@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Home page works when:  displays content 1`] = `
+<DocumentFragment>
+  <main>
+    <h1
+      class="text-3xl top-5 font-bold underline"
+    >
+      Hello!
+    </h1>
+    <span
+      class="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10"
+    >
+      Badge
+    </span>
+    <span
+      class="dark:text-white text-black"
+    >
+      Theme test
+    </span>
+    <h1
+      class="text-3xl top-5 font-bold underline"
+    >
+      This is home page. Zustand works! The blog title is:Some title
+    </h1>
+  </main>
+</DocumentFragment>
+`;

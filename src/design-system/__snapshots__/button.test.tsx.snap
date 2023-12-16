@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Button component works when:  allows to pass native button properties and events 1`] = `
+<DocumentFragment>
+  <button
+    aria-checked="true"
+    class="my-class bg-gray-300 dark:bg-red-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center"
+  >
+    Content
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Button component works when:  displays content 1`] = `
+<DocumentFragment>
+  <button
+    class="my-class bg-gray-300 dark:bg-red-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center"
+  >
+    Content
+  </button>
+</DocumentFragment>
+`;
