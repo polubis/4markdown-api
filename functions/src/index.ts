@@ -1,19 +1,42 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * import {onCall} from "firebase-functions/v2/https";
- * import {onDocumentWritten} from "firebase-functions/v2/firestore";
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
+import { https } from 'firebase-functions';
+import * as admin from 'firebase-admin';
+import { v4 as uuid } from 'uuid';
 
-import {onRequest} from "firebase-functions/v2/https";
-import * as logger from "firebase-functions/logger";
+admin.initializeApp();
 
-// Start writing functions
-// https://firebase.google.com/docs/functions/typescript
+const { onCall, HttpsError } = https;
 
-// export const helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+interface CreatePayload {
+  name: string;
+  code: string;
+}
+
+interface CreateDocDto {
+  id: string;
+}
+
+export const createDoc = onCall(
+  async ({ name, code }: CreatePayload, context) => {
+    if (!context.auth) {
+      throw new HttpsError(`unauthenticated`, `Unauthorized`);
+    }
+
+    try {
+      const { uid } = context.auth;
+      const id = uuid();
+
+      await admin.firestore().collection(`docs`).doc(uid).set(
+        {
+          name,
+          code,
+          id,
+        },
+        { merge: true },
+      );
+
+      return <CreateDocDto>{ id };
+    } catch (error) {
+      throw new HttpsError(`internal`, `Internal Server Error`);
+    }
+  },
+);
