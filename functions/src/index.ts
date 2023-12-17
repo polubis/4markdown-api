@@ -39,7 +39,9 @@ export const createDoc = onCall(async (payload: CreatePayload, context) => {
     }
 
     const fields = (docs.data() as DocEntity).fields;
-    const alreadyExist = fields.some((f) => f.name.trim() === doc.name);
+    const alreadyExist = fields.some(
+      (f) => f.name.trim().toLowerCase() === doc.name.toLowerCase(),
+    );
 
     if (alreadyExist) {
       throw new HttpsError(
