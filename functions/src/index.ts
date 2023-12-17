@@ -57,6 +57,12 @@ export const createDoc = onCall(async (payload: CreatePayload, context) => {
 
     return <CreateDocDto>{ id };
   } catch (error: unknown) {
+    if (error instanceof HttpsError) {
+      if (error.code === `already-exists` || error.code === `unauthenticated`) {
+        throw error;
+      }
+    }
+
     throw new HttpsError(`internal`, `Internal Server Error`);
   }
 });
