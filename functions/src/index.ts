@@ -1,42 +1,62 @@
 import { https } from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
+import type { CreatePayload } from './payloads/create-doc.payload';
+import type { DocEntity, DocEntityField } from './entities/doc.entity';
+import type { CreateDocDto } from './dtos/create-doc.dto';
 
 admin.initializeApp();
 
 const { onCall, HttpsError } = https;
 
-interface CreatePayload {
-  name: string;
-  code: string;
-}
+export const createDoc = onCall(async (payload: CreatePayload, context) => {
+  if (!context.auth) {
+    throw new HttpsError(`unauthenticated`, `Unauthorized`);
+  }
 
-interface CreateDocDto {
-  id: string;
-}
+  try {
+    const { code } = payload;
+    const id = uuid();
+    const name = payload.name.trim();
 
-export const createDoc = onCall(
-  async ({ name, code }: CreatePayload, context) => {
-    if (!context.auth) {
-      throw new HttpsError(`unauthenticated`, `Unauthorized`);
-    }
+    const doc: DocEntityField = {
+      id,
+      name,
+      code,
+    };
 
-    try {
-      const { uid } = context.auth;
-      const id = uuid();
+    const docsCollection = admin
+      .firestore()
+      .collection(`docs`)
+      .doc(context.auth.uid);
+    const docs = await docsCollection.get();
 
-      await admin.firestore().collection(`docs`).doc(uid).set(
-        {
-          name,
-          code,
-          id,
-        },
-        { merge: true },
-      );
-
+    if (!docs.exists) {
+      await docsCollection.set({
+        fields: [doc],
+      });
       return <CreateDocDto>{ id };
-    } catch (error) {
-      throw new HttpsError(`internal`, `Internal Server Error`);
     }
-  },
-);
+
+    const fields = (docs.data() as DocEntity).fields;
+    const alreadyExist = fields.some((f) => f.name.trim() === doc.name);
+
+    if (alreadyExist) {
+      throw new HttpsError(
+        `already-exists`,
+        `Document with provided name already exist`,
+      );
+    }
+
+    await docsCollection.set(
+      {
+        fields: [...fields, doc],
+      },
+      { merge: true },
+    );
+
+    return <CreateDocDto>{ id };
+  } catch (error: unknown) {
+    throw new HttpsError(`internal`, `Internal Server Error`);
+  }
+});
