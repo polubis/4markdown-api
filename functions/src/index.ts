@@ -21,10 +21,13 @@ export const createDoc = onCall(async (payload: CreateDocPayload, context) => {
     const { code } = payload;
     const id = uuid();
     const name = payload.name.trim();
+    const cdate = new Date().toISOString();
 
     const field: DocEntityField = {
       name,
       code,
+      cdate,
+      mdate: cdate,
     };
 
     const docsCollection = admin
@@ -75,14 +78,6 @@ export const updateDoc = onCall(async (payload: UpdateDocPayload, context) => {
   }
 
   try {
-    const { id, code } = payload;
-    const name = payload.name.trim();
-
-    const field: DocEntityField = {
-      name,
-      code,
-    };
-
     const docsCollection = admin
       .firestore()
       .collection(`docs`)
@@ -96,6 +91,9 @@ export const updateDoc = onCall(async (payload: UpdateDocPayload, context) => {
       );
     }
 
+    const { id, code } = payload;
+    const name = payload.name.trim();
+    const mdate = new Date().toISOString();
     const fields = docs.data() as DocEntity;
     const alreadyExist = !!fields[id];
 
@@ -107,7 +105,12 @@ export const updateDoc = onCall(async (payload: UpdateDocPayload, context) => {
     }
 
     await docsCollection.update(<DocEntity>{
-      [id]: field,
+      [id]: {
+        ...fields[id],
+        name,
+        code,
+        mdate,
+      },
     });
 
     return <UpdateDocDto>{ id };
