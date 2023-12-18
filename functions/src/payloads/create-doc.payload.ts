@@ -1,5 +1,7 @@
 import type { DocEntityField } from '../entities/doc.entity';
 
-interface CreatePayload extends Pick<DocEntityField, 'name' | 'code'> {}
+interface CreateDocPayload extends Pick<DocEntityField, 'name' | 'code'> {}
 
-export type { CreatePayload };
+interface UpdateDocPayload extends DocEntityField {}
+
+export type { CreateDocPayload, UpdateDocPayload };
