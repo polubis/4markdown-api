@@ -4,9 +4,9 @@ import { v4 as uuid } from 'uuid';
 import type {
   CreateDocPayload,
   UpdateDocPayload,
-} from './payloads/create-doc.payload';
+} from './payloads/docs.payload';
 import type { DocEntity, DocEntityField } from './entities/doc.entity';
-import type { CreateDocDto, UpdateDocDto } from './dtos/create-doc.dto';
+import type { CreateDocDto, GetDocsDto, UpdateDocDto } from './dtos/docs.dto';
 
 admin.initializeApp();
 
@@ -34,14 +34,16 @@ export const createDoc = onCall(async (payload: CreateDocPayload, context) => {
     const docs = await docsCollection.get();
 
     if (!docs.exists) {
-      await docsCollection.set({
-        fields: { [id]: field },
+      await docsCollection.set(<DocEntity>{
+        [id]: field,
       });
       return <CreateDocDto>{ id };
     }
 
     const fields = docs.data() as DocEntity;
-    const alreadyExist = fields[id]!!;
+    const alreadyExist = Object.values(fields).some(
+      (f) => f.name.trim().toLowerCase() === payload.name.toLowerCase(),
+    );
 
     if (alreadyExist) {
       throw new HttpsError(
@@ -50,11 +52,9 @@ export const createDoc = onCall(async (payload: CreateDocPayload, context) => {
       );
     }
 
-    await docsCollection.set({
-      fields: {
-        ...fields,
-        [id]: field,
-      },
+    await docsCollection.set(<DocEntity>{
+      ...fields,
+      [id]: field,
     });
 
     return <CreateDocDto>{ id };
@@ -97,9 +97,16 @@ export const updateDoc = onCall(async (payload: UpdateDocPayload, context) => {
     }
 
     const fields = docs.data() as DocEntity;
+    const alreadyExist = !!fields[id];
 
-    await docsCollection.set({
-      ...fields,
+    if (!alreadyExist) {
+      throw new HttpsError(
+        `not-found`,
+        `Operation not allowed, not found record`,
+      );
+    }
+
+    await docsCollection.update(<DocEntity>{
       [id]: field,
     });
 
@@ -111,6 +118,31 @@ export const updateDoc = onCall(async (payload: UpdateDocPayload, context) => {
       }
     }
 
+    throw new HttpsError(`internal`, `Internal Server Error`);
+  }
+});
+
+export const getDocs = onCall(async (_, context) => {
+  if (!context.auth) {
+    throw new HttpsError(`unauthenticated`, `Unauthorized`);
+  }
+
+  try {
+    const docsCollection = await admin
+      .firestore()
+      .collection(`docs`)
+      .doc(context.auth.uid)
+      .get();
+
+    const docs: GetDocsDto = Object.entries(docsCollection.data).map(
+      ([id, field]) => ({
+        id,
+        ...field,
+      }),
+    );
+
+    return <GetDocsDto>docs;
+  } catch (error: unknown) {
     throw new HttpsError(`internal`, `Internal Server Error`);
   }
 });
