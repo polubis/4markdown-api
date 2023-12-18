@@ -23,7 +23,6 @@ export const createDoc = onCall(async (payload: CreateDocPayload, context) => {
     const name = payload.name.trim();
 
     const field: DocEntityField = {
-      id,
       name,
       code,
     };
@@ -36,15 +35,13 @@ export const createDoc = onCall(async (payload: CreateDocPayload, context) => {
 
     if (!docs.exists) {
       await docsCollection.set({
-        fields: [field],
+        fields: { [id]: field },
       });
       return <CreateDocDto>{ id };
     }
 
-    const fields = (docs.data() as DocEntity).fields;
-    const alreadyExist = fields.some(
-      (f) => f.name.trim().toLowerCase() === field.name.toLowerCase(),
-    );
+    const fields = docs.data() as DocEntity;
+    const alreadyExist = fields[id]!!;
 
     if (alreadyExist) {
       throw new HttpsError(
@@ -53,12 +50,12 @@ export const createDoc = onCall(async (payload: CreateDocPayload, context) => {
       );
     }
 
-    await docsCollection.set(
-      {
-        fields: [...fields, field],
+    await docsCollection.set({
+      fields: {
+        ...fields,
+        [id]: field,
       },
-      { merge: true },
-    );
+    });
 
     return <CreateDocDto>{ id };
   } catch (error: unknown) {
@@ -82,7 +79,6 @@ export const updateDoc = onCall(async (payload: UpdateDocPayload, context) => {
     const name = payload.name.trim();
 
     const field: DocEntityField = {
-      id,
       name,
       code,
     };
@@ -100,14 +96,12 @@ export const updateDoc = onCall(async (payload: UpdateDocPayload, context) => {
       );
     }
 
-    await docsCollection.set(
-      {
-        fields: (docs.data() as DocEntity).fields.map((f) =>
-          f.id === payload.id ? field : f,
-        ),
-      },
-      { merge: true },
-    );
+    const fields = docs.data() as DocEntity;
+
+    await docsCollection.set({
+      ...fields,
+      [id]: field,
+    });
 
     return <UpdateDocDto>{ id };
   } catch (error: unknown) {

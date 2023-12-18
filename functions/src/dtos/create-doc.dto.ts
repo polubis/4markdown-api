@@ -1,7 +1,11 @@
-import type { DocEntityField } from '../entities/doc.entity';
+import type { Id } from '../entities/general';
 
-interface CreateDocDto extends Pick<DocEntityField, 'id'> {}
+interface CreateDocDto {
+  id: Id;
+}
 
-interface UpdateDocDto extends Pick<DocEntityField, 'id'> {}
+interface UpdateDocDto {
+  id: Id;
+}
 
 export type { CreateDocDto, UpdateDocDto };

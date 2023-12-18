@@ -1,11 +1,10 @@
+import type { Id } from './general';
+
 interface DocEntityField {
-  id: string;
   name: string;
   code: string;
 }
 
-interface DocEntity {
-  fields: DocEntityField[];
-}
+type DocEntity = Record<Id, DocEntityField>;
 
 export type { DocEntity, DocEntityField };
