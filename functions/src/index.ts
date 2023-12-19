@@ -154,8 +154,17 @@ export const getDocs = onCall(async (_, context) => {
       .collection(`docs`)
       .doc(context.auth.uid)
       .get();
-    logger.info(docsCollection);
-    const docs: GetDocsDto = Object.entries(docsCollection.data).map(
+
+    const result = docsCollection.data();
+
+    if (!Array.isArray(result)) {
+      throw new HttpsError(
+        `not-found`,
+        `Operation not allowed, not found record`,
+      );
+    }
+
+    const docs: GetDocsDto = Object.entries(result).map(
       ([id, field]: [string, DocEntityField]): GetDocsDtoItem => ({
         id,
         name: field.name,
@@ -167,6 +176,12 @@ export const getDocs = onCall(async (_, context) => {
 
     return <GetDocsDto>docs;
   } catch (error: unknown) {
+    if (error instanceof HttpsError) {
+      if (error.code === `not-found`) {
+        throw error;
+      }
+    }
+
     throw new HttpsError(`internal`, `Internal Server Error`);
   }
 });
