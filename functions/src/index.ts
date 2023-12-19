@@ -6,7 +6,12 @@ import type {
   UpdateDocPayload,
 } from './payloads/docs.payload';
 import type { DocEntity, DocEntityField } from './entities/doc.entity';
-import type { CreateDocDto, GetDocsDto, UpdateDocDto } from './dtos/docs.dto';
+import type {
+  CreateDocDto,
+  GetDocsDto,
+  GetDocsDtoItem,
+  UpdateDocDto,
+} from './dtos/docs.dto';
 
 admin.initializeApp();
 
@@ -138,9 +143,12 @@ export const getDocs = onCall(async (_, context) => {
       .get();
 
     const docs: GetDocsDto = Object.entries(docsCollection.data).map(
-      ([id, field]) => ({
+      ([id, field]: [string, DocEntityField]): GetDocsDtoItem => ({
         id,
-        ...field,
+        name: field.name,
+        code: field.code,
+        cdate: field.cdate,
+        mdate: field.mdate,
       }),
     );
 

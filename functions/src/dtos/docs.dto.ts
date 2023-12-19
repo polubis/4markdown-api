@@ -9,6 +9,8 @@ interface UpdateDocDto {
   id: Id;
 }
 
-type GetDocsDto = (DocEntityField & { id: Id })[];
+type GetDocsDtoItem = DocEntityField & { id: Id };
 
-export type { CreateDocDto, UpdateDocDto, GetDocsDto };
+type GetDocsDto = GetDocsDtoItem[];
+
+export type { CreateDocDto, UpdateDocDto, GetDocsDto, GetDocsDtoItem };
