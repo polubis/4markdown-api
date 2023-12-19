@@ -1,4 +1,4 @@
-import { https, logger } from 'firebase-functions';
+import { https } from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
 import type {
