@@ -157,7 +157,7 @@ export const getDocs = onCall(async (_, context) => {
 
     const result = docsCollection.data();
 
-    if (!Array.isArray(result)) {
+    if (result === undefined) {
       throw new HttpsError(
         `not-found`,
         `Operation not allowed, not found record`,
