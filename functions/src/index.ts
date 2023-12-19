@@ -208,7 +208,7 @@ export const deleteDoc = onCall(async (payload: DeleteDocPayload, context) => {
       );
     }
 
-    delete result[payload.id];
+    result[payload.id] = admin.firestore.FieldValue.delete();
 
     await docsCollection.update(result);
 
