@@ -3,11 +3,13 @@ import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
 import type {
   CreateDocPayload,
+  DeleteDocPayload,
   UpdateDocPayload,
 } from './payloads/docs.payload';
 import type { DocEntity, DocEntityField } from './entities/doc.entity';
 import type {
   CreateDocDto,
+  DeleteDocDto,
   GetDocsDto,
   GetDocsDtoItem,
   UpdateDocDto,
@@ -175,6 +177,42 @@ export const getDocs = onCall(async (_, context) => {
     );
 
     return <GetDocsDto>docs;
+  } catch (error: unknown) {
+    if (error instanceof HttpsError) {
+      if (error.code === `not-found`) {
+        throw error;
+      }
+    }
+
+    throw new HttpsError(`internal`, `Internal Server Error`);
+  }
+});
+
+export const deleteDoc = onCall(async (payload: DeleteDocPayload, context) => {
+  if (!context.auth) {
+    throw new HttpsError(`unauthenticated`, `Unauthorized`);
+  }
+
+  try {
+    const docsCollection = admin
+      .firestore()
+      .collection(`docs`)
+      .doc(context.auth.uid);
+
+    const result = (await docsCollection.get()).data();
+
+    if (result === undefined) {
+      throw new HttpsError(
+        `not-found`,
+        `Operation not allowed, not found record`,
+      );
+    }
+
+    delete result[payload.id];
+
+    await docsCollection.update(result);
+
+    return <DeleteDocDto>{ id: payload.id };
   } catch (error: unknown) {
     if (error instanceof HttpsError) {
       if (error.code === `not-found`) {

@@ -15,4 +15,12 @@ type GetDocsDtoItem = DocEntityField & { id: Id };
 
 type GetDocsDto = GetDocsDtoItem[];
 
-export type { CreateDocDto, UpdateDocDto, GetDocsDto, GetDocsDtoItem };
+type DeleteDocDto = { id: Id };
+
+export type {
+  CreateDocDto,
+  UpdateDocDto,
+  GetDocsDto,
+  GetDocsDtoItem,
+  DeleteDocDto,
+};

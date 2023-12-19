@@ -5,4 +5,6 @@ interface CreateDocPayload extends Pick<DocEntityField, 'name' | 'code'> {}
 
 type UpdateDocPayload = DocEntityField & { id: Id };
 
-export type { CreateDocPayload, UpdateDocPayload };
+type DeleteDocPayload = { id: Id };
+
+export type { CreateDocPayload, UpdateDocPayload, DeleteDocPayload };
