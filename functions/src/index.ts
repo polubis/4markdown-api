@@ -1,4 +1,4 @@
-import { https } from 'firebase-functions';
+import { https, logger } from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
 import type {
@@ -65,7 +65,12 @@ export const createDoc = onCall(async (payload: CreateDocPayload, context) => {
       [id]: field,
     });
 
-    return <CreateDocDto>{ id };
+    const dto: CreateDocDto = {
+      ...field,
+      id,
+    };
+
+    return dto;
   } catch (error: unknown) {
     if (error instanceof HttpsError) {
       if (error.code === `already-exists`) {
@@ -118,7 +123,15 @@ export const updateDoc = onCall(async (payload: UpdateDocPayload, context) => {
       },
     });
 
-    return <UpdateDocDto>{ id };
+    const dto: UpdateDocDto = {
+      id,
+      name,
+      code,
+      mdate,
+      cdate: fields[id].cdate,
+    };
+
+    return dto;
   } catch (error: unknown) {
     if (error instanceof HttpsError) {
       if (error.code === `not-found`) {
@@ -141,7 +154,7 @@ export const getDocs = onCall(async (_, context) => {
       .collection(`docs`)
       .doc(context.auth.uid)
       .get();
-
+    logger.info(docsCollection);
     const docs: GetDocsDto = Object.entries(docsCollection.data).map(
       ([id, field]: [string, DocEntityField]): GetDocsDtoItem => ({
         id,
