@@ -43,11 +43,16 @@ export const createDoc = onCall(async (payload: CreateDocPayload, context) => {
       .doc(context.auth.uid);
     const docs = await docsCollection.get();
 
+    const dto: CreateDocDto = {
+      ...field,
+      id,
+    };
+
     if (!docs.exists) {
       await docsCollection.set(<DocEntity>{
         [id]: field,
       });
-      return <CreateDocDto>{ id };
+      return dto;
     }
 
     const fields = docs.data() as DocEntity;
@@ -66,11 +71,6 @@ export const createDoc = onCall(async (payload: CreateDocPayload, context) => {
       ...fields,
       [id]: field,
     });
-
-    const dto: CreateDocDto = {
-      ...field,
-      id,
-    };
 
     return dto;
   } catch (error: unknown) {
@@ -159,7 +159,7 @@ export const getDocs = onCall(async (_, context) => {
 
     const result = docsCollection.data();
 
-    if (result === undefined) return <GetDocsDto>[];
+    if (result === undefined) return [];
 
     const docs: GetDocsDto = Object.entries(result).map(
       ([id, field]: [string, DocEntityField]): GetDocsDtoItem => ({
@@ -171,7 +171,7 @@ export const getDocs = onCall(async (_, context) => {
       }),
     );
 
-    return <GetDocsDto>docs;
+    return docs;
   } catch (error: unknown) {
     if (error instanceof HttpsError) {
       if (error.code === `not-found`) {
@@ -207,7 +207,9 @@ export const deleteDoc = onCall(async (payload: DeleteDocPayload, context) => {
 
     await docsCollection.update(result);
 
-    return <DeleteDocDto>{ id: payload.id };
+    const dto: DeleteDocDto = { id: payload.id };
+
+    return dto;
   } catch (error: unknown) {
     if (error instanceof HttpsError) {
       if (error.code === `not-found`) {
