@@ -3,8 +3,17 @@ import type { Id } from '../entities/general';
 
 interface CreateDocPayload extends Pick<DocEntityField, 'name' | 'code'> {}
 
-type UpdateDocPayload = DocEntityField & { id: Id };
+type UpdateDocPayload = Pick<DocEntityField, 'name' | 'code' | 'visibility'> & {
+  id: Id;
+};
 
 type DeleteDocPayload = { id: Id };
 
-export type { CreateDocPayload, UpdateDocPayload, DeleteDocPayload };
+type GetDocPayload = { id: Id };
+
+export type {
+  CreateDocPayload,
+  UpdateDocPayload,
+  DeleteDocPayload,
+  GetDocPayload,
+};
