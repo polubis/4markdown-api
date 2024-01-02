@@ -105,7 +105,8 @@ export const updateDoc = onCall(async (payload: UpdateDocPayload, context) => {
   const name = payload.name.trim();
   const mdate = new Date().toISOString();
   const fields = docs.data() as DocEntity;
-  const alreadyExist = !!fields[id];
+  const doc = fields[id];
+  const alreadyExist = !!doc;
 
   if (!alreadyExist) {
     throw new HttpsError(
@@ -114,19 +115,18 @@ export const updateDoc = onCall(async (payload: UpdateDocPayload, context) => {
     );
   }
 
+  const { cdate } = doc;
+
   let docEntityField: DocEntityField;
   let dto: UpdateDocDto;
 
   if (visibility === `permanent`) {
     const path = createPath(name);
-    // TODO: Update doc path and check if it exists
-    const allDocs = (await admin.firestore().collection(`docs`).get()).docs.map(
-      (doc) => doc.data(),
-    );
+
     const thumbnail = ``;
 
     docEntityField = {
-      cdate: fields[id].cdate,
+      cdate,
       name,
       code,
       mdate,
@@ -139,14 +139,14 @@ export const updateDoc = onCall(async (payload: UpdateDocPayload, context) => {
       name,
       code,
       mdate,
-      cdate: fields[id].cdate,
+      cdate,
       visibility,
       thumbnail,
       path,
     };
   } else {
     docEntityField = {
-      cdate: fields[id].cdate,
+      cdate,
       name,
       code,
       mdate,
@@ -157,7 +157,7 @@ export const updateDoc = onCall(async (payload: UpdateDocPayload, context) => {
       name,
       code,
       mdate,
-      cdate: fields[id].cdate,
+      cdate,
       visibility,
     };
   }
