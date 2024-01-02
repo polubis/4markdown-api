@@ -119,6 +119,7 @@ export const updateDoc = onCall(async (payload: UpdateDocPayload, context) => {
 
   if (visibility === `permanent`) {
     const path = createPath(name);
+    // TODO: Update doc path and check if it exists
     const thumbnail = ``;
 
     docEntityField = {
