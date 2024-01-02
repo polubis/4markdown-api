@@ -1,21 +1,9 @@
-import { DocEntityField } from '../entities/doc.entity';
+import { DocEntityField, PrivateDocEntityField } from '../entities/doc.entity';
 import type { Id } from '../entities/general';
 
-interface CreateDocDto
-  extends Pick<
-    DocEntityField,
-    'cdate' | 'code' | 'mdate' | 'name' | 'visibility'
-  > {
-  id: Id;
-}
+type CreateDocDto = PrivateDocEntityField & { id: Id };
 
-interface UpdateDocDto
-  extends Pick<
-    DocEntityField,
-    'cdate' | 'code' | 'mdate' | 'name' | 'visibility'
-  > {
-  id: Id;
-}
+type UpdateDocDto = DocEntityField & { id: Id };
 
 type GetDocsDtoItem = DocEntityField & { id: Id };
 

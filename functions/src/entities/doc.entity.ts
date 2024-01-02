@@ -30,4 +30,11 @@ type DocVisibility = DocEntityField['visibility'];
 
 type DocEntity = Record<Id, DocEntityField>;
 
-export type { DocEntity, DocEntityField, DocVisibility };
+export type {
+  DocEntity,
+  DocEntityField,
+  DocVisibility,
+  PermanentDocEntityField,
+  PublicDocEntityField,
+  PrivateDocEntityField,
+};
