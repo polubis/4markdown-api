@@ -7,9 +7,6 @@
     "sourceMap": true,
     "strict": true,
     "target": "es2017",
-    "paths": {
-      "@core/*": ["./src/core/*"]
-    }
   },
   "compileOnSave": true,
   "include": ["src"]
