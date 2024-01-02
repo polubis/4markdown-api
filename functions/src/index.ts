@@ -120,6 +120,9 @@ export const updateDoc = onCall(async (payload: UpdateDocPayload, context) => {
   if (visibility === `permanent`) {
     const path = createPath(name);
     // TODO: Update doc path and check if it exists
+    const allDocs = (await admin.firestore().collection(`docs`).get()).docs.map(
+      (doc) => doc.data(),
+    );
     const thumbnail = ``;
 
     docEntityField = {
