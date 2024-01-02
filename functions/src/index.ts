@@ -16,8 +16,8 @@ import type {
   GetDocsDtoItem,
   UpdateDocDto,
 } from './dtos/docs.dto';
-import { getVisibility } from './core/doc';
-import { createPath } from './core/path';
+import { getVisibility } from '@core/doc';
+import { createPath } from '@core/path';
 
 admin.initializeApp();
 
