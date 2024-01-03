@@ -11,7 +11,7 @@ import { Id } from '../entities/general';
 import { DocsRepository } from '../repositories/docs.repository';
 
 export const DocsService = {
-  update: async (payload: UpdateDocPayload, uid: Id) => {
+  update: async (uid: Id, payload: UpdateDocPayload) => {
     const name = Doc.createName(payload.name);
     const docsRepo = DocsRepository(uid);
 

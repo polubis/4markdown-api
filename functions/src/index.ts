@@ -82,7 +82,7 @@ export const createDoc = onCall(async (payload: CreateDocPayload, context) => {
 
 export const updateDoc = onCall(async (payload, context) => {
   const { uid } = AuthService.authorize(context);
-  return DocsService.update(payload, uid);
+  return DocsService.update(uid, payload);
 });
 
 export const getDocs = onCall(async (_, context) => {
