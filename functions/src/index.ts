@@ -18,7 +18,6 @@ import type {
   UpdateDocPrivateDto,
   UpdateDocPublicDto,
 } from './dtos/docs.dto';
-import { docValidators } from './validation/doc';
 import { errors } from './core/errors';
 import { Doc } from './core/doc';
 
@@ -33,11 +32,10 @@ export const createDoc = onCall(async (payload: CreateDocPayload, context) => {
 
   const { code } = payload;
   const id = uuid();
-  const name = payload.name.trim();
   const cdate = new Date().toISOString();
 
   const field: DocEntityField = {
-    name,
+    name: Doc.createName(name),
     code,
     cdate,
     mdate: cdate,
@@ -89,10 +87,6 @@ export const updateDoc = onCall(async (payload: UpdateDocPayload, context) => {
     throw errors.notAuthorized();
   }
 
-  if (!docValidators.name(payload.name)) {
-    throw errors.invalidArg(`Wrong name format`);
-  }
-
   const docsCollection = admin
     .firestore()
     .collection(`docs`)
@@ -118,7 +112,7 @@ export const updateDoc = onCall(async (payload: UpdateDocPayload, context) => {
         mdate,
         visibility: payload.visibility,
         code: payload.code,
-        name: payload.name,
+        name: Doc.createName(payload.name),
         id: payload.id,
       };
 
@@ -136,7 +130,7 @@ export const updateDoc = onCall(async (payload: UpdateDocPayload, context) => {
         mdate,
         visibility: payload.visibility,
         code: payload.code,
-        name: payload.name,
+        name: Doc.createName(payload.name),
         id: payload.id,
       };
 
@@ -149,16 +143,12 @@ export const updateDoc = onCall(async (payload: UpdateDocPayload, context) => {
       return dto;
     }
     case `permanent`: {
-      if (!docValidators.path(payload.name)) {
-        throw errors.invalidArg(`Wrong name format`);
-      }
-
       const dto: UpdateDocPermanentDto = {
         cdate: doc.cdate,
         mdate,
         visibility: payload.visibility,
         code: payload.code,
-        name: payload.name,
+        name: Doc.createName(payload.name),
         id: payload.id,
         path: Doc.createPath(context.auth.uid, payload.name),
         thumbnail: ``,

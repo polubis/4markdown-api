@@ -2,6 +2,8 @@ import { GetDocDto } from '../dtos/docs.dto';
 import { DocEntityField } from '../entities/doc.entity';
 import * as admin from 'firebase-admin';
 import type { Id, Name, Path } from '../entities/general';
+import { docValidators } from '../validation/doc';
+import { errors } from './errors';
 
 export const getAllDocs = async () => {
   const allDocs = (await admin.firestore().collection(`docs`).get()).docs;
@@ -40,8 +42,20 @@ export const getAllDocs = async () => {
 
 const Doc = () => {};
 
-Doc.createPath = (uid: Id, name: Name): Path => {
-  const path = name.trim().replace(/ /g, `-`).toLowerCase();
+Doc.createName = (name: unknown): Name => {
+  if (!docValidators.name(name)) {
+    throw errors.invalidArg(`Wrong name format`);
+  }
+
+  return name;
+};
+
+Doc.createPath = (uid: Id, name: unknown): Path => {
+  if (!docValidators.path(name)) {
+    throw errors.invalidArg(`Wrong name format`);
+  }
+
+  const path = Doc.createName(name).trim().replace(/ /g, `-`).toLowerCase();
   return `/${uid}/${path}/`;
 };
 
