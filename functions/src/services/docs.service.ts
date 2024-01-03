@@ -7,15 +7,15 @@ import {
   UpdateDocPublicDto,
 } from '../dtos/docs.dto';
 import { Doc } from '../core/doc';
-import * as admin from 'firebase-admin';
 import { Id } from '../entities/general';
+import { DocsRepository } from '../repositories/docs.repository';
 
 export const DocsService = {
   update: async (payload: UpdateDocPayload, uid: Id) => {
     const name = Doc.createName(payload.name);
+    const docsRepo = DocsRepository(uid);
 
-    const docsCollection = admin.firestore().collection(`docs`).doc(uid);
-    const docs = await docsCollection.get();
+    const docs = await docsRepo.getMy();
 
     if (!docs.exists) {
       throw errors.notFound();
@@ -44,7 +44,7 @@ export const DocsService = {
           [payload.id]: dto,
         };
 
-        await docsCollection.update(docEntity);
+        await docsRepo.update(docEntity);
 
         return dto;
       }
@@ -62,7 +62,7 @@ export const DocsService = {
           [payload.id]: dto,
         };
 
-        await docsCollection.update(docEntity);
+        await docsRepo.update(docEntity);
 
         return dto;
       }
@@ -82,7 +82,7 @@ export const DocsService = {
           [payload.id]: dto,
         };
 
-        await docsCollection.update(docEntity);
+        await docsRepo.update(docEntity);
 
         return dto;
       }
