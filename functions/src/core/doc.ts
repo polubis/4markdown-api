@@ -50,7 +50,7 @@ Doc.createName = (name: unknown): Name => {
   return name;
 };
 
-Doc.createPath = (uid: Id, name: unknown): Path => {
+Doc.createPath = (uid: Id, name: Name): Path => {
   if (!docValidators.path(name)) {
     throw errors.invalidArg(`Wrong name format`);
   }

@@ -5,7 +5,6 @@ import type {
   CreateDocPayload,
   DeleteDocPayload,
   GetDocPayload,
-  UpdateDocPayload,
 } from './payloads/docs.payload';
 import type { DocEntity, DocEntityField } from './entities/doc.entity';
 import type {
@@ -14,12 +13,11 @@ import type {
   GetDocDto,
   GetDocsDto,
   GetDocsDtoItem,
-  UpdateDocPermanentDto,
-  UpdateDocPrivateDto,
-  UpdateDocPublicDto,
 } from './dtos/docs.dto';
 import { errors } from './core/errors';
 import { Doc } from './core/doc';
+import { DocsService } from './services/docs.service';
+import { AuthService } from './services/auth.service';
 
 admin.initializeApp();
 
@@ -82,90 +80,9 @@ export const createDoc = onCall(async (payload: CreateDocPayload, context) => {
   return dto;
 });
 
-export const updateDoc = onCall(async (payload: UpdateDocPayload, context) => {
-  if (!context.auth) {
-    throw errors.notAuthorized();
-  }
-
-  const docsCollection = admin
-    .firestore()
-    .collection(`docs`)
-    .doc(context.auth.uid);
-  const docs = await docsCollection.get();
-
-  if (!docs.exists) {
-    throw errors.notFound();
-  }
-
-  const mdate = new Date().toISOString();
-  const fields = docs.data() as DocEntity;
-  const doc = fields[payload.id];
-
-  if (!doc) {
-    throw errors.notFound();
-  }
-
-  switch (payload.visibility) {
-    case `public`: {
-      const dto: UpdateDocPublicDto = {
-        cdate: doc.cdate,
-        mdate,
-        visibility: payload.visibility,
-        code: payload.code,
-        name: Doc.createName(payload.name),
-        id: payload.id,
-      };
-
-      const docEntity: DocEntity = {
-        [payload.id]: dto,
-      };
-
-      await docsCollection.update(docEntity);
-
-      return dto;
-    }
-    case `private`: {
-      const dto: UpdateDocPrivateDto = {
-        cdate: doc.cdate,
-        mdate,
-        visibility: payload.visibility,
-        code: payload.code,
-        name: Doc.createName(payload.name),
-        id: payload.id,
-      };
-
-      const docEntity: DocEntity = {
-        [payload.id]: dto,
-      };
-
-      await docsCollection.update(docEntity);
-
-      return dto;
-    }
-    case `permanent`: {
-      const dto: UpdateDocPermanentDto = {
-        cdate: doc.cdate,
-        mdate,
-        visibility: payload.visibility,
-        code: payload.code,
-        name: Doc.createName(payload.name),
-        id: payload.id,
-        path: Doc.createPath(context.auth.uid, payload.name),
-        thumbnail: ``,
-      };
-
-      const docEntity: DocEntity = {
-        [payload.id]: dto,
-      };
-
-      await docsCollection.update(docEntity);
-
-      return dto;
-    }
-    default: {
-      throw errors.invalidArg(`Wrong visiblity value`);
-    }
-  }
+export const updateDoc = onCall(async (payload, context) => {
+  const { uid } = AuthService.authorize(context);
+  return DocsService.update(payload, uid);
 });
 
 export const getDocs = onCall(async (_, context) => {
