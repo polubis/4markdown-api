@@ -1,20 +1,7 @@
 import { GetDocDto } from '../dtos/docs.dto';
-import { DocEntityField, DocVisibility } from '../entities/doc.entity';
-import { invalidArg } from './errors';
+import { DocEntityField } from '../entities/doc.entity';
 import * as admin from 'firebase-admin';
-
-const isValidVisibility = (visibility: string): visibility is DocVisibility => {
-  const options: DocVisibility[] = [`public`, `private`, `permanent`];
-
-  return options.includes(visibility as DocVisibility);
-};
-
-export const getVisibility = (visibility: unknown): DocVisibility | never => {
-  if (typeof visibility !== `string` || !isValidVisibility(visibility))
-    throw invalidArg(`Unsupported visibility value`);
-
-  return visibility;
-};
+import type { Id, Name, Path } from '../entities/general';
 
 export const getAllDocs = async () => {
   const allDocs = (await admin.firestore().collection(`docs`).get()).docs;
@@ -50,3 +37,12 @@ export const getAllDocs = async () => {
 
   return flattenDocs;
 };
+
+const Doc = () => {};
+
+Doc.createPath = (uid: Id, name: Name): Path => {
+  const path = name.trim().replace(/ /g, `-`).toLowerCase();
+  return `/${uid}/${path}/`;
+};
+
+export { Doc };

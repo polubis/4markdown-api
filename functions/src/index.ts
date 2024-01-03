@@ -14,10 +14,13 @@ import type {
   GetDocDto,
   GetDocsDto,
   GetDocsDtoItem,
-  UpdateDocDto,
+  UpdateDocPermanentDto,
+  UpdateDocPrivateDto,
+  UpdateDocPublicDto,
 } from './dtos/docs.dto';
-import { getVisibility } from './core/doc';
-import { createPath } from './core/path';
+import { docValidators } from './validation/doc';
+import { errors } from './core/errors';
+import { Doc } from './core/doc';
 
 admin.initializeApp();
 
@@ -82,10 +85,12 @@ export const createDoc = onCall(async (payload: CreateDocPayload, context) => {
 });
 
 export const updateDoc = onCall(async (payload: UpdateDocPayload, context) => {
-  const visibility = getVisibility(payload.visibility);
-
   if (!context.auth) {
-    throw new HttpsError(`unauthenticated`, `Unauthorized`);
+    throw errors.notAuthorized();
+  }
+
+  if (!docValidators.name(payload.name)) {
+    throw errors.invalidArg(`Wrong name format`);
   }
 
   const docsCollection = admin
@@ -95,85 +100,87 @@ export const updateDoc = onCall(async (payload: UpdateDocPayload, context) => {
   const docs = await docsCollection.get();
 
   if (!docs.exists) {
-    throw new HttpsError(
-      `not-found`,
-      `Operation not allowed, not found record`,
-    );
+    throw errors.notFound();
   }
 
-  const { id, code } = payload;
-  const name = payload.name.trim();
   const mdate = new Date().toISOString();
   const fields = docs.data() as DocEntity;
-  const doc = fields[id];
-  const alreadyExist = !!doc;
+  const doc = fields[payload.id];
 
-  if (!alreadyExist) {
-    throw new HttpsError(
-      `not-found`,
-      `Operation not allowed, not found record`,
-    );
+  if (!doc) {
+    throw errors.notFound();
   }
 
-  const { cdate } = doc;
+  switch (payload.visibility) {
+    case `public`: {
+      const dto: UpdateDocPublicDto = {
+        cdate: doc.cdate,
+        mdate,
+        visibility: payload.visibility,
+        code: payload.code,
+        name: payload.name,
+        id: payload.id,
+      };
 
-  let docEntityField: DocEntityField;
-  let dto: UpdateDocDto;
+      const docEntity: DocEntity = {
+        [payload.id]: dto,
+      };
 
-  if (visibility === `permanent`) {
-    const path = createPath(name);
+      await docsCollection.update(docEntity);
 
-    const thumbnail = ``;
+      return dto;
+    }
+    case `private`: {
+      const dto: UpdateDocPrivateDto = {
+        cdate: doc.cdate,
+        mdate,
+        visibility: payload.visibility,
+        code: payload.code,
+        name: payload.name,
+        id: payload.id,
+      };
 
-    docEntityField = {
-      cdate,
-      name,
-      code,
-      mdate,
-      visibility,
-      thumbnail,
-      path,
-    };
-    dto = {
-      id,
-      name,
-      code,
-      mdate,
-      cdate,
-      visibility,
-      thumbnail,
-      path,
-    };
-  } else {
-    docEntityField = {
-      cdate,
-      name,
-      code,
-      mdate,
-      visibility,
-    };
-    dto = {
-      id,
-      name,
-      code,
-      mdate,
-      cdate,
-      visibility,
-    };
+      const docEntity: DocEntity = {
+        [payload.id]: dto,
+      };
+
+      await docsCollection.update(docEntity);
+
+      return dto;
+    }
+    case `permanent`: {
+      if (!docValidators.path(payload.name)) {
+        throw errors.invalidArg(`Wrong name format`);
+      }
+
+      const dto: UpdateDocPermanentDto = {
+        cdate: doc.cdate,
+        mdate,
+        visibility: payload.visibility,
+        code: payload.code,
+        name: payload.name,
+        id: payload.id,
+        path: Doc.createPath(context.auth.uid, payload.name),
+        thumbnail: ``,
+      };
+
+      const docEntity: DocEntity = {
+        [payload.id]: dto,
+      };
+
+      await docsCollection.update(docEntity);
+
+      return dto;
+    }
+    default: {
+      throw errors.invalidArg(`Wrong visiblity value`);
+    }
   }
-
-  const docEntity: DocEntity = {
-    [id]: docEntityField,
-  };
-
-  await docsCollection.update(docEntity);
-
-  return dto;
 });
 
 export const getDocs = onCall(async (_, context) => {
   if (!context.auth) {
-    throw new HttpsError(`unauthenticated`, `Unauthorized`);
+    throw errors.notAuthorized();
   }
 
   const docsCollection = await admin
@@ -214,7 +221,7 @@ export const getDocs = onCall(async (_, context) => {
 
 export const deleteDoc = onCall(async (payload: DeleteDocPayload, context) => {
   if (!context.auth) {
-    throw new HttpsError(`unauthenticated`, `Unauthorized`);
+    throw errors.notAuthorized();
   }
 
   const docsCollection = admin
@@ -225,10 +232,7 @@ export const deleteDoc = onCall(async (payload: DeleteDocPayload, context) => {
   const result = (await docsCollection.get()).data();
 
   if (result === undefined) {
-    throw new HttpsError(
-      `not-found`,
-      `Operation not allowed, not found record`,
-    );
+    throw errors.notFound();
   }
 
   result[payload.id] = admin.firestore.FieldValue.delete();
@@ -242,7 +246,7 @@ export const deleteDoc = onCall(async (payload: DeleteDocPayload, context) => {
 
 export const deleteAccount = onCall(async (_, context) => {
   if (!context.auth) {
-    throw new HttpsError(`unauthenticated`, `Unauthorized`);
+    throw errors.notAuthorized();
   }
 
   await admin.auth().deleteUser(context.auth.uid);
@@ -288,7 +292,7 @@ export const getPublicDoc = onCall(async (payload: GetDocPayload) => {
   }
 
   if (docDto?.visibility !== `public` && docDto?.visibility !== `permanent`) {
-    throw new HttpsError(`not-found`, `Not found`);
+    throw errors.notFound();
   }
 
   return docDto;
