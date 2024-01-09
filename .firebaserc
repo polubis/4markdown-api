@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "greenonsoftware-dev-api"
-  }
+    "default": "greenonsoftware-dev-api",
+    "prod": "markdown-b9f5e"
+  },
+  "targets": {},
+  "etags": {}
 }
