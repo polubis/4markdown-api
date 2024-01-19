@@ -1,7 +1,7 @@
 import { GetDocDto } from '../dtos/docs.dto';
 import { DocEntityField } from '../entities/doc.entity';
 import * as admin from 'firebase-admin';
-import type { Description, Id, Name, Path } from '../entities/general';
+import type { Description, Name, Path } from '../entities/general';
 import { docValidators } from '../validation/doc';
 import { errors } from './errors';
 
@@ -50,13 +50,13 @@ Doc.createName = (name: unknown): Name => {
   return name;
 };
 
-Doc.createPath = (uid: Id, name: Name): Path => {
+Doc.createPath = (name: Name): Path => {
   if (!docValidators.path(name)) {
     throw errors.invalidArg(`Wrong name format`);
   }
 
   const path = Doc.createName(name).trim().replace(/ /g, `-`).toLowerCase();
-  return `/${uid}/${path}/`;
+  return `/${path}/`;
 };
 
 Doc.createDescription = (description: unknown): Description => {

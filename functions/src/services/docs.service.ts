@@ -74,7 +74,7 @@ export const DocsService = {
           code: payload.code,
           name,
           id: payload.id,
-          path: Doc.createPath(uid, name),
+          path: Doc.createPath(name),
           description: Doc.createDescription(payload.description),
         };
 
