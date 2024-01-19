@@ -60,7 +60,7 @@ export const createDoc = onCall(async (payload: CreateDocPayload, context) => {
 
   const fields = docs.data() as DocEntity;
   const alreadyExist = Object.values(fields).some(
-    (f) => f.name.trim().toLowerCase() === payload.name.toLowerCase(),
+    (f) => f.name.trim().toLowerCase() === field.name.toLowerCase(),
   );
 
   if (alreadyExist) {
