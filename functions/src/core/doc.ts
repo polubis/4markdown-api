@@ -1,7 +1,7 @@
 import { GetDocDto } from '../dtos/docs.dto';
 import { DocEntityField } from '../entities/doc.entity';
 import * as admin from 'firebase-admin';
-import type { Id, Name, Path } from '../entities/general';
+import type { Description, Id, Name, Path } from '../entities/general';
 import { docValidators } from '../validation/doc';
 import { errors } from './errors';
 
@@ -18,7 +18,7 @@ export const getAllDocs = async () => {
             code: field.code,
             name: field.name,
             visibility: field.visibility,
-            thumbnail: field.thumbnail,
+            description: field.description,
             path: field.path,
           });
         } else {
@@ -57,6 +57,14 @@ Doc.createPath = (uid: Id, name: Name): Path => {
 
   const path = Doc.createName(name).trim().replace(/ /g, `-`).toLowerCase();
   return `/${uid}/${path}/`;
+};
+
+Doc.createDescription = (description: unknown): Description => {
+  if (!docValidators.description(description)) {
+    throw errors.invalidArg(`Wrong description format`);
+  }
+
+  return description;
 };
 
 export { Doc };

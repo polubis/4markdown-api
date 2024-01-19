@@ -75,7 +75,7 @@ export const DocsService = {
           name,
           id: payload.id,
           path: Doc.createPath(uid, name),
-          thumbnail: ``,
+          description: Doc.createDescription(payload.description),
         };
 
         const docEntity: DocEntity = {

@@ -110,7 +110,7 @@ export const getDocs = onCall(async (_, context) => {
             cdate: field.cdate,
             mdate: field.mdate,
             visibility: field.visibility,
-            thumbnail: field.thumbnail,
+            description: field.description,
             path: field.path,
           }
         : {
@@ -180,7 +180,7 @@ export const getPublicDoc = onCall(async (payload: GetDocPayload) => {
           mdate: field.mdate,
           code: field.code,
           visibility: field.visibility,
-          thumbnail: field.thumbnail,
+          description: field.description,
           path: field.path,
         };
       } else {
