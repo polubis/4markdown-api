@@ -1,17 +1,21 @@
 import { Doc } from './doc';
 
 describe(`Doc may be used when: `, () => {
-  it(`creates a path`, () => {
-    expect(Doc.createPath(`Working with Zustand`)).toBe(
-      `/working-with-zustand/`,
-    );
+  it(`creates name`, () => {
+    expect(Doc.createName(`Working with Zustand`)).toBe(`Working with Zustand`);
+    expect(() => Doc.createName(`Working-with-Zustand`)).toThrow();
+    expect(Doc.createName(`Test1`)).toBe(`Test1`);
   });
 
-  it(`throws an error if invalid name`, () => {
+  it(`creates path`, () => {
+    expect(Doc.createPath(`Test siema 3`)).toBe(`/test-siema-3/`);
+    expect(Doc.createPath(`Test 1`)).toBe(`/test-1/`);
+    expect(Doc.createPath(`Test`)).toBe(`/test/`);
+    expect(() => Doc.createPath(`  Test   1    `)).toThrow();
     expect(() => Doc.createPath(`Working-with-Zustand`)).toThrow();
   });
 
-  it(`throws an error if invalid description`, () => {
+  it(`creates description`, () => {
     expect(() => Doc.createDescription(`31232-`)).toThrow();
     expect(() =>
       Doc.createDescription(

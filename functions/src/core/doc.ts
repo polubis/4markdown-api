@@ -51,12 +51,12 @@ Doc.createName = (name: unknown): Name => {
 };
 
 Doc.createPath = (name: Name): Path => {
-  if (!docValidators.path(name)) {
-    throw errors.invalidArg(`Wrong name format`);
-  }
+  const path = `/${Doc.createName(name)
+    .trim()
+    .replace(/ /g, `-`)
+    .toLowerCase()}/`;
 
-  const path = Doc.createName(name).trim().replace(/ /g, `-`).toLowerCase();
-  return `/${path}/`;
+  return path;
 };
 
 Doc.createDescription = (description: unknown): Description => {

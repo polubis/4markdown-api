@@ -13,4 +13,7 @@ export const errors = {
       `Operation not allowed, not found record`,
     );
   },
+  exists: (message: string): never => {
+    throw new HttpsError(`already-exists`, message);
+  },
 };

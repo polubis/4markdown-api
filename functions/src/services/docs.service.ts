@@ -6,7 +6,7 @@ import {
   UpdateDocPrivateDto,
   UpdateDocPublicDto,
 } from '../dtos/docs.dto';
-import { Doc } from '../core/doc';
+import { Doc, getAllDocs } from '../core/doc';
 import { Id } from '../entities/general';
 import { DocsRepository } from '../repositories/docs.repository';
 
@@ -77,6 +77,20 @@ export const DocsService = {
           path: Doc.createPath(name),
           description: Doc.createDescription(payload.description),
         };
+
+        const alreadyExists =
+          (await getAllDocs()).filter(
+            (doc) =>
+              doc.id !== payload.id &&
+              doc.visibility === `permanent` &&
+              doc.name === dto.name,
+          ).length > 0;
+
+        if (alreadyExists) {
+          throw errors.exists(
+            `Document with provided name already exists, please change name`,
+          );
+        }
 
         const docEntity: DocEntity = {
           [payload.id]: dto,
