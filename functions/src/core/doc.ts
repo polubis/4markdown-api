@@ -1,4 +1,4 @@
-import { GetDocDto } from '../dtos/docs.dto';
+import { GetDocDto, GetPermanentDocsDto } from '../dtos/docs.dto';
 import { DocEntityField } from '../entities/doc.entity';
 import * as admin from 'firebase-admin';
 import type { Description, Name, Path } from '../entities/general';
@@ -38,6 +38,31 @@ export const getAllDocs = async () => {
   }, [] as GetDocDto[]);
 
   return flattenDocs;
+};
+
+export const getPermanentDocs = async (): Promise<GetPermanentDocsDto> => {
+  const allDocs = (await admin.firestore().collection(`docs`).get()).docs;
+
+  return allDocs.reduce<GetPermanentDocsDto>((acc, doc) => {
+    Object.entries(doc.data()).forEach(
+      ([id, field]: [string, DocEntityField]) => {
+        if (field.visibility === `permanent`) {
+          acc.push({
+            id,
+            cdate: field.cdate,
+            mdate: field.mdate,
+            code: field.code,
+            name: field.name,
+            visibility: field.visibility,
+            description: field.description,
+            path: field.path,
+          });
+        }
+      },
+    );
+
+    return acc;
+  }, [] as GetPermanentDocsDto);
 };
 
 const Doc = () => {};

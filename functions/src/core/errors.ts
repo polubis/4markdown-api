@@ -16,4 +16,7 @@ export const errors = {
   exists: (message: string): never => {
     throw new HttpsError(`already-exists`, message);
   },
+  internal: (message = `Server error`): never => {
+    throw new HttpsError(`internal`, message);
+  },
 };

@@ -202,3 +202,7 @@ export const getPublicDoc = onCall(async (payload: GetDocPayload) => {
 
   return docDto;
 });
+
+export const getPermanentDocs = onCall(async () => {
+  return await DocsService.getAllPermanent();
+});
