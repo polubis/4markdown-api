@@ -1,7 +1,7 @@
-import { GetDocDto } from '../dtos/docs.dto';
+import { GetDocDto, GetPermanentDocsDto } from '../dtos/docs.dto';
 import { DocEntityField } from '../entities/doc.entity';
 import * as admin from 'firebase-admin';
-import type { Id, Name, Path } from '../entities/general';
+import type { Description, Name, Path } from '../entities/general';
 import { docValidators } from '../validation/doc';
 import { errors } from './errors';
 
@@ -18,7 +18,7 @@ export const getAllDocs = async () => {
             code: field.code,
             name: field.name,
             visibility: field.visibility,
-            thumbnail: field.thumbnail,
+            description: field.description,
             path: field.path,
           });
         } else {
@@ -40,6 +40,31 @@ export const getAllDocs = async () => {
   return flattenDocs;
 };
 
+export const getPermanentDocs = async (): Promise<GetPermanentDocsDto> => {
+  const allDocs = (await admin.firestore().collection(`docs`).get()).docs;
+
+  return allDocs.reduce<GetPermanentDocsDto>((acc, doc) => {
+    Object.entries(doc.data()).forEach(
+      ([id, field]: [string, DocEntityField]) => {
+        if (field.visibility === `permanent`) {
+          acc.push({
+            id,
+            cdate: field.cdate,
+            mdate: field.mdate,
+            code: field.code,
+            name: field.name,
+            visibility: field.visibility,
+            description: field.description,
+            path: field.path,
+          });
+        }
+      },
+    );
+
+    return acc;
+  }, [] as GetPermanentDocsDto);
+};
+
 const Doc = () => {};
 
 Doc.createName = (name: unknown): Name => {
@@ -50,13 +75,27 @@ Doc.createName = (name: unknown): Name => {
   return name;
 };
 
-Doc.createPath = (uid: Id, name: Name): Path => {
-  if (!docValidators.path(name)) {
-    throw errors.invalidArg(`Wrong name format`);
+const pathsBlackList = [`/docs/`, `/doc/`];
+
+Doc.createPath = (name: Name): Path => {
+  const path = `/${Doc.createName(name)
+    .trim()
+    .replace(/ /g, `-`)
+    .toLowerCase()}/`;
+
+  if (pathsBlackList.includes(path)) {
+    throw errors.invalidArg(`This name is already taken`);
   }
 
-  const path = Doc.createName(name).trim().replace(/ /g, `-`).toLowerCase();
-  return `/${uid}/${path}/`;
+  return path;
+};
+
+Doc.createDescription = (description: unknown): Description => {
+  if (!docValidators.description(description)) {
+    throw errors.invalidArg(`Wrong description format`);
+  }
+
+  return description;
 };
 
 export { Doc };

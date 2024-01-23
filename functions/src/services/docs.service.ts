@@ -1,16 +1,46 @@
 import { UpdateDocPayload } from '../payloads/docs.payload';
 import { errors } from '../core/errors';
-import { DocEntity } from '../entities/doc.entity';
+import { DocEntity, DocEntityField } from '../entities/doc.entity';
 import {
+  GetPermanentDocsDto,
   UpdateDocPermanentDto,
   UpdateDocPrivateDto,
   UpdateDocPublicDto,
 } from '../dtos/docs.dto';
-import { Doc } from '../core/doc';
+import { Doc, getAllDocs } from '../core/doc';
 import { Id } from '../entities/general';
 import { DocsRepository } from '../repositories/docs.repository';
+import * as admin from 'firebase-admin';
 
 export const DocsService = {
+  getAllPermanent: async (): Promise<GetPermanentDocsDto> => {
+    try {
+      const allDocs = (await admin.firestore().collection(`docs`).get()).docs;
+
+      return allDocs.reduce<GetPermanentDocsDto>((acc, doc) => {
+        Object.entries(doc.data()).forEach(
+          ([id, field]: [string, DocEntityField]) => {
+            if (field.visibility === `permanent`) {
+              acc.push({
+                id,
+                cdate: field.cdate,
+                mdate: field.mdate,
+                code: field.code,
+                name: field.name,
+                visibility: field.visibility,
+                description: field.description,
+                path: field.path,
+              });
+            }
+          },
+        );
+
+        return acc;
+      }, [] as GetPermanentDocsDto);
+    } catch (err) {
+      throw errors.internal();
+    }
+  },
   update: async (uid: Id, payload: UpdateDocPayload) => {
     const name = Doc.createName(payload.name);
     const docsRepo = DocsRepository(uid);
@@ -74,9 +104,23 @@ export const DocsService = {
           code: payload.code,
           name,
           id: payload.id,
-          path: Doc.createPath(uid, name),
-          thumbnail: ``,
+          path: Doc.createPath(name),
+          description: Doc.createDescription(payload.description),
         };
+
+        const alreadyExists =
+          (await getAllDocs()).filter(
+            (doc) =>
+              doc.id !== payload.id &&
+              doc.visibility === `permanent` &&
+              doc.name === dto.name,
+          ).length > 0;
+
+        if (alreadyExists) {
+          throw errors.exists(
+            `Document with provided name already exists, please change name`,
+          );
+        }
 
         const docEntity: DocEntity = {
           [payload.id]: dto,
