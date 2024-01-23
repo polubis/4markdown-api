@@ -75,11 +75,17 @@ Doc.createName = (name: unknown): Name => {
   return name;
 };
 
+const pathsBlackList = [`/docs/`, `/doc/`];
+
 Doc.createPath = (name: Name): Path => {
   const path = `/${Doc.createName(name)
     .trim()
     .replace(/ /g, `-`)
     .toLowerCase()}/`;
+
+  if (pathsBlackList.includes(path)) {
+    throw errors.invalidArg(`This name is already taken`);
+  }
 
   return path;
 };

@@ -13,6 +13,8 @@ describe(`Doc may be used when: `, () => {
     expect(Doc.createPath(`Test`)).toBe(`/test/`);
     expect(() => Doc.createPath(`  Test   1    `)).toThrow();
     expect(() => Doc.createPath(`Working-with-Zustand`)).toThrow();
+    expect(() => Doc.createPath(`docs`)).toThrow();
+    expect(() => Doc.createPath(`doc`)).toThrow();
   });
 
   it(`creates description`, () => {
