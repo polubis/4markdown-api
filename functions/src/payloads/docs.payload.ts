@@ -20,8 +20,8 @@ type UpdateDocPublicPayload = Pick<
 
 type UpdateDocPermanentPayload = Pick<
   PermanentDocEntityField,
-  'name' | 'code' | 'visibility'
-> & { id: Id; thumbnail: PermanentDocEntityField['thumbnail'] | null };
+  'name' | 'code' | 'visibility' | 'description'
+> & { id: Id };
 
 type UpdateDocPayload =
   | UpdateDocPrivatePayload

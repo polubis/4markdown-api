@@ -25,6 +25,8 @@ type DeleteDocDto = { id: Id };
 
 type GetDocDto = DocEntityField & { id: Id };
 
+type GetPermanentDocsDto = (PermanentDocEntityField & { id: Id })[];
+
 export type {
   CreateDocDto,
   UpdateDocDto,
@@ -34,5 +36,6 @@ export type {
   GetDocsDto,
   GetDocsDtoItem,
   GetDocDto,
+  GetPermanentDocsDto,
   DeleteDocDto,
 };

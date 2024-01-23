@@ -33,7 +33,7 @@ export const createDoc = onCall(async (payload: CreateDocPayload, context) => {
   const cdate = new Date().toISOString();
 
   const field: DocEntityField = {
-    name: Doc.createName(name),
+    name: Doc.createName(payload.name),
     code,
     cdate,
     mdate: cdate,
@@ -59,9 +59,7 @@ export const createDoc = onCall(async (payload: CreateDocPayload, context) => {
   }
 
   const fields = docs.data() as DocEntity;
-  const alreadyExist = Object.values(fields).some(
-    (f) => f.name.trim().toLowerCase() === payload.name.toLowerCase(),
-  );
+  const alreadyExist = Object.values(fields).some((f) => f.name === field.name);
 
   if (alreadyExist) {
     throw new HttpsError(
@@ -110,7 +108,7 @@ export const getDocs = onCall(async (_, context) => {
             cdate: field.cdate,
             mdate: field.mdate,
             visibility: field.visibility,
-            thumbnail: field.thumbnail,
+            description: field.description,
             path: field.path,
           }
         : {
@@ -180,7 +178,7 @@ export const getPublicDoc = onCall(async (payload: GetDocPayload) => {
           mdate: field.mdate,
           code: field.code,
           visibility: field.visibility,
-          thumbnail: field.thumbnail,
+          description: field.description,
           path: field.path,
         };
       } else {
@@ -203,4 +201,8 @@ export const getPublicDoc = onCall(async (payload: GetDocPayload) => {
   }
 
   return docDto;
+});
+
+export const getPermanentDocs = onCall(async () => {
+  return await DocsService.getAllPermanent();
 });
