@@ -30,6 +30,7 @@ export const DocsService = {
                 visibility: field.visibility,
                 description: field.description,
                 path: field.path,
+                tags: field.tags ?? [],
               });
             }
           },

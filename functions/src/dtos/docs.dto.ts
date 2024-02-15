@@ -1,10 +1,9 @@
 import {
-  DocEntityField,
   PermanentDocEntityField,
   PrivateDocEntityField,
   PublicDocEntityField,
 } from '../entities/doc.entity';
-import type { Id } from '../entities/general';
+import type { Id, Tags } from '../entities/general';
 
 type CreateDocDto = PrivateDocEntityField & { id: Id };
 
@@ -17,15 +16,21 @@ type UpdateDocDto =
   | UpdateDocPrivateDto
   | UpdateDocPermanentDto;
 
-type GetDocsDtoItem = DocEntityField & { id: Id };
+type GetDocDto =
+  | (PublicDocEntityField & { id: Id })
+  | (PrivateDocEntityField & { id: Id })
+  | (Omit<PermanentDocEntityField, 'tags'> & { id: Id; tags: Tags });
+
+type GetDocsDtoItem = GetDocDto;
 
 type GetDocsDto = GetDocsDtoItem[];
 
 type DeleteDocDto = { id: Id };
 
-type GetDocDto = DocEntityField & { id: Id };
-
-type GetPermanentDocsDto = (PermanentDocEntityField & { id: Id })[];
+type GetPermanentDocsDto = (Omit<PermanentDocEntityField, 'tags'> & {
+  id: Id;
+  tags: Tags;
+})[];
 
 export type {
   CreateDocDto,
