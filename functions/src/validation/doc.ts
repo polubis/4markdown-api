@@ -1,4 +1,4 @@
-import type { Description, Name } from '../entities/general';
+import type { Description, Name, Tags } from '../entities/general';
 
 const docValidators = {
   name: (name: unknown): name is Name =>
@@ -16,6 +16,19 @@ const docValidators = {
       description.length === description.trim().length &&
       description.length >= 50 &&
       description.length <= 250
+    );
+  },
+  tags: (tags: unknown): tags is Tags => {
+    if (!Array.isArray(tags)) return false;
+
+    return (
+      tags.length >= 1 &&
+      tags.length <= 10 &&
+      tags.length === new Set([...tags]).size &&
+      tags.every(
+        (tag) =>
+          tag.length >= 2 && tag.length <= 50 && /^[a-zA-Z0-9,-]+$/.test(tag),
+      )
     );
   },
 };

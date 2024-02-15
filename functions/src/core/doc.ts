@@ -1,7 +1,7 @@
 import { GetDocDto, GetPermanentDocsDto } from '../dtos/docs.dto';
 import { DocEntityField } from '../entities/doc.entity';
 import * as admin from 'firebase-admin';
-import type { Description, Name, Path } from '../entities/general';
+import type { Description, Name, Path, Tags } from '../entities/general';
 import { docValidators } from '../validation/doc';
 import { errors } from './errors';
 
@@ -20,6 +20,7 @@ export const getAllDocs = async () => {
             visibility: field.visibility,
             description: field.description,
             path: field.path,
+            tags: field.tags ?? [],
           });
         } else {
           acc.push({
@@ -56,6 +57,7 @@ export const getPermanentDocs = async (): Promise<GetPermanentDocsDto> => {
             visibility: field.visibility,
             description: field.description,
             path: field.path,
+            tags: field.tags ?? [],
           });
         }
       },
@@ -96,6 +98,14 @@ Doc.createDescription = (description: unknown): Description => {
   }
 
   return description;
+};
+
+Doc.createTags = (tags: unknown): Tags => {
+  if (!docValidators.tags(tags)) {
+    throw errors.invalidArg(`Wrong description format`);
+  }
+
+  return tags;
 };
 
 export { Doc };

@@ -9,7 +9,10 @@ type CreateDocDto = PrivateDocEntityField & { id: Id };
 
 type UpdateDocPublicDto = PublicDocEntityField & { id: Id };
 type UpdateDocPrivateDto = PrivateDocEntityField & { id: Id };
-type UpdateDocPermanentDto = PermanentDocEntityField & { id: Id };
+type UpdateDocPermanentDto = Omit<PermanentDocEntityField, 'tags'> & {
+  id: Id;
+  tags: Tags;
+};
 
 type UpdateDocDto =
   | UpdateDocPublicDto
