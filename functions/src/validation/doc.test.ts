@@ -29,3 +29,51 @@ describe(`Name validation works when: `, () => {
     ).toBe(false);
   });
 });
+
+describe(`Tags validation works when: `, () => {
+  it(`validates tags format`, () => {
+    expect(docValidators.tags([`react`, `angular`])).toBe(true);
+    expect(docValidators.tags([`react`, `react`])).toBe(false);
+    expect(docValidators.tags([`react`, `react `])).toBe(false);
+    expect(docValidators.tags([`r`, `react `])).toBe(false);
+    expect(docValidators.tags([])).toBe(false);
+    expect(docValidators.tags([`react`])).toBe(true);
+    expect(docValidators.tags([`react-dasdasd`])).toBe(true);
+    expect(docValidators.tags([`react/dasdasd`])).toBe(false);
+    expect(
+      docValidators.tags([
+        `re`,
+        `an`,
+        `vu`,
+        `ds`,
+        `da`,
+        `dg`,
+        `dd`,
+        `dde`,
+        `dsd`,
+        `dasd`,
+      ]),
+    ).toBe(true);
+    expect(
+      docValidators.tags([
+        `re`,
+        `an`,
+        `vu`,
+        `ds`,
+        `da`,
+        `dg`,
+        `dd`,
+        `dde`,
+        `dsd`,
+        `dasd`,
+        `dsd`,
+      ]),
+    ).toBe(false);
+    expect(
+      docValidators.tags([
+        `react`,
+        `reactddddddddddddddddddddddddddddddddddddddddddddddddddddddddd`,
+      ]),
+    ).toBe(false);
+  });
+});
