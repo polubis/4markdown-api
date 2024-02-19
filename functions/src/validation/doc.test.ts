@@ -36,7 +36,7 @@ describe(`Tags validation works when: `, () => {
     expect(docValidators.tags([`react`, `react`])).toBe(false);
     expect(docValidators.tags([`react`, `react `])).toBe(false);
     expect(docValidators.tags([`r`, `react `])).toBe(false);
-    expect(docValidators.tags([])).toBe(false);
+    expect(docValidators.tags([])).toBe(true);
     expect(docValidators.tags([`react`])).toBe(true);
     expect(docValidators.tags([`react-dasdasd`])).toBe(true);
     expect(docValidators.tags([`react/dasdasd`])).toBe(false);
