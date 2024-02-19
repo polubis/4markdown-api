@@ -22,7 +22,7 @@ const docValidators = {
     if (!Array.isArray(tags)) return false;
 
     return (
-      tags.length >= 0 &&
+      tags.length >= 1 &&
       tags.length <= 10 &&
       tags.length === new Set([...tags]).size &&
       tags.every(
