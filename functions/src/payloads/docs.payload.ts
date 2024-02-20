@@ -4,7 +4,7 @@ import type {
   PublicDocEntityField,
   PermanentDocEntityField,
 } from '../entities/doc.entity';
-import type { Id } from '../entities/general';
+import type { Id, Tags } from '../entities/general';
 
 interface CreateDocPayload extends Pick<DocEntityField, 'name' | 'code'> {}
 
@@ -21,7 +21,7 @@ type UpdateDocPublicPayload = Pick<
 type UpdateDocPermanentPayload = Pick<
   PermanentDocEntityField,
   'name' | 'code' | 'visibility' | 'description'
-> & { id: Id };
+> & { id: Id; tags: Tags };
 
 type UpdateDocPayload =
   | UpdateDocPrivatePayload
