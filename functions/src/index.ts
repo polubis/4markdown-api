@@ -110,6 +110,7 @@ export const getDocs = onCall(async (_, context) => {
             visibility: field.visibility,
             description: field.description,
             path: field.path,
+            tags: field.tags ?? [],
           }
         : {
             id,
@@ -180,6 +181,7 @@ export const getPublicDoc = onCall(async (payload: GetDocPayload) => {
           visibility: field.visibility,
           description: field.description,
           path: field.path,
+          tags: field.tags ?? [],
         };
       } else {
         docDto = {

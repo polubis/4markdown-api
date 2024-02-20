@@ -1,4 +1,12 @@
-import type { Code, DateStamp, Id, Name, Path, Description } from './general';
+import type {
+  Code,
+  DateStamp,
+  Id,
+  Name,
+  Path,
+  Description,
+  Tags,
+} from './general';
 
 interface DocEntityFieldBase {
   name: Name;
@@ -11,6 +19,7 @@ interface PermanentDocEntityField extends DocEntityFieldBase {
   visibility: 'permanent';
   description: Description;
   path: Path;
+  tags?: Tags;
 }
 
 interface PublicDocEntityField extends DocEntityFieldBase {
