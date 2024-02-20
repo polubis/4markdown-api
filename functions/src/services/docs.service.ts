@@ -30,6 +30,7 @@ export const DocsService = {
                 visibility: field.visibility,
                 description: field.description,
                 path: field.path,
+                tags: field.tags ?? [],
               });
             }
           },
@@ -97,6 +98,8 @@ export const DocsService = {
         return dto;
       }
       case `permanent`: {
+        const tags = Doc.createTags(payload.tags);
+
         const dto: UpdateDocPermanentDto = {
           cdate: doc.cdate,
           mdate,
@@ -106,6 +109,7 @@ export const DocsService = {
           id: payload.id,
           path: Doc.createPath(name),
           description: Doc.createDescription(payload.description),
+          tags,
         };
 
         const alreadyExists =
