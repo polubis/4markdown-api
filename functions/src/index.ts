@@ -5,6 +5,7 @@ import type {
   CreateDocPayload,
   DeleteDocPayload,
   GetDocPayload,
+  UploadImagePayload,
 } from './payloads/docs.payload';
 import type { DocEntity, DocEntityField } from './entities/doc.entity';
 import type {
@@ -18,6 +19,7 @@ import { errors } from './core/errors';
 import { Doc } from './core/doc';
 import { DocsService } from './services/docs.service';
 import { AuthService } from './services/auth.service';
+import { UsersService } from './services/users.service';
 
 admin.initializeApp();
 
@@ -208,3 +210,9 @@ export const getPublicDoc = onCall(async (payload: GetDocPayload) => {
 export const getPermanentDocs = onCall(async () => {
   return await DocsService.getAllPermanent();
 });
+
+export const uploadImage = onCall(
+  async (payload: UploadImagePayload, context) => {
+    return await UsersService.uploadImage(context, payload);
+  },
+);

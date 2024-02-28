@@ -32,9 +32,12 @@ type DeleteDocPayload = { id: Id };
 
 type GetDocPayload = { id: Id };
 
+type UploadImagePayload = FormData;
+
 export type {
   CreateDocPayload,
   UpdateDocPayload,
   DeleteDocPayload,
   GetDocPayload,
+  UploadImagePayload,
 };
