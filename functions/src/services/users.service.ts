@@ -38,9 +38,9 @@ export const UsersService = {
         throw errors.internal();
       }
 
-      const ref = admin.storage().bucket().file(`${uuid()}.png`);
+      const ref = admin.storage().bucket().file(uuid());
 
-      await ref.save(binaryImage);
+      await ref.save(binaryImage, { contentType: `image/png` });
     } catch (err) {
       logger.info(err);
       throw errors.internal();
