@@ -38,7 +38,7 @@ export const UsersService = {
         throw errors.internal();
       }
 
-      const ref = admin.storage().bucket().file(`${auth.uid}/${uuid()}`);
+      const ref = admin.storage().bucket().file(`${auth.uid}/${uuid()}.png`);
 
       await ref.save(binaryImage);
     } catch (err) {
