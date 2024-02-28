@@ -20,7 +20,7 @@ export const UsersService = {
       const { image } = payload;
 
       if (typeof image !== `string`) {
-        throw errors.invalidArg(`Provided resource is not an image`);
+        throw errors.invalidArg(`Provided resource is not a base64 format`);
       }
 
       const binaryImage = Buffer.from(image, `base64`);
