@@ -5,14 +5,6 @@ import { UploadImagePayload } from '../payloads/docs.payload';
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
 
-const isValidImage = (data: Buffer): boolean => {
-  const jpeg = `ffd8ffe0`;
-  const png = `89504e47`;
-  const prefix = data.toString(`hex`, 0, 4);
-
-  return prefix === jpeg || prefix === png;
-};
-
 export const UsersService = {
   uploadImage: async (
     context: https.CallableContext,
@@ -32,10 +24,6 @@ export const UsersService = {
       }
 
       const binaryImage = Buffer.from(image, `base64`);
-
-      if (!isValidImage(binaryImage)) {
-        throw errors.invalidArg(`Provided resource is not an image`);
-      }
 
       const bucketUrl = process.env.IMAGES_BUCKET;
 
