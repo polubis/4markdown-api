@@ -4,6 +4,7 @@ import { errors } from '../core/errors';
 import { UploadImagePayload } from '../payloads/docs.payload';
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
+import { IMAGES_BUCKET } from '../core';
 
 export const UsersService = {
   uploadImage: async (
@@ -23,22 +24,19 @@ export const UsersService = {
         throw errors.invalidArg(`Provided resource is not a base64 format`);
       }
 
-      const binaryImage = Buffer.from(image, `base64`);
+      const binaryImage = Buffer.from(
+        image.replace(/^data:image\/\w+;base64,/, ``),
+        `base64`,
+      );
 
-      const bucketUrl = process.env.IMAGES_BUCKET;
-
-      if (!bucketUrl) {
-        throw errors.internal();
-      }
-
-      const bucket = admin.storage().bucket(bucketUrl);
+      const bucket = admin.storage().bucket(IMAGES_BUCKET);
       const [bucketExists] = await bucket.exists();
 
       if (!bucketExists) {
         throw errors.internal();
       }
 
-      const ref = admin.storage().bucket().file(uuid());
+      const ref = admin.storage().bucket().file(`${uuid()}.png`);
 
       await ref.save(binaryImage, { contentType: `image/png` });
     } catch (err) {
