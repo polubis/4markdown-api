@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { errors } from './errors';
 
 type Vars = Partial<{ IMAGES_BUCKET: string }>;
 
@@ -17,6 +18,12 @@ const schema = z.object({
     .regex(/^gs:\/\/[a-zA-Z0-9.-]+\.appspot\.com$/, msg(`IMAGES_BUCKET`)),
 });
 
-const env = (key: keyof Vars) => schema.parse(process.env)[key];
+const env = (key: keyof Vars) => {
+  try {
+    return schema.parse(process.env)[key];
+  } catch {
+    throw errors.internal(`Wrong with environment configuration`);
+  }
+};
 
 export { env };

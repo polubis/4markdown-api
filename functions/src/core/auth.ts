@@ -4,11 +4,11 @@ import { errors } from './errors';
 import { AuthData } from 'firebase-functions/lib/common/providers/https';
 
 /**
- * Retrieves authentication data from the provided Firebase Callable Context.
- * Throws an error if authentication data is not available.
- * @param {Object} ctx The Firebase Callable Context object.
- * @returns {AuthData} The authentication data extracted from the context.
- * @throws {Error} Throws a 'notAuthorized' error if authentication data is not available.
+ * Retrieves authentication data from the Firebase Callable Context.
+ * Throws an error if not authorized.
+ * @param {Object} ctx - The Firebase Callable Context object.
+ * @returns {AuthData} - The authentication data.
+ * @throws {Error} - Throws an error if not authorized.
  */
 const identified = (ctx: https.CallableContext): AuthData | never => {
   const auth = ctx.auth;
