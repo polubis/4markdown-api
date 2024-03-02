@@ -1,47 +1,38 @@
-import { https, logger } from 'firebase-functions';
-
+import { https } from 'firebase-functions';
 import { errors } from '../core/errors';
 import { UploadImagePayload } from '../payloads/docs.payload';
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
 import { IMAGES_BUCKET } from '../core';
+import { identified } from '../core/auth';
 
 export const UsersService = {
   uploadImage: async (
     context: https.CallableContext,
     payload: UploadImagePayload,
   ): Promise<void> => {
-    try {
-      const auth = context.auth;
+    identified(context);
 
-      if (!auth) {
-        throw errors.notAuthorized();
-      }
+    const { image } = payload;
 
-      const { image } = payload;
+    if (typeof image !== `string`) {
+      throw errors.invalidArg(`Provided resource is not a base64 format`);
+    }
 
-      if (typeof image !== `string`) {
-        throw errors.invalidArg(`Provided resource is not a base64 format`);
-      }
+    const binaryImage = Buffer.from(
+      image.replace(/^data:image\/\w+;base64,/, ``),
+      `base64`,
+    );
 
-      const binaryImage = Buffer.from(
-        image.replace(/^data:image\/\w+;base64,/, ``),
-        `base64`,
-      );
+    const bucket = admin.storage().bucket(IMAGES_BUCKET);
+    const [bucketExists] = await bucket.exists();
 
-      const bucket = admin.storage().bucket(IMAGES_BUCKET);
-      const [bucketExists] = await bucket.exists();
-
-      if (!bucketExists) {
-        throw errors.internal();
-      }
-
-      const ref = admin.storage().bucket().file(`${uuid()}.png`);
-
-      await ref.save(binaryImage, { contentType: `image/png` });
-    } catch (err) {
-      logger.info(err);
+    if (!bucketExists) {
       throw errors.internal();
     }
+
+    const ref = admin.storage().bucket().file(`${uuid()}.png`);
+
+    await ref.save(binaryImage, { contentType: `image/png` });
   },
 };

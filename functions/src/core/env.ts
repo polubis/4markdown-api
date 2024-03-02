@@ -1,15 +1,24 @@
 import { z } from 'zod';
 
-const schema = z.object({
-  IMAGES_BUCKET: z.string().transform((val) => {
-    if (!val.startsWith(`gs://`)) {
-      throw Error(`Invalid apiUrl format`);
-    }
+type Vars = Partial<{ IMAGES_BUCKET: string }>;
 
-    return val;
-  }),
+declare global {
+  namespace NodeJS {
+    interface ProcessEnv extends Vars {}
+  }
+}
+
+const msg = (name: string): string =>
+  `Wrong ${name} property config for environment`;
+
+const schema = z.object({
+  IMAGES_BUCKET: z
+    .string()
+    .regex(/^gs:\/\/[a-zA-Z0-9.-]+\.appspot\.com$/, msg(`IMAGES_BUCKET`)),
 });
 
-const { IMAGES_BUCKET } = schema.parse(process.env);
+const { IMAGES_BUCKET } = schema.parse({
+  IMAGES_BUCKET: process.env.IMAGES_BUCKET,
+});
 
 export { IMAGES_BUCKET };
