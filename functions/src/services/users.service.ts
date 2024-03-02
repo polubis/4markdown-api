@@ -6,7 +6,7 @@ import { v4 as uuid } from 'uuid';
 import { IMAGES_BUCKET } from '../core';
 import { identified } from '../core/auth';
 
-export const UsersService = {
+const UsersService = {
   uploadImage: async (
     context: https.CallableContext,
     payload: UploadImagePayload,
@@ -36,3 +36,5 @@ export const UsersService = {
     await ref.save(binaryImage, { contentType: `image/png` });
   },
 };
+
+export { UsersService };
