@@ -1,9 +1,9 @@
+import { env } from '../core/env';
 import { https } from 'firebase-functions';
 import { errors } from '../core/errors';
 import { UploadImagePayload } from '../payloads/docs.payload';
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
-import { IMAGES_BUCKET } from '../core';
 import { identified } from '../core/auth';
 
 const UsersService = {
@@ -24,7 +24,7 @@ const UsersService = {
       `base64`,
     );
 
-    const bucket = admin.storage().bucket(IMAGES_BUCKET);
+    const bucket = admin.storage().bucket(env(`IMAGES_BUCKET`));
     const [bucketExists] = await bucket.exists();
 
     if (!bucketExists) {
