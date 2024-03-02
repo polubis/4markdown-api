@@ -8,7 +8,7 @@ declare global {
   }
 }
 
-const msg = (name: string): string =>
+const msg = (name: keyof Vars): string =>
   `Wrong ${name} property config for environment`;
 
 const schema = z.object({
