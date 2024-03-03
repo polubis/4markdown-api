@@ -22,7 +22,7 @@ const env = (key: keyof Vars) => {
   try {
     return schema.parse(process.env)[key];
   } catch {
-    throw errors.internal(`Wrong with environment configuration`);
+    throw errors.internal(`Wrong environment configuration`);
   }
 };
 
