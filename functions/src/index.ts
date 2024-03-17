@@ -5,7 +5,6 @@ import type {
   CreateDocPayload,
   DeleteDocPayload,
   GetDocPayload,
-  UploadImagePayload,
 } from './payloads/docs.payload';
 import type { DocEntity, DocEntityField } from './entities/doc.entity';
 import type {
@@ -20,6 +19,7 @@ import { Doc } from './core/doc';
 import { DocsService } from './services/docs.service';
 import { AuthService } from './services/auth.service';
 import { UsersService } from './services/users.service';
+import { UploadImagePayload } from './payloads/images.payload';
 
 admin.initializeApp();
 
