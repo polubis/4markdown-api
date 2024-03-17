@@ -12,7 +12,8 @@ const UsersService = {
     payload: UploadImagePayload,
     context: https.CallableContext,
   ): Promise<UploadImageDto> => {
-    const user = AuthService.authorize(context);
+    AuthService.authorize(context);
+
     const { blob, extension, contentType } = Image.create(payload.image);
     const bucket = admin.storage().bucket();
     const [bucketExists] = await bucket.exists();
