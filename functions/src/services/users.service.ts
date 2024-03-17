@@ -1,38 +1,38 @@
 import { https } from 'firebase-functions';
 import { errors } from '../core/errors';
-import { UploadImagePayload } from '../payloads/docs.payload';
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
 import { identified } from '../core/auth';
+import { UploadImagePayload } from '../payloads/images.payload';
+import { Image } from '../core/image';
+import { UploadImageDto } from '../dtos/image.dto';
 
 const UsersService = {
   uploadImage: async (
     payload: UploadImagePayload,
     context: https.CallableContext,
-  ): Promise<void> => {
+  ): Promise<UploadImageDto> => {
     identified(context);
 
-    const { image } = payload;
-
-    if (typeof image !== `string`) {
-      throw errors.invalidArg(`Provided resource is not a base64 format`);
-    }
-
-    const binaryImage = Buffer.from(
-      image.replace(/^data:image\/\w+;base64,/, ``),
-      `base64`,
-    );
-
+    const { blob, extension, contentType } = Image.create(payload.image);
     const bucket = admin.storage().bucket();
     const [bucketExists] = await bucket.exists();
 
     if (!bucketExists) {
-      throw errors.internal();
+      throw errors.internal(`Cannot find bucket for images`);
     }
 
-    const ref = admin.storage().bucket().file(`${uuid()}.png`);
+    const id = `${uuid()}.${extension}`;
+    const ref = admin.storage().bucket().file(id);
 
-    await ref.save(binaryImage, { contentType: `image/png` });
+    await ref.save(blob, { contentType });
+
+    return {
+      extension,
+      contentType,
+      path: ref.name,
+      id,
+    };
   },
 };
 

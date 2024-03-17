@@ -32,12 +32,9 @@ type DeleteDocPayload = { id: Id };
 
 type GetDocPayload = { id: Id };
 
-type UploadImagePayload = { image: FileReader['result'] };
-
 export type {
   CreateDocPayload,
   UpdateDocPayload,
   DeleteDocPayload,
   GetDocPayload,
-  UploadImagePayload,
 };
