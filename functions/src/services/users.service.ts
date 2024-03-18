@@ -15,7 +15,8 @@ const UsersService = {
     AuthService.authorize(context);
 
     const { blob, extension, contentType } = Image.create(payload.image);
-    const bucket = admin.storage().bucket();
+    const storage = admin.storage();
+    const bucket = storage.bucket();
     const [bucketExists] = await bucket.exists();
 
     if (!bucketExists) {
@@ -23,7 +24,7 @@ const UsersService = {
     }
 
     const id = `${uuid()}.${extension}`;
-    const file = admin.storage().bucket().file(id);
+    const file = bucket.file(id);
 
     await file.save(Buffer.from(blob, `base64`), { contentType });
 
