@@ -4,7 +4,7 @@ import { ImageContentType, ImageExtension } from '../entities/image.entity';
 interface UploadImageDto {
   extension: ImageExtension;
   contentType: ImageContentType;
-  path: Path;
+  url: Path;
   id: Id;
 }
 

@@ -31,7 +31,7 @@ const UsersService = {
     return {
       extension,
       contentType,
-      path: ``,
+      url: ``,
       id,
     };
   },
