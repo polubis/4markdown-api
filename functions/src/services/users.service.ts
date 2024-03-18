@@ -26,17 +26,12 @@ const UsersService = {
     const id = `${uuid()}.${extension}`;
     const file = bucket.file(id);
 
-    await file.save(Buffer.from(blob, `base64`), { contentType });
-
-    const [path] = await file.getSignedUrl({
-      action: `read`,
-      expires: new Date(`9999-12-31`),
-    });
+    await file.save(Buffer.from(blob, `base64`), { contentType, public: true });
 
     return {
       extension,
       contentType,
-      path,
+      path: ``,
       id,
     };
   },
