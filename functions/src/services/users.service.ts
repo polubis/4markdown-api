@@ -23,14 +23,19 @@ const UsersService = {
     }
 
     const id = `${uuid()}.${extension}`;
-    const ref = admin.storage().bucket().file(id);
+    const file = admin.storage().bucket().file(id);
 
-    await ref.save(Buffer.from(blob, `base64`), { contentType });
+    await file.save(Buffer.from(blob, `base64`), { contentType });
+
+    const [path] = await file.getSignedUrl({
+      action: `read`,
+      expires: new Date(`9999-12-31`),
+    });
 
     return {
       extension,
       contentType,
-      path: ref.name,
+      path,
       id,
     };
   },
