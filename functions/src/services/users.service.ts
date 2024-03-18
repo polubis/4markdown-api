@@ -26,7 +26,10 @@ const UsersService = {
     const id = `${uuid()}.${extension}`;
     const file = bucket.file(id);
 
-    await file.save(Buffer.from(blob, `base64`), { contentType, public: true });
+    await file.save(Buffer.from(blob, `base64`), {
+      contentType,
+      public: true,
+    });
 
     return {
       extension,
