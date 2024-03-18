@@ -30,10 +30,12 @@ const UsersService = {
       contentType,
     });
 
+    const url = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${id}?alt=media`;
+
     return {
       extension,
       contentType,
-      url: ``,
+      url,
       id,
     };
   },
