@@ -25,7 +25,7 @@ const UsersService = {
     const id = `${uuid()}.${extension}`;
     const ref = admin.storage().bucket().file(id);
 
-    await ref.save(blob, { contentType });
+    await ref.save(Buffer.from(blob, `base64`), { contentType });
 
     return {
       extension,

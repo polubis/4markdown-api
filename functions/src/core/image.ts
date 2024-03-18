@@ -9,12 +9,14 @@ import { errors } from './errors';
 
 const Image = () => {};
 
+// Example: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQE..
 Image.decode = (
   image: string,
 ): { blob: Blob; contentType: string; extension: string } => {
-  const [meta, blob] = image.split(`,`);
-  const contentType = meta.split(`:`)[1].trim();
+  const [meta] = image.split(`,`);
+  const contentType = meta.split(`:`)[1].split(`;`)[0];
   const extension = contentType.replace(`image/`, ``);
+  const blob = image.replace(/^data:image\/\w+;base64,/, ``);
 
   return {
     blob,
@@ -23,7 +25,6 @@ Image.decode = (
   };
 };
 
-// Example: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQE..
 Image.create = (
   image: unknown,
 ): {
@@ -40,7 +41,7 @@ Image.create = (
   if (!imageValidators.extension(extension)) {
     throw errors.invalidArg(
       `Unsupported image format, use supported one: ${IMAGE_EXTENSIONS.join(
-        `,`,
+        `, `,
       )}`,
     );
   }
