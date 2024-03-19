@@ -28,9 +28,9 @@ Image.decode = (
 Image.create = (
   image: unknown,
 ): {
-  blob: Blob;
   extension: ImageExtension;
   contentType: ImageContentType;
+  buffer: Buffer;
 } => {
   if (!imageValidators.format(image)) {
     throw errors.invalidArg(`Wrong image data type`);
@@ -46,10 +46,18 @@ Image.create = (
     );
   }
 
+  const buffer = Buffer.from(blob, `base64`);
+
+  if (!imageValidators.size(buffer)) {
+    throw errors.invalidArg(
+      `Max image size is ${imageValidators.limitInMegabytes} megabytes (MB)`,
+    );
+  }
+
   return {
-    blob,
     extension,
     contentType: contentType as ImageContentType,
+    buffer,
   };
 };
 

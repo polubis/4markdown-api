@@ -15,7 +15,7 @@ const UsersService = {
   ): Promise<UploadImageDto> => {
     const auth = AuthService.authorize(context);
 
-    const { blob, extension, contentType } = Image.create(payload.image);
+    const { extension, contentType, buffer } = Image.create(payload.image);
     const storage = admin.storage();
     const bucket = storage.bucket();
     const [bucketExists] = await bucket.exists();
@@ -28,7 +28,7 @@ const UsersService = {
     const location = `${auth.uid}/images/${id}`;
     const file = bucket.file(location);
 
-    await file.save(Buffer.from(blob, `base64`), {
+    await file.save(buffer, {
       contentType,
     });
 
