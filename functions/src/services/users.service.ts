@@ -6,13 +6,14 @@ import { UploadImagePayload } from '../payloads/images.payload';
 import { Image } from '../core/image';
 import { UploadImageDto } from '../dtos/image.dto';
 import { AuthService } from './auth.service';
+import { ImagesRepository } from '../repositories/images.repository';
 
 const UsersService = {
   uploadImage: async (
     payload: UploadImagePayload,
     context: https.CallableContext,
   ): Promise<UploadImageDto> => {
-    AuthService.authorize(context);
+    const auth = AuthService.authorize(context);
 
     const { blob, extension, contentType } = Image.create(payload.image);
     const storage = admin.storage();
@@ -23,7 +24,7 @@ const UsersService = {
       throw errors.internal(`Cannot find bucket for images`);
     }
 
-    const id = `${uuid()}.${extension}`;
+    const id = uuid();
     const file = bucket.file(id);
 
     await file.save(Buffer.from(blob, `base64`), {
@@ -31,6 +32,13 @@ const UsersService = {
     });
 
     const url = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${id}?alt=media`;
+
+    await ImagesRepository(auth.uid).create({
+      id,
+      url,
+      contentType,
+      extension,
+    });
 
     return {
       extension,
