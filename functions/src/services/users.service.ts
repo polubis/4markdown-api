@@ -25,13 +25,16 @@ const UsersService = {
     }
 
     const id = uuid();
-    const file = bucket.file(id);
+    const location = `${auth.uid}/images/${id}`;
+    const file = bucket.file(location);
 
     await file.save(Buffer.from(blob, `base64`), {
       contentType,
     });
 
-    const url = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${id}?alt=media`;
+    const url = `https://firebasestorage.googleapis.com/v0/b/${
+      bucket.name
+    }/o/${encodeURIComponent(location)}?alt=media`;
 
     await ImagesRepository(auth.uid).create({
       id,
