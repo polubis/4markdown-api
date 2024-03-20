@@ -2,7 +2,7 @@ import { HttpsError } from 'firebase-functions/v1/auth';
 import { UsersService } from './users.service';
 
 describe(`Image upload works when: `, () => {
-  it(`blocks when unauthorized`, async () => {
+  it(`unauthorized users are blocked`, async () => {
     try {
       await UsersService.uploadImage(
         {
