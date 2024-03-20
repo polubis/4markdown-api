@@ -18,6 +18,8 @@ import { errors } from './core/errors';
 import { Doc } from './core/doc';
 import { DocsService } from './services/docs.service';
 import { AuthService } from './services/auth.service';
+import { UsersService } from './services/users.service';
+import { UploadImagePayload } from './payloads/images.payload';
 
 admin.initializeApp();
 
@@ -79,8 +81,8 @@ export const createDoc = onCall(async (payload: CreateDocPayload, context) => {
 });
 
 export const updateDoc = onCall(async (payload, context) => {
-  const { uid } = AuthService.authorize(context);
-  return DocsService.update(uid, payload);
+  const user = AuthService.authorize(context);
+  return DocsService.update(user.uid, payload);
 });
 
 export const getDocs = onCall(async (_, context) => {
@@ -208,3 +210,9 @@ export const getPublicDoc = onCall(async (payload: GetDocPayload) => {
 export const getPermanentDocs = onCall(async () => {
   return await DocsService.getAllPermanent();
 });
+
+export const uploadImage = onCall(
+  async (payload: UploadImagePayload, context) => {
+    return await UsersService.uploadImage(payload, context);
+  },
+);
