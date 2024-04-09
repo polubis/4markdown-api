@@ -35,6 +35,8 @@ type GetPermanentDocsDto = (Omit<PermanentDocEntityField, 'tags'> & {
   tags: Tags;
 })[];
 
+type SearchDocsDto = {};
+
 export type {
   CreateDocDto,
   UpdateDocDto,
@@ -46,4 +48,5 @@ export type {
   GetDocDto,
   GetPermanentDocsDto,
   DeleteDocDto,
+  SearchDocsDto,
 };

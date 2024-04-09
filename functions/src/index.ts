@@ -5,6 +5,7 @@ import type {
   CreateDocPayload,
   DeleteDocPayload,
   GetDocPayload,
+  SearchDocsPayload,
 } from './payloads/docs.payload';
 import type { DocEntity, DocEntityField } from './entities/doc.entity';
 import type {
@@ -214,5 +215,11 @@ export const getPermanentDocs = onCall(async () => {
 export const uploadImage = onCall(
   async (payload: UploadImagePayload, context) => {
     return await UsersService.uploadImage(payload, context);
+  },
+);
+
+export const searchPermamentDocs = onCall(
+  async (payload: SearchDocsPayload) => {
+    return await DocsService.searchPermamentDocs(payload);
   },
 );

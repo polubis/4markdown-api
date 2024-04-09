@@ -32,9 +32,21 @@ type DeleteDocPayload = { id: Id };
 
 type GetDocPayload = { id: Id };
 
+type SearchDocsPayload = {
+  query: string;
+  page: number;
+  limit: number;
+  sort: {
+    order: 'asc' | 'desc';
+    field: 'title' | 'cdate' | 'mdate';
+  };
+  tags: string[];
+};
+
 export type {
   CreateDocPayload,
   UpdateDocPayload,
   DeleteDocPayload,
   GetDocPayload,
+  SearchDocsPayload,
 };

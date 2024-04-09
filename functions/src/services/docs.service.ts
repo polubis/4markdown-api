@@ -1,8 +1,9 @@
-import { UpdateDocPayload } from '../payloads/docs.payload';
+import { SearchDocsPayload, UpdateDocPayload } from '../payloads/docs.payload';
 import { errors } from '../core/errors';
 import { DocEntity, DocEntityField } from '../entities/doc.entity';
 import {
   GetPermanentDocsDto,
+  SearchDocsDto,
   UpdateDocPermanentDto,
   UpdateDocPrivateDto,
   UpdateDocPublicDto,
@@ -13,6 +14,9 @@ import { DocsRepository } from '../repositories/docs.repository';
 import * as admin from 'firebase-admin';
 
 export const DocsService = {
+  searchPermamentDocs: async (
+    payload: SearchDocsPayload,
+  ): Promise<SearchDocsDto> => {},
   getAllPermanent: async (): Promise<GetPermanentDocsDto> => {
     try {
       const allDocs = (await admin.firestore().collection(`docs`).get()).docs;
