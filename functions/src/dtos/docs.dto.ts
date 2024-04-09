@@ -35,7 +35,10 @@ type GetPermanentDocsDto = (Omit<PermanentDocEntityField, 'tags'> & {
   tags: Tags;
 })[];
 
-type SearchDocsDto = {};
+type SearchDocsDto = (Omit<PermanentDocEntityField, 'tags' | 'code'> & {
+  id: Id;
+  tags: Tags;
+})[];
 
 export type {
   CreateDocDto,

@@ -16,7 +16,12 @@ import * as admin from 'firebase-admin';
 export const DocsService = {
   searchPermamentDocs: async (
     payload: SearchDocsPayload,
-  ): Promise<SearchDocsDto> => {},
+  ): Promise<SearchDocsDto> => {
+    const allDocs = await DocsService.getAllPermanent();
+    const filteredDocs: SearchDocsDto = [];
+
+    for (let i = 0; i < allDocs.length; i++) {}
+  },
   getAllPermanent: async (): Promise<GetPermanentDocsDto> => {
     try {
       const allDocs = (await admin.firestore().collection(`docs`).get()).docs;

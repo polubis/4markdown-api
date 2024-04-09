@@ -38,7 +38,7 @@ type SearchDocsPayload = {
   limit: number;
   sort: {
     order: 'asc' | 'desc';
-    field: 'title' | 'cdate' | 'mdate';
+    field: 'name' | 'cdate' | 'mdate';
   };
   tags: string[];
 };
