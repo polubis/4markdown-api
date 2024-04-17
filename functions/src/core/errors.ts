@@ -16,7 +16,10 @@ export const errors = {
   exists: (message: string): never => {
     throw new HttpsError(`already-exists`, message);
   },
-  internal: (message = `Server error`): never => {
+  internal: (message: string): never => {
     throw new HttpsError(`internal`, message);
+  },
+  outOfDateEntry: (message: string): never => {
+    throw new HttpsError(`resource-exhausted`, message);
   },
 };
