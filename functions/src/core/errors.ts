@@ -20,6 +20,9 @@ export const errors = {
     throw new HttpsError(`internal`, message);
   },
   outOfDateEntry: (message: string): never => {
-    throw new HttpsError(`resource-exhausted`, message);
+    throw new HttpsError(
+      `resource-exhausted`,
+      `[${errors.outOfDateEntry.name}][${message}]`,
+    );
   },
 };

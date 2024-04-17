@@ -62,7 +62,7 @@ export const DocsService = {
 
     if (doc.mdate !== payload.mdate) {
       throw errors.outOfDateEntry(
-        `You cannot edit this document. You've changed it on another device`,
+        `You cannot edit this document. You've changed it on another device.`,
       );
     }
 
