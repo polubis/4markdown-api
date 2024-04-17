@@ -11,6 +11,7 @@ describe(`Docs updating works when: `, () => {
         code: `dasdad`,
         visibility: `public`,
         id: `312313`,
+        mdate: `2024-04-17T13:07:33.976Z`,
       });
     } catch (error) {
       expect((error as Error).message).toMatchSnapshot();
@@ -28,6 +29,7 @@ describe(`Docs updating works when: `, () => {
         code: `dasdad`,
         visibility: `public`,
         id: `312313`,
+        mdate: `2024-04-17T13:07:33.976Z`,
       });
     } catch (error) {
       expect((error as Error).message).toMatchSnapshot();

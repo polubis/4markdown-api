@@ -39,7 +39,7 @@ export const DocsService = {
         return acc;
       }, [] as GetPermanentDocsDto);
     } catch (err) {
-      throw errors.internal();
+      throw errors.internal(`Server error`);
     }
   },
   update: async (uid: Id, payload: UpdateDocPayload) => {
@@ -58,6 +58,12 @@ export const DocsService = {
 
     if (!doc) {
       throw errors.notFound();
+    }
+
+    if (doc.mdate !== payload.mdate) {
+      throw errors.outOfDateEntry(
+        `You cannot edit this document. You've changed it on another device.`,
+      );
     }
 
     switch (payload.visibility) {

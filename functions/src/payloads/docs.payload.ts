@@ -10,17 +10,17 @@ interface CreateDocPayload extends Pick<DocEntityField, 'name' | 'code'> {}
 
 type UpdateDocPrivatePayload = Pick<
   PrivateDocEntityField,
-  'name' | 'code' | 'visibility'
+  'name' | 'code' | 'visibility' | 'mdate'
 > & { id: Id };
 
 type UpdateDocPublicPayload = Pick<
   PublicDocEntityField,
-  'name' | 'code' | 'visibility'
+  'name' | 'code' | 'visibility' | 'mdate'
 > & { id: Id };
 
 type UpdateDocPermanentPayload = Pick<
   PermanentDocEntityField,
-  'name' | 'code' | 'visibility' | 'description'
+  'name' | 'code' | 'visibility' | 'description' | 'mdate'
 > & { id: Id; tags: Tags };
 
 type UpdateDocPayload =
