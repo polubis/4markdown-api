@@ -62,7 +62,7 @@ export const DocsService = {
 
     if (doc.mdate !== payload.mdate) {
       throw errors.outOfDateEntry(
-        `You're trying to update out of date document`,
+        `You cannot edit this document. You've changed it on another device`,
       );
     }
 
