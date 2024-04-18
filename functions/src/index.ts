@@ -100,29 +100,35 @@ export const getDocs = onCall(async (_, context) => {
 
   if (result === undefined) return [];
 
-  const docs: GetDocsDto = Object.entries(result).map(
-    ([id, field]: [string, DocEntityField]): GetDocsDtoItem =>
-      field.visibility === `permanent`
-        ? {
-            id,
-            name: field.name,
-            code: field.code,
-            cdate: field.cdate,
-            mdate: field.mdate,
-            visibility: field.visibility,
-            description: field.description,
-            path: field.path,
-            tags: field.tags ?? [],
-          }
-        : {
-            id,
-            name: field.name,
-            code: field.code,
-            cdate: field.cdate,
-            mdate: field.mdate,
-            visibility: field.visibility,
-          },
-  );
+  const docs: GetDocsDto = Object.entries(result)
+    .map(
+      ([id, field]: [string, DocEntityField]): GetDocsDtoItem =>
+        field.visibility === `permanent`
+          ? {
+              id,
+              name: field.name,
+              code: field.code,
+              cdate: field.cdate,
+              mdate: field.mdate,
+              visibility: field.visibility,
+              description: field.description,
+              path: field.path,
+              tags: field.tags ?? [],
+            }
+          : {
+              id,
+              name: field.name,
+              code: field.code,
+              cdate: field.cdate,
+              mdate: field.mdate,
+              visibility: field.visibility,
+            },
+    )
+    .sort((prev, curr) => {
+      if (prev.mdate > curr.mdate) return -1;
+      if (prev.mdate === curr.mdate) return 0;
+      return 1;
+    });
 
   return docs;
 });
