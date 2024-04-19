@@ -15,11 +15,24 @@ interface DocEntityFieldBase {
   mdate: DateStamp;
 }
 
+const THUMBNAIL_EXTENSIONS = [`png`, `jpeg`, `jpg`] as const;
+
+type ThumbnailExtension = (typeof THUMBNAIL_EXTENSIONS)[number];
+type ThumbnailContentType = `image/${ThumbnailExtension}`;
+
+interface DocThumbnail {
+  id: Id;
+  extension: ThumbnailExtension;
+  contentType: ThumbnailContentType;
+  url: Path;
+}
+
 interface PermanentDocEntityField extends DocEntityFieldBase {
   visibility: 'permanent';
   description: Description;
   path: Path;
   tags?: Tags;
+  thumbnail?: DocThumbnail;
 }
 
 interface PublicDocEntityField extends DocEntityFieldBase {
@@ -46,4 +59,5 @@ export type {
   PermanentDocEntityField,
   PublicDocEntityField,
   PrivateDocEntityField,
+  DocThumbnail,
 };
