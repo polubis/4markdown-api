@@ -112,6 +112,20 @@ export const DocsService = {
       case `permanent`: {
         const tags = Doc.createTags(payload.tags);
 
+        const alreadyExists =
+          (await getAllDocs()).filter(
+            (doc) =>
+              doc.id !== payload.id &&
+              doc.visibility === `permanent` &&
+              doc.name === name,
+          ).length > 0;
+
+        if (alreadyExists) {
+          throw errors.exists(
+            `Document with provided name already exists, please change name`,
+          );
+        }
+
         const dto: UpdateDocPermanentDto = {
           cdate: doc.cdate,
           mdate,
@@ -123,20 +137,6 @@ export const DocsService = {
           description: Doc.createDescription(payload.description),
           tags,
         };
-
-        const alreadyExists =
-          (await getAllDocs()).filter(
-            (doc) =>
-              doc.id !== payload.id &&
-              doc.visibility === `permanent` &&
-              doc.name === dto.name,
-          ).length > 0;
-
-        if (alreadyExists) {
-          throw errors.exists(
-            `Document with provided name already exists, please change name`,
-          );
-        }
 
         const docEntity: DocEntity = {
           [payload.id]: dto,
