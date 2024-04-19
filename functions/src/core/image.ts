@@ -1,4 +1,3 @@
-import { Blob } from '../entities/general';
 import {
   IMAGE_EXTENSIONS,
   ImageContentType,
