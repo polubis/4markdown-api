@@ -60,4 +60,7 @@ export type {
   PublicDocEntityField,
   PrivateDocEntityField,
   DocThumbnail,
+  ThumbnailExtension,
+  ThumbnailContentType,
 };
+export { THUMBNAIL_EXTENSIONS };

@@ -1,6 +1,13 @@
-import { UpdateDocPayload } from '../payloads/docs.payload';
+import {
+  UpdateDocPayload,
+  UpdateDocPermamentThumbnailUpdateAction,
+} from '../payloads/docs.payload';
 import { errors } from '../core/errors';
-import { DocEntity, DocEntityField } from '../entities/doc.entity';
+import {
+  DocEntity,
+  DocEntityField,
+  DocThumbnail,
+} from '../entities/doc.entity';
 import {
   GetPermanentDocsDto,
   UpdateDocPermanentDto,
@@ -11,6 +18,8 @@ import { Doc, getAllDocs } from '../core/doc';
 import { Id } from '../entities/general';
 import { DocsRepository } from '../repositories/docs.repository';
 import * as admin from 'firebase-admin';
+import { Thumbnail } from '../core/thumbnail';
+import { v4 as uuid } from 'uuid';
 
 export const DocsService = {
   getAllPermanent: async (): Promise<GetPermanentDocsDto> => {
@@ -47,6 +56,37 @@ export const DocsService = {
     } catch (err) {
       throw errors.internal(`Server error`);
     }
+  },
+  uploadThumbnail: async (
+    thumbnail: UpdateDocPermamentThumbnailUpdateAction,
+  ): Promise<DocThumbnail> => {
+    const { extension, contentType, buffer } = Thumbnail.create(thumbnail);
+    const storage = admin.storage();
+    const bucket = storage.bucket();
+    const [bucketExists] = await bucket.exists();
+
+    if (!bucketExists) {
+      throw errors.internal(`Cannot find bucket for images`);
+    }
+
+    const id = uuid();
+    const location = `thumbnails/${id}`;
+    const file = bucket.file(location);
+
+    await file.save(buffer, {
+      contentType,
+    });
+
+    const url = `https://firebasestorage.googleapis.com/v0/b/${
+      bucket.name
+    }/o/${encodeURIComponent(location)}?alt=media`;
+
+    return {
+      url,
+      id,
+      extension,
+      contentType,
+    };
   },
   update: async (uid: Id, payload: UpdateDocPayload) => {
     const name = Doc.createName(payload.name);
@@ -126,6 +166,9 @@ export const DocsService = {
           );
         }
 
+        const thumbnail =
+          doc.visibility === `permanent` ? doc.thumbnail : undefined;
+
         const dto: UpdateDocPermanentDto = {
           cdate: doc.cdate,
           mdate,
@@ -136,6 +179,10 @@ export const DocsService = {
           path: Doc.createPath(name),
           description: Doc.createDescription(payload.description),
           tags,
+          thumbnail:
+            payload.thumbnail.action === `noop`
+              ? thumbnail
+              : await DocsService.uploadThumbnail(payload.thumbnail),
         };
 
         const docEntity: DocEntity = {
