@@ -24,7 +24,7 @@ type UpdateDocPermamentThumbnailNoopAction = {
 
 type UpdateDocPermamentThumbnailUpdateAction = {
   action: 'update';
-  data: string;
+  data: unknown;
 };
 
 type UpdateDocPermanentPayload = Pick<
