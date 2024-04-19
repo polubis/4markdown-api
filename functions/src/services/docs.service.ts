@@ -60,7 +60,7 @@ export const DocsService = {
   uploadThumbnail: async (
     thumbnail: UpdateDocPermamentThumbnailUpdateAction,
   ): Promise<DocThumbnail> => {
-    const { extension, contentType, buffer } = Thumbnail.create(thumbnail);
+    const { extension, contentType, buffer } = Thumbnail.create(thumbnail.data);
     const storage = admin.storage();
     const bucket = storage.bucket();
     const [bucketExists] = await bucket.exists();
