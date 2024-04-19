@@ -4,26 +4,11 @@ import {
   ImageContentType,
   ImageExtension,
 } from '../entities/image.entity';
+import { parseImage } from '../utils/parse-image';
 import { imageValidators } from '../validation/image';
 import { errors } from './errors';
 
 const Image = () => {};
-
-// Example: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQE..
-Image.decode = (
-  image: string,
-): { blob: Blob; contentType: string; extension: string } => {
-  const [meta] = image.split(`,`);
-  const contentType = meta.split(`:`)[1].split(`;`)[0];
-  const extension = contentType.replace(`image/`, ``);
-  const blob = image.replace(/^data:image\/\w+;base64,/, ``);
-
-  return {
-    blob,
-    contentType,
-    extension,
-  };
-};
 
 Image.create = (
   image: unknown,
@@ -36,7 +21,7 @@ Image.create = (
     throw errors.invalidArg(`Wrong image data type`);
   }
 
-  const { blob, contentType, extension } = Image.decode(image);
+  const { buffer, contentType, extension } = parseImage(image);
 
   if (!imageValidators.extension(extension)) {
     throw errors.invalidArg(
@@ -46,11 +31,9 @@ Image.create = (
     );
   }
 
-  const buffer = Buffer.from(blob, `base64`);
-
   if (!imageValidators.size(buffer)) {
     throw errors.invalidArg(
-      `Max image size is ${imageValidators.limitInMegabytes} megabytes (MB)`,
+      `Max image size is ${imageValidators.limitInMegabytes} (MB)`,
     );
   }
 
