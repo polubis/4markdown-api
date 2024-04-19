@@ -18,10 +18,25 @@ type UpdateDocPublicPayload = Pick<
   'name' | 'code' | 'visibility' | 'mdate'
 > & { id: Id };
 
+type UpdateDocPermamentThumbnailNoopAction = {
+  action: 'noop';
+};
+
+type UpdateDocPermamentThumbnailUpdateAction = {
+  action: 'update';
+  data: string;
+};
+
 type UpdateDocPermanentPayload = Pick<
   PermanentDocEntityField,
   'name' | 'code' | 'visibility' | 'description' | 'mdate'
-> & { id: Id; tags: Tags };
+> & {
+  id: Id;
+  tags: Tags;
+  thumbnail:
+    | UpdateDocPermamentThumbnailNoopAction
+    | UpdateDocPermamentThumbnailUpdateAction;
+};
 
 type UpdateDocPayload =
   | UpdateDocPrivatePayload
@@ -37,4 +52,6 @@ export type {
   UpdateDocPayload,
   DeleteDocPayload,
   GetDocPayload,
+  UpdateDocPermamentThumbnailNoopAction,
+  UpdateDocPermamentThumbnailUpdateAction,
 };
