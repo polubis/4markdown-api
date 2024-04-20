@@ -190,6 +190,7 @@ export const getPublicDoc = onCall(async (payload: GetDocPayload) => {
           description: field.description,
           path: field.path,
           tags: field.tags ?? [],
+          thumbnail: field.thumbnail,
         };
       } else {
         docDto = {
