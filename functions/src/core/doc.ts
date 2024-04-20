@@ -21,6 +21,7 @@ export const getAllDocs = async () => {
             description: field.description,
             path: field.path,
             tags: field.tags ?? [],
+            thumbnail: field.thumbnail,
           });
         } else {
           acc.push({
@@ -58,6 +59,7 @@ export const getPermanentDocs = async (): Promise<GetPermanentDocsDto> => {
             description: field.description,
             path: field.path,
             tags: field.tags ?? [],
+            thumbnail: field.thumbnail,
           });
         }
       },

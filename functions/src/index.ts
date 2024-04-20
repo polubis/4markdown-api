@@ -114,6 +114,7 @@ export const getDocs = onCall(async (_, context) => {
               description: field.description,
               path: field.path,
               tags: field.tags ?? [],
+              thumbnail: field.thumbnail,
             }
           : {
               id,
