@@ -58,6 +58,15 @@ export const DocsService = {
       throw errors.internal(`Server error`);
     }
   },
+  deleteThumbnail: async (id: Id): Promise<void> => {
+    const storage = admin.storage();
+    const bucket = storage.bucket();
+
+    const location = `thumbnails/${id}`;
+    const file = bucket.file(location);
+
+    await file.delete();
+  },
   uploadThumbnail: async (
     thumbnail: UpdateDocPermamentThumbnailUpdateAction,
   ): Promise<DocThumbnail> => {
@@ -115,6 +124,10 @@ export const DocsService = {
 
     switch (payload.visibility) {
       case `public`: {
+        if (doc.visibility === `permanent` && !!doc.thumbnail) {
+          await DocsService.deleteThumbnail(payload.id);
+        }
+
         const dto: UpdateDocPublicDto = {
           cdate: doc.cdate,
           mdate,
@@ -133,6 +146,10 @@ export const DocsService = {
         return dto;
       }
       case `private`: {
+        if (doc.visibility === `permanent` && !!doc.thumbnail) {
+          await DocsService.deleteThumbnail(payload.id);
+        }
+
         const dto: UpdateDocPrivateDto = {
           cdate: doc.cdate,
           mdate,
