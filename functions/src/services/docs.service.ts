@@ -125,7 +125,7 @@ export const DocsService = {
     switch (payload.visibility) {
       case `public`: {
         if (doc.visibility === `permanent` && !!doc.thumbnail) {
-          await DocsService.deleteThumbnail(payload.id);
+          await DocsService.deleteThumbnail(doc.thumbnail.id);
         }
 
         const dto: UpdateDocPublicDto = {
@@ -147,7 +147,7 @@ export const DocsService = {
       }
       case `private`: {
         if (doc.visibility === `permanent` && !!doc.thumbnail) {
-          await DocsService.deleteThumbnail(payload.id);
+          await DocsService.deleteThumbnail(doc.thumbnail.id);
         }
 
         const dto: UpdateDocPrivateDto = {
