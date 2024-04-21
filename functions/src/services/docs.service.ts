@@ -89,7 +89,10 @@ export const DocsService = {
     const location = `thumbnails/${id}`;
     const file = bucket.file(location);
 
-    const webpBuffer = await sharp(buffer).webp({ quality: 60 }).toBuffer();
+    const webpBuffer = await sharp(buffer)
+      .resize(600, 400)
+      .webp({ quality: 60 })
+      .toBuffer();
 
     await file.save(webpBuffer, {
       contentType,
