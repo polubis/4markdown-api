@@ -7,6 +7,7 @@ import {
   DocEntity,
   DocEntityField,
   DocThumbnail,
+  ThumbnailContentType,
 } from '../entities/doc.entity';
 import {
   GetPermanentDocsDto,
@@ -20,6 +21,7 @@ import { DocsRepository } from '../repositories/docs.repository';
 import * as admin from 'firebase-admin';
 import { Thumbnail } from '../core/thumbnail';
 import { v4 as uuid } from 'uuid';
+import * as sharp from 'sharp';
 
 export const DocsService = {
   getAllPermanent: async (): Promise<GetPermanentDocsDto> => {
@@ -70,7 +72,11 @@ export const DocsService = {
   uploadThumbnail: async (
     thumbnail: UpdateDocPermamentThumbnailUpdateAction,
   ): Promise<DocThumbnail> => {
-    const { extension, contentType, buffer } = Thumbnail.create(thumbnail.data);
+    const { extension, buffer } = Thumbnail.create(thumbnail.data);
+    const contentType: Extract<
+      ThumbnailContentType,
+      'image/webp'
+    > = `image/webp`;
     const storage = admin.storage();
     const bucket = storage.bucket();
     const [bucketExists] = await bucket.exists();
@@ -83,7 +89,9 @@ export const DocsService = {
     const location = `thumbnails/${id}`;
     const file = bucket.file(location);
 
-    await file.save(buffer, {
+    const webpBuffer = await sharp(buffer).webp({ quality: 60 }).toBuffer();
+
+    await file.save(webpBuffer, {
       contentType,
     });
 

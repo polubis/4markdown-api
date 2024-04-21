@@ -15,7 +15,7 @@ interface DocEntityFieldBase {
   mdate: DateStamp;
 }
 
-const THUMBNAIL_EXTENSIONS = [`png`, `jpeg`, `jpg`] as const;
+const THUMBNAIL_EXTENSIONS = [`png`, `jpeg`, `jpg`, `webp`] as const;
 
 type ThumbnailExtension = (typeof THUMBNAIL_EXTENSIONS)[number];
 type ThumbnailContentType = `image/${ThumbnailExtension}`;
