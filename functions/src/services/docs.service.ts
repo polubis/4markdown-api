@@ -67,10 +67,11 @@ export const DocsService = {
     const storage = admin.storage();
     const bucket = storage.bucket();
 
-    const location = `thumbnails/${id}`;
-    const file = bucket.file(location);
-
-    await file.delete();
+    await Promise.all(
+      thumbnailSizes.map((size) =>
+        bucket.file(`thumbnails/${id}/${size}`).delete(),
+      ),
+    );
   },
   uploadThumbnail: async (
     thumbnail: UpdateDocPermamentThumbnailUpdateAction,
