@@ -6,6 +6,7 @@ import type {
   Path,
   Description,
   Tags,
+  Url,
 } from './general';
 
 interface DocEntityFieldBase {
@@ -16,16 +17,19 @@ interface DocEntityFieldBase {
 }
 
 const THUMBNAIL_EXTENSIONS = [`png`, `jpeg`, `jpg`, `webp`] as const;
+const thumbnailSizes = [`xl`, `lg`, `md`, `sm`, `xs`] as const;
 
 type ThumbnailExtension = (typeof THUMBNAIL_EXTENSIONS)[number];
 type ThumbnailContentType = `image/${ThumbnailExtension}`;
+type ThumbnailSize = (typeof thumbnailSizes)[number];
+type DocThumbnailUrls = Record<ThumbnailSize, Url>;
 
-interface DocThumbnail {
+type DocThumbnail = {
   id: Id;
   extension: ThumbnailExtension;
   contentType: ThumbnailContentType;
-  url: Path;
-}
+  urls: DocThumbnailUrls;
+};
 
 interface PermanentDocEntityField extends DocEntityFieldBase {
   visibility: 'permanent';
@@ -61,6 +65,8 @@ export type {
   PrivateDocEntityField,
   DocThumbnail,
   ThumbnailExtension,
+  ThumbnailSize,
+  DocThumbnailUrls,
   ThumbnailContentType,
 };
-export { THUMBNAIL_EXTENSIONS };
+export { THUMBNAIL_EXTENSIONS, thumbnailSizes };

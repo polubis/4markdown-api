@@ -7,7 +7,10 @@ import {
   DocEntity,
   DocEntityField,
   DocThumbnail,
+  DocThumbnailUrls,
   ThumbnailContentType,
+  ThumbnailSize,
+  thumbnailSizes,
 } from '../entities/doc.entity';
 import {
   GetPermanentDocsDto,
@@ -16,7 +19,7 @@ import {
   UpdateDocPublicDto,
 } from '../dtos/docs.dto';
 import { Doc, getAllDocs } from '../core/doc';
-import { Id } from '../entities/general';
+import { Id, Url } from '../entities/general';
 import { DocsRepository } from '../repositories/docs.repository';
 import * as admin from 'firebase-admin';
 import { Thumbnail } from '../core/thumbnail';
@@ -87,23 +90,56 @@ export const DocsService = {
 
     const id = uuid();
     const location = `thumbnails/${id}`;
-    const file = bucket.file(location);
+    // Original (xl) - 100%: 1920x580 pixels
+    // Large (lg) - 75% of original: 1440x435 pixels
+    // Medium (md) - 50% of original: 960x290 pixels
+    // Small (sm) - 25% of original: 480x145 pixels
+    // Extra Small (xs) - 12.5% of original: 240x73 pixels
+    const sizeLookup: Record<ThumbnailSize, [number, number]> = {
+      xl: [1920, 580],
+      lg: [1440, 435],
+      md: [960, 290],
+      sm: [480, 145],
+      xs: [240, 73],
+    };
 
-    const webpBuffer = await sharp(buffer)
-      .resize(600, 400)
-      .webp({ quality: 60 })
-      .toBuffer();
+    const uploadImage = async (
+      size: ThumbnailSize,
+    ): Promise<{ url: Url; size: ThumbnailSize }> => {
+      const path = `${location}/${size}`;
+      const file = bucket.file(path);
 
-    await file.save(webpBuffer, {
-      contentType,
-    });
+      const [width, height] = sizeLookup[size];
+      const webpBuffer = await sharp(buffer)
+        .resize(width, height)
+        .webp({ quality: 60 })
+        .toBuffer();
 
-    const url = `https://firebasestorage.googleapis.com/v0/b/${
-      bucket.name
-    }/o/${encodeURIComponent(location)}?alt=media`;
+      await file.save(webpBuffer, {
+        contentType,
+      });
+
+      const url = `https://firebasestorage.googleapis.com/v0/b/${
+        bucket.name
+      }/o/${encodeURIComponent(path)}?alt=media`;
+
+      return {
+        url,
+        size,
+      };
+    };
+
+    const result = await Promise.all(
+      thumbnailSizes.map((size) =>
+        uploadImage(size as keyof typeof sizeLookup),
+      ),
+    );
 
     return {
-      url,
+      urls: result.reduce<DocThumbnailUrls>((acc, { url, size }) => {
+        acc[size] = url;
+        return acc;
+      }, {} as DocThumbnailUrls),
       id,
       extension,
       contentType,
