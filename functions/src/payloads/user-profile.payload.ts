@@ -1,9 +1,9 @@
 import { z } from 'zod';
-import { errors } from '../core/errors';
-import { userProfileEntitySchema } from '../entities/user-profile.entity';
+import { createSchema } from '../validation/create-schema';
+import { UserProfileEntity } from '../entities/user-profile.entity';
 
-const userProfilePayloadSchema = userProfileEntitySchema
-  .omit({ cdate: true, mdate: true, id: true })
+const schema = UserProfileEntity.schema
+  .omit({ cdate: true, mdate: true, id: true, avatar: true })
   .merge(
     z.object({
       avatar: z.union([
@@ -21,21 +21,9 @@ const userProfilePayloadSchema = userProfileEntitySchema
     }),
   );
 
-type UserProfilePayload = z.infer<typeof userProfilePayloadSchema>;
+type IUserProfilePayload = z.infer<typeof schema>;
 
-const createUserProfilePayload = (payload: unknown): UserProfilePayload => {
-  try {
-    const values = userProfilePayloadSchema.parse(payload);
-    return values;
-  } catch (err) {
-    throw errors.invalidArg(
-      `UserProfilePayload is not typeof UserProfilePayload`,
-    );
-  }
-};
+const UserProfilePayload = createSchema(schema, `UserProfilePayload`);
 
-export {
-  UserProfilePayload,
-  userProfilePayloadSchema,
-  createUserProfilePayload,
-};
+export type { IUserProfilePayload };
+export { UserProfilePayload };

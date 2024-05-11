@@ -1,5 +1,5 @@
-import { errors } from '../core/errors';
 import { z } from 'zod';
+import { createSchema } from '../validation/create-schema';
 
 const avatarVariantSchema = z.object({
   h: z.number(),
@@ -8,7 +8,7 @@ const avatarVariantSchema = z.object({
   ext: z.enum([`webp`]),
 });
 
-const userProfileEntitySchema = z.object({
+const schema = z.object({
   displayName: z
     .string()
     .regex(/^[a-zA-Z0-9_-]+$/)
@@ -34,23 +34,8 @@ const userProfileEntitySchema = z.object({
   mdate: z.date(),
 });
 
-type UserProfileEntity = z.infer<typeof userProfileEntitySchema>;
+type IUserProfileEntity = z.infer<typeof schema>;
 
-const createUserProfileEntity = (payload: unknown): UserProfileEntity => {
-  try {
-    const values = userProfileEntitySchema.parse(payload);
-    return values;
-  } catch (err) {
-    throw errors.invalidArg(`Passed UserProfileEntity payload is invalid`);
-  }
-};
+const UserProfileEntity = createSchema(schema, `UserProfileEntity`);
 
-const isUserProfileEntity = (payload: unknown): payload is UserProfileEntity =>
-  userProfileEntitySchema.safeParse(payload).success;
-
-export {
-  createUserProfileEntity,
-  isUserProfileEntity,
-  userProfileEntitySchema,
-  UserProfileEntity,
-};
+export { UserProfileEntity, IUserProfileEntity };

@@ -7,16 +7,13 @@ import { Image } from '../core/image';
 import { UploadImageDto } from '../dtos/image.dto';
 import { AuthService } from './auth.service';
 import { ImagesRepository } from '../repositories/images.repository';
-import {
-  createUserProfileEntity,
-  isUserProfileEntity,
-} from '../entities/user-profile.entity';
-import { createUserProfilePayload } from '../payloads/user-profile.payload';
+import { UserProfilePayload } from '../payloads/user-profile.payload';
+import { UserProfileEntity } from '../entities/user-profile.entity';
 
 const UsersService = {
   updateProfile: async (payload: unknown, context: https.CallableContext) => {
     const auth = AuthService.authorize(context);
-    const userProfilePayload = createUserProfilePayload(payload);
+    const userProfilePayload = UserProfilePayload(payload);
     const userProfilesCollection = admin
       .firestore()
       .collection(`users-profiles`);
@@ -25,7 +22,7 @@ const UsersService = {
 
     if (!userProfile.exists) {
       const cdate = new Date().toISOString();
-      const userProfileNewEntity = createUserProfileEntity({
+      const userProfileNewEntity = UserProfileEntity({
         id: uuid(),
         cdate,
         mdate: cdate,
@@ -43,15 +40,13 @@ const UsersService = {
       return {};
     }
 
-    const currentUserProfileEntity = isUserProfileEntity(userProfile.data());
+    const currentUserProfileEntity = userProfile.data();
 
-    if (!isUserProfileEntity(currentUserProfileEntity)) {
-      throw errors.internal(
-        `Retreived UserProfileEntity is not type of UserProfileEntity`,
-      );
+    if (!UserProfileEntity.is(currentUserProfileEntity)) {
+      throw errors.invalidSchema(UserProfileEntity.name);
     }
 
-    const userProfileNewEntity = createUserProfileEntity({
+    const userProfileNewEntity = UserProfileEntity({
       id: currentUserProfileEntity.id,
       cdate: currentUserProfileEntity.cdate,
       mdate: new Date().toISOString(),
