@@ -7,65 +7,63 @@ import { Image } from '../core/image';
 import { UploadImageDto } from '../dtos/image.dto';
 import { AuthService } from './auth.service';
 import { ImagesRepository } from '../repositories/images.repository';
-import { UserProfileEntity } from '../entities/users-profiles.entity';
-import { UserProfilePayload } from '../payloads/user-profile.payload';
+import {
+  createUserProfileEntity,
+  isUserProfileEntity,
+} from '../entities/user-profile.entity';
+import { createUserProfilePayload } from '../payloads/user-profile.payload';
 
 const UsersService = {
   updateProfile: async (payload: unknown, context: https.CallableContext) => {
     const auth = AuthService.authorize(context);
-    const {
-      displayName,
-      bio,
-      blogUrl,
-      fbUrl,
-      githubUrl,
-      linkedInUrl,
-      avatar: avatarAction,
-      twitterUrl,
-    } = UserProfilePayload(payload);
-    const collection = admin.firestore().collection(`users`);
-    const document = await collection.doc(auth.uid);
-    const profile = await document.get();
+    const userProfilePayload = createUserProfilePayload(payload);
+    const userProfilesCollection = admin.firestore().collection(`users`);
+    const userProfileDocument = await userProfilesCollection.doc(auth.uid);
+    const userProfile = await userProfileDocument.get();
 
-    if (!profile.exists) {
+    if (!userProfile.exists) {
       const cdate = new Date().toISOString();
-
-      const entity: UserProfileEntity = {
+      const userProfileNewEntity = createUserProfileEntity({
         id: uuid(),
         cdate,
         mdate: cdate,
-        avatar: null,
-        displayName,
-        bio,
-        blogUrl,
-        fbUrl,
-        githubUrl,
-        twitterUrl,
-        linkedInUrl,
-      };
+        displayName: userProfilePayload.displayName,
+        bio: userProfilePayload.bio,
+        blogUrl: userProfilePayload.blogUrl,
+        fbUrl: userProfilePayload.fbUrl,
+        githubUrl: userProfilePayload.githubUrl,
+        twitterUrl: userProfilePayload.twitterUrl,
+        linkedInUrl: userProfilePayload.linkedInUrl,
+      });
 
-      await document.set(entity);
+      await userProfileDocument.set(userProfileNewEntity);
 
       return {};
     }
 
-    const profileData = profile.data() as UserProfileEntity;
+    const currentUserProfileEntity = isUserProfileEntity(userProfile.data());
 
-    const entity: UserProfileEntity = {
-      id: profileData.id,
-      cdate: profileData.cdate,
+    if (!isUserProfileEntity(currentUserProfileEntity)) {
+      throw errors.internal(
+        `Retreived UserProfileEntity is not type of UserProfileEntity`,
+      );
+    }
+
+    const userProfileNewEntity = createUserProfileEntity({
+      id: currentUserProfileEntity.id,
+      cdate: currentUserProfileEntity.cdate,
       mdate: new Date().toISOString(),
       avatar: null,
-      displayName,
-      bio,
-      blogUrl,
-      fbUrl,
-      githubUrl,
-      twitterUrl,
-      linkedInUrl,
-    };
+      displayName: currentUserProfileEntity.displayName,
+      bio: userProfilePayload.bio,
+      blogUrl: userProfilePayload.blogUrl,
+      fbUrl: userProfilePayload.fbUrl,
+      githubUrl: userProfilePayload.githubUrl,
+      twitterUrl: userProfilePayload.twitterUrl,
+      linkedInUrl: userProfilePayload.linkedInUrl,
+    });
 
-    await document.set(entity);
+    await userProfileDocument.set(userProfileNewEntity);
 
     return {};
   },

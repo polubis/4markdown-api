@@ -1,41 +1,39 @@
 import { z } from 'zod';
 import { errors } from '../core/errors';
+import { userProfileEntitySchema } from '../entities/user-profile.entity';
 
-const schema = z.object({
-  displayName: z
-    .string()
-    .regex(/^[a-zA-Z0-9_-]+$/)
-    .min(2)
-    .max(25)
-    .nullable(),
-  bio: z.string().min(60).max(300).nullable(),
-  avatar: z.union([
+const userProfilePayloadSchema = userProfileEntitySchema
+  .omit({ cdate: true, mdate: true, id: true })
+  .merge(
     z.object({
-      type: z.literal(`noop`),
+      avatar: z.union([
+        z.object({
+          type: z.literal(`noop`),
+        }),
+        z.object({
+          type: z.literal(`update`),
+          data: z.string().base64(),
+        }),
+        z.object({
+          type: z.literal(`remove`),
+        }),
+      ]),
     }),
-    z.object({
-      type: z.literal(`update`),
-      data: z.string().base64(),
-    }),
-    z.object({
-      type: z.literal(`remove`),
-    }),
-  ]),
-  githubUrl: z.string().url().nullable(),
-  fbUrl: z.string().url().nullable(),
-  linkedInUrl: z.string().url().nullable(),
-  blogUrl: z.string().url().nullable(),
-  twitterUrl: z.string().url().nullable(),
-});
+  );
 
-const UserProfilePayload = (payload: unknown): z.infer<typeof schema> => {
+type UserProfilePayload = z.infer<typeof userProfilePayloadSchema>;
+
+const createUserProfilePayload = (payload: unknown): UserProfilePayload => {
   try {
-    const values = schema.parse(payload);
-
+    const values = userProfilePayloadSchema.parse(payload);
     return values;
   } catch (err) {
     throw errors.invalidArg(`Passed payload is invalid`);
   }
 };
 
-export { UserProfilePayload };
+export {
+  UserProfilePayload,
+  userProfilePayloadSchema,
+  createUserProfilePayload,
+};
