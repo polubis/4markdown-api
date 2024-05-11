@@ -17,7 +17,9 @@ const UsersService = {
   updateProfile: async (payload: unknown, context: https.CallableContext) => {
     const auth = AuthService.authorize(context);
     const userProfilePayload = createUserProfilePayload(payload);
-    const userProfilesCollection = admin.firestore().collection(`users`);
+    const userProfilesCollection = admin
+      .firestore()
+      .collection(`users-profiles`);
     const userProfileDocument = await userProfilesCollection.doc(auth.uid);
     const userProfile = await userProfileDocument.get();
 

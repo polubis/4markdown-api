@@ -5,6 +5,7 @@ const avatarVariantSchema = z.object({
   h: z.number(),
   w: z.number(),
   src: z.string().url(),
+  ext: z.enum([`webp`]),
 });
 
 const userProfileEntitySchema = z.object({
@@ -40,7 +41,7 @@ const createUserProfileEntity = (payload: unknown): UserProfileEntity => {
     const values = userProfileEntitySchema.parse(payload);
     return values;
   } catch (err) {
-    throw errors.invalidArg(`Passed payload is invalid`);
+    throw errors.invalidArg(`Passed UserProfileEntity payload is invalid`);
   }
 };
 

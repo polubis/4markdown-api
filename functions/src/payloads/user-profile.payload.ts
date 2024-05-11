@@ -28,7 +28,9 @@ const createUserProfilePayload = (payload: unknown): UserProfilePayload => {
     const values = userProfilePayloadSchema.parse(payload);
     return values;
   } catch (err) {
-    throw errors.invalidArg(`Passed payload is invalid`);
+    throw errors.invalidArg(
+      `UserProfilePayload is not typeof UserProfilePayload`,
+    );
   }
 };
 
