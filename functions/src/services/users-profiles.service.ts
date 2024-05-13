@@ -118,7 +118,7 @@ const rescaleAndUploadAvatars = async (uid: string, data: string) => {
 };
 
 const UsersProfilesService = {
-  updateProfile: async (payload: unknown, context: https.CallableContext) => {
+  updateYours: async (payload: unknown, context: https.CallableContext) => {
     const auth = AuthService.authorize(context);
     const userProfilePayload = UserProfilePayload(payload);
     const userProfilesCollection = admin

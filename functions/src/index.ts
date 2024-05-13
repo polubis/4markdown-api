@@ -224,6 +224,8 @@ export const uploadImage = onCall(
   },
 );
 
-export const updateUserProfile = onCall(async (payload: unknown, context) => {
-  return await UsersProfilesService.updateProfile(payload, context);
-});
+export const updateYourUserProfile = onCall(
+  async (payload: unknown, context) => {
+    return await UsersProfilesService.updateYours(payload, context);
+  },
+);
