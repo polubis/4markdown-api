@@ -20,6 +20,7 @@ import { DocsService } from './services/docs.service';
 import { AuthService } from './services/auth.service';
 import { UsersService } from './services/users.service';
 import { UploadImagePayload } from './payloads/images.payload';
+import { UsersProfilesService } from './services/users-profiles.service';
 
 admin.initializeApp();
 
@@ -224,5 +225,5 @@ export const uploadImage = onCall(
 );
 
 export const updateUserProfile = onCall(async (payload: unknown, context) => {
-  return await UsersService.updateProfile(payload, context);
+  return await UsersProfilesService.updateProfile(payload, context);
 });
