@@ -1,13 +1,13 @@
-import { ZodSchema, z } from 'zod';
+import { AnyZodObject, z } from 'zod';
 import { errors } from '../core/errors';
 
-const createSchema = <Schema extends ZodSchema>(
+const createSchema = <Schema extends AnyZodObject>(
   schema: Schema,
   name: string,
 ) => {
   const parser = (payload: unknown): z.infer<Schema> => {
     try {
-      const values = schema.parse(payload);
+      const values = schema.strict().parse(payload);
       return values;
     } catch (err) {
       throw errors.invalidSchema(name);

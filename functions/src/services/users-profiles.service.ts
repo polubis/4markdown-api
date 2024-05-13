@@ -61,6 +61,62 @@ const getBucket = async () => {
   return bucket;
 };
 
+const rescaleAndUploadAvatars = async (uid: string, data: string) => {
+  const avatar = ImageEntity(data);
+
+  if (avatar.extension === `gif`) {
+    throw errors.invalidArg(`Invalid extension of avatar`);
+  }
+
+  if (avatar.size > 4) {
+    throw errors.invalidArg(`Invalid avatar size`);
+  }
+
+  const bucket = await getBucket();
+
+  const rescalePromises: Promise<Buffer>[] = [];
+
+  sizes.forEach(({ h, w }) => {
+    rescalePromises.push(
+      sharp(avatar.buffer).resize(w, h).webp({ quality: 70 }).toBuffer(),
+    );
+  });
+
+  const rescaleBuffers = await Promise.all(rescalePromises);
+  const savePromises: Promise<void>[] = [];
+  const paths: string[] = [];
+
+  sizes.forEach(({ size }, idx) => {
+    const path = `avatars/${uid}/${size}`;
+    const file = bucket.file(path);
+    const buffer = rescaleBuffers[idx];
+
+    savePromises.push(
+      file.save(buffer, {
+        contentType: `webp`,
+      }),
+    );
+    paths.push(path);
+  });
+
+  await Promise.all(savePromises);
+
+  return sizes.reduce<NonNullable<IUserProfileEntityAvatar>>(
+    (acc, { size, w, h }, idx) => ({
+      ...acc,
+      [size]: {
+        h,
+        w,
+        ext: `webp`,
+        src: `https://firebasestorage.googleapis.com/v0/b/${
+          bucket.name
+        }/o/${encodeURIComponent(paths[idx])}?alt=media`,
+      },
+    }),
+    {} as NonNullable<IUserProfileEntityAvatar>,
+  );
+};
+
 const UsersProfilesService = {
   updateProfile: async (payload: unknown, context: https.CallableContext) => {
     const auth = AuthService.authorize(context);
@@ -71,62 +127,6 @@ const UsersProfilesService = {
     const userProfileDocument = await userProfilesCollection.doc(auth.uid);
     const userProfile = await userProfileDocument.get();
 
-    const manageAvatar = async (data: string) => {
-      const avatar = ImageEntity(data);
-
-      if (avatar.extension === `gif`) {
-        throw errors.invalidArg(`Invalid extension of avatar`);
-      }
-
-      if (avatar.size > 4) {
-        throw errors.invalidArg(`Invalid avatar size`);
-      }
-
-      const bucket = await getBucket();
-
-      const rescalePromises: Promise<Buffer>[] = [];
-
-      sizes.forEach(({ h, w }) => {
-        rescalePromises.push(
-          sharp(avatar.buffer).resize(w, h).webp({ quality: 70 }).toBuffer(),
-        );
-      });
-
-      const rescaleBuffers = await Promise.all(rescalePromises);
-      const savePromises: Promise<void>[] = [];
-      const paths: string[] = [];
-
-      sizes.forEach(({ size }, idx) => {
-        const path = `avatars/${auth.uid}/${size}`;
-        const file = bucket.file(path);
-        const buffer = rescaleBuffers[idx];
-
-        savePromises.push(
-          file.save(buffer, {
-            contentType: `webp`,
-          }),
-        );
-        paths.push(path);
-      });
-
-      await Promise.all(savePromises);
-
-      return sizes.reduce<NonNullable<IUserProfileEntityAvatar>>(
-        (acc, { size, w, h }, idx) => ({
-          ...acc,
-          [size]: {
-            h,
-            w,
-            ext: `webp`,
-            src: `https://firebasestorage.googleapis.com/v0/b/${
-              bucket.name
-            }/o/${encodeURIComponent(paths[idx])}?alt=media`,
-          },
-        }),
-        {} as NonNullable<IUserProfileEntityAvatar>,
-      );
-    };
-
     if (!userProfile.exists) {
       const cdate = new Date().toISOString();
 
@@ -135,7 +135,10 @@ const UsersProfilesService = {
         cdate,
         avatar:
           userProfilePayload.avatar.type === `update`
-            ? await manageAvatar(userProfilePayload.avatar.data)
+            ? await rescaleAndUploadAvatars(
+                auth.uid,
+                userProfilePayload.avatar.data,
+              )
             : null,
         mdate: cdate,
         displayName: userProfilePayload.displayName,
@@ -173,7 +176,10 @@ const UsersProfilesService = {
           ? currentUserProfileEntity.avatar
           : userProfilePayload.avatar.type === `remove`
           ? null
-          : await manageAvatar(userProfilePayload.avatar.data),
+          : await rescaleAndUploadAvatars(
+              auth.uid,
+              userProfilePayload.avatar.data,
+            ),
       displayName: currentUserProfileEntity.displayName,
       bio: userProfilePayload.bio,
       blogUrl: userProfilePayload.blogUrl,
