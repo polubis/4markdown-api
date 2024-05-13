@@ -14,6 +14,7 @@ import {
 } from '../entities/user-profile.entity';
 import { ImageEntity } from '../entities/img.entity';
 import * as sharp from 'sharp';
+import { UserProfileDto } from '../dtos/users-profiles.dto';
 
 const UsersService = {
   updateProfile: async (payload: unknown, context: https.CallableContext) => {
@@ -131,7 +132,17 @@ const UsersService = {
 
       await userProfileDocument.set(userProfileNewEntity);
 
-      return {};
+      return UserProfileDto({
+        id: userProfileNewEntity.id,
+        avatar: userProfileNewEntity.avatar,
+        displayName: userProfileNewEntity.displayName,
+        bio: userProfileNewEntity.bio,
+        blogUrl: userProfileNewEntity.blogUrl,
+        fbUrl: userProfileNewEntity.fbUrl,
+        githubUrl: userProfileNewEntity.githubUrl,
+        twitterUrl: userProfileNewEntity.twitterUrl,
+        linkedInUrl: userProfileNewEntity.linkedInUrl,
+      });
     }
 
     const currentUserProfileEntity = userProfile.data();
@@ -173,7 +184,17 @@ const UsersService = {
 
     await userProfileDocument.set(userProfileNewEntity);
 
-    return {};
+    return UserProfileDto({
+      id: userProfileNewEntity.id,
+      avatar: userProfileNewEntity.avatar,
+      displayName: userProfileNewEntity.displayName,
+      bio: userProfileNewEntity.bio,
+      blogUrl: userProfileNewEntity.blogUrl,
+      fbUrl: userProfileNewEntity.fbUrl,
+      githubUrl: userProfileNewEntity.githubUrl,
+      twitterUrl: userProfileNewEntity.twitterUrl,
+      linkedInUrl: userProfileNewEntity.linkedInUrl,
+    });
   },
   uploadImage: async (
     payload: UploadImagePayload,
