@@ -28,7 +28,6 @@ const schema = UserProfileEntity.schema
       ]),
     }),
   );
-
 type IUserProfilePayload = z.infer<typeof schema>;
 
 const UserProfilePayload = createSchema(schema, `UserProfilePayload`);
