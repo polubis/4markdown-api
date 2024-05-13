@@ -35,7 +35,16 @@ const schema = z.object({
 });
 
 type IUserProfileEntity = z.infer<typeof schema>;
+type IUserProfileAvatarSizeVariant = keyof NonNullable<
+  IUserProfileEntity['avatar']
+>;
+type IUserProfileEntityAvatar = IUserProfileEntity['avatar'];
 
 const UserProfileEntity = createSchema(schema, `UserProfileEntity`);
 
-export { UserProfileEntity, IUserProfileEntity };
+export {
+  UserProfileEntity,
+  IUserProfileEntity,
+  IUserProfileEntityAvatar,
+  IUserProfileAvatarSizeVariant,
+};

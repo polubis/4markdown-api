@@ -12,7 +12,7 @@ const schema = UserProfileEntity.schema
         }),
         z.object({
           type: z.literal(`update`),
-          data: z.string().base64(),
+          data: z.string(),
         }),
         z.object({
           type: z.literal(`remove`),

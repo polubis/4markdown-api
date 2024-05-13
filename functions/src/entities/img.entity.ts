@@ -36,7 +36,7 @@ const decode = (base64: string): IImageEntity => {
 
 const ImageEntity = (image: unknown) => {
   try {
-    const base64 = z.string().base64().parse(image);
+    const base64 = z.string().parse(image);
     return decode(base64);
   } catch (err) {
     throw errors.invalidSchema(`ImageEntity`);
