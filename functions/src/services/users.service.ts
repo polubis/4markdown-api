@@ -140,11 +140,28 @@ const UsersService = {
       throw errors.invalidSchema(UserProfileEntity.name);
     }
 
+    if (userProfilePayload.avatar.type === `remove`) {
+      const storage = admin.storage();
+      const bucket = storage.bucket();
+      const [bucketExists] = await bucket.exists();
+
+      if (!bucketExists) {
+        throw errors.internal(`Cannot find bucket for avatars`);
+      }
+
+      await bucket.file(`avatars/${auth.uid}`).delete();
+    }
+
     const userProfileNewEntity = UserProfileEntity({
       id: currentUserProfileEntity.id,
       cdate: currentUserProfileEntity.cdate,
       mdate: new Date().toISOString(),
-      avatar: null,
+      avatar:
+        userProfilePayload.avatar.type === `noop`
+          ? currentUserProfileEntity.avatar
+          : userProfilePayload.avatar.type === `remove`
+          ? null
+          : await manageAvatar(userProfilePayload.avatar.data),
       displayName: currentUserProfileEntity.displayName,
       bio: userProfilePayload.bio,
       blogUrl: userProfilePayload.blogUrl,
