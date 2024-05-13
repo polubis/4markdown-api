@@ -118,7 +118,28 @@ const rescaleAndUploadAvatars = async (uid: string, data: string) => {
 };
 
 const UsersProfilesService = {
-  updateYours: async (payload: unknown, context: https.CallableContext) => {
+  getYour: async (
+    context: https.CallableContext,
+  ): Promise<IUserProfileDto | null> => {
+    const auth = AuthService.authorize(context);
+    const userProfilesCollection = admin
+      .firestore()
+      .collection(`users-profiles`);
+    const userProfileDocument = await userProfilesCollection.doc(auth.uid);
+    const userProfile = await userProfileDocument.get();
+
+    if (!userProfile.exists) {
+      return null;
+    }
+
+    const userProfileEntity = UserProfileEntity(userProfile.data());
+
+    return createProfileDto(userProfileEntity);
+  },
+  updateYour: async (
+    payload: unknown,
+    context: https.CallableContext,
+  ): Promise<IUserProfileDto> => {
     const auth = AuthService.authorize(context);
     const userProfilePayload = UserProfilePayload(payload);
     const userProfilesCollection = admin
