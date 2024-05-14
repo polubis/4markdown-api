@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { createSchema } from '../validation/create-schema';
-
-const noEdgeSpacesRgx = /^\S(.*\S)?$/;
+import { dateRgx, noEdgeSpacesRgx, usernameRgx } from '../validation/regex';
 
 const avatarVariantSchema = z.object({
   h: z.number(),
@@ -13,7 +12,7 @@ const avatarVariantSchema = z.object({
 const schema = z.object({
   displayName: z
     .string()
-    .regex(/^[a-zA-Z0-9_-]+$/)
+    .regex(usernameRgx)
     .min(2)
     .max(25)
     .regex(noEdgeSpacesRgx)
@@ -33,8 +32,8 @@ const schema = z.object({
   blogUrl: z.string().url().regex(noEdgeSpacesRgx).nullable(),
   twitterUrl: z.string().url().regex(noEdgeSpacesRgx).nullable(),
   id: z.string().uuid(),
-  cdate: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/),
-  mdate: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/),
+  cdate: z.string().regex(dateRgx),
+  mdate: z.string().regex(dateRgx),
 });
 
 type IUserProfileEntity = z.infer<typeof schema>;

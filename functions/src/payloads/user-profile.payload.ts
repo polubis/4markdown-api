@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { createSchema } from '../validation/create-schema';
 import { UserProfileEntity } from '../entities/user-profile.entity';
+import { base64Rgx } from '../validation/regex';
 
 const schema = UserProfileEntity.schema
   .pick({
@@ -20,16 +21,13 @@ const schema = UserProfileEntity.schema
         }),
         z.object({
           type: z.literal(`update`),
-          data: z
-            .string()
-            .regex(
-              /^\s*data:([a-zA-Z]+\/[a-zA-Z]+)?(;base64)?,[a-zA-Z0-9+/]+={0,2}\s*$/,
-            ),
+          data: z.string().regex(base64Rgx),
         }),
         z.object({
           type: z.literal(`remove`),
         }),
       ]),
+      cdate: z.string().nullable(),
     }),
   );
 type IUserProfilePayload = z.infer<typeof schema>;
