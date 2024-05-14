@@ -27,7 +27,6 @@ const schema = UserProfileEntity.schema
           type: z.literal(`remove`),
         }),
       ]),
-      cdate: z.string().nullable(),
     }),
   );
 type IUserProfilePayload = z.infer<typeof schema>;
