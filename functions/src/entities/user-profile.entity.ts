@@ -30,8 +30,8 @@ const schema = z.object({
   blogUrl: z.string().url().nullable(),
   twitterUrl: z.string().url().nullable(),
   id: z.string().uuid(),
-  cdate: z.date(),
-  mdate: z.date(),
+  cdate: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/),
+  mdate: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/),
 });
 
 type IUserProfileEntity = z.infer<typeof schema>;
