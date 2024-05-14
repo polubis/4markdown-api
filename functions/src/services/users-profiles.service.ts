@@ -111,6 +111,7 @@ const rescaleAndUploadAvatars = async (uid: string, data: string) => {
         src: `https://firebasestorage.googleapis.com/v0/b/${
           bucket.name
         }/o/${encodeURIComponent(paths[idx])}?alt=media`,
+        id: uuid(),
       },
     }),
     {} as NonNullable<IUserProfileEntityAvatar>,

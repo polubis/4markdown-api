@@ -3,6 +3,7 @@ import { createSchema } from '../validation/create-schema';
 import { dateRgx, noEdgeSpacesRgx, usernameRgx } from '../validation/regex';
 
 const avatarVariantSchema = z.object({
+  id: z.string().uuid(),
   h: z.number(),
   w: z.number(),
   src: z.string().url(),
