@@ -20,7 +20,11 @@ const schema = UserProfileEntity.schema
         }),
         z.object({
           type: z.literal(`update`),
-          data: z.string(),
+          data: z
+            .string()
+            .regex(
+              /^\s*data:([a-zA-Z]+\/[a-zA-Z]+)?(;base64)?,[a-zA-Z0-9+/]+={0,2}\s*$/,
+            ),
         }),
         z.object({
           type: z.literal(`remove`),
