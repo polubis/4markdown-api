@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import { createSchema } from '../validation/create-schema';
 
+const noEdgeSpacesRgx = /^\s+|\s+$/;
+
 const avatarVariantSchema = z.object({
   h: z.number(),
   w: z.number(),
@@ -14,7 +16,7 @@ const schema = z.object({
     .regex(/^[a-zA-Z0-9_-]+$/)
     .min(2)
     .max(25)
-    .regex(/^\s+|\s+$/)
+    .regex(noEdgeSpacesRgx)
     .nullable(),
   avatar: z
     .object({
@@ -24,37 +26,12 @@ const schema = z.object({
       lg: avatarVariantSchema,
     })
     .nullable(),
-  bio: z
-    .string()
-    .min(60)
-    .max(300)
-    .regex(/^\s+|\s+$/)
-    .nullable(),
-  githubUrl: z
-    .string()
-    .url()
-    .regex(/^\s+|\s+$/)
-    .nullable(),
-  fbUrl: z
-    .string()
-    .url()
-    .regex(/^\s+|\s+$/)
-    .nullable(),
-  linkedInUrl: z
-    .string()
-    .url()
-    .regex(/^\s+|\s+$/)
-    .nullable(),
-  blogUrl: z
-    .string()
-    .url()
-    .regex(/^\s+|\s+$/)
-    .nullable(),
-  twitterUrl: z
-    .string()
-    .url()
-    .regex(/^\s+|\s+$/)
-    .nullable(),
+  bio: z.string().min(60).max(300).regex(noEdgeSpacesRgx).nullable(),
+  githubUrl: z.string().url().regex(noEdgeSpacesRgx).nullable(),
+  fbUrl: z.string().url().regex(noEdgeSpacesRgx).nullable(),
+  linkedInUrl: z.string().url().regex(noEdgeSpacesRgx).nullable(),
+  blogUrl: z.string().url().regex(noEdgeSpacesRgx).nullable(),
+  twitterUrl: z.string().url().regex(noEdgeSpacesRgx).nullable(),
   id: z.string().uuid(),
   cdate: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/),
   mdate: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/),
