@@ -11,6 +11,7 @@ const schema = UserProfileEntity.schema.pick({
   linkedInUrl: true,
   blogUrl: true,
   fbUrl: true,
+  twitterUrl: true,
 });
 
 type IUserProfileDto = z.infer<typeof schema>;
