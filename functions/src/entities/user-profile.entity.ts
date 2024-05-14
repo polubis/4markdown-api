@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { createSchema } from '../validation/create-schema';
 
-const noEdgeSpacesRgx = /^\s+|\s+$/;
+const noEdgeSpacesRgx = /^\S(.*\S)?$/;
 
 const avatarVariantSchema = z.object({
   h: z.number(),
