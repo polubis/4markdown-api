@@ -185,7 +185,15 @@ const UsersProfilesService = {
     if (userProfilePayload.avatar.type === `remove`) {
       const bucket = await getBucket();
 
-      await bucket.file(`avatars/${auth.uid}`).delete();
+      const deletePromises: Promise<unknown>[] = [];
+
+      sizes.forEach((size) => {
+        deletePromises.push(
+          bucket.file(`avatars/${auth.uid}/${size}`).delete(),
+        );
+      });
+
+      await Promise.all(deletePromises);
     }
 
     const userProfileNewEntity = UserProfileEntity({
