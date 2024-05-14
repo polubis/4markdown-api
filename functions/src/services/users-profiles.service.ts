@@ -187,7 +187,7 @@ const UsersProfilesService = {
 
       const deletePromises: Promise<unknown>[] = [];
 
-      sizes.forEach((size) => {
+      sizes.forEach(({ size }) => {
         deletePromises.push(
           bucket.file(`avatars/${auth.uid}/${size}`).delete(),
         );
