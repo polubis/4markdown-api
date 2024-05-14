@@ -11,6 +11,7 @@ const createSchema = <Schema extends AnyZodObject>(
       const values = schema.strict().parse(payload);
       return values;
     } catch (err) {
+      logger.error(`Error occured in ${name}`);
       logger.error(err);
       throw errors.invalidSchema(name);
     }
