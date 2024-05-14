@@ -209,7 +209,7 @@ const UsersProfilesService = {
               auth.uid,
               userProfilePayload.avatar.data,
             ),
-      displayName: currentUserProfileEntity.displayName,
+      displayName: userProfilePayload.displayName,
       bio: userProfilePayload.bio,
       blogUrl: userProfilePayload.blogUrl,
       fbUrl: userProfilePayload.fbUrl,
