@@ -87,7 +87,7 @@ const rescaleAndUploadAvatars = async (uid: string, data: string) => {
   const paths: string[] = [];
 
   sizes.forEach(({ size }, idx) => {
-    const path = `avatars/${uid}/${uuid()}/${size}`;
+    const path = `avatars/${uid}/${size}`;
     const file = bucket.file(path);
     const buffer = rescaleBuffers[idx];
 
@@ -184,10 +184,11 @@ const UsersProfilesService = {
 
     if (userProfilePayload.avatar.type === `remove`) {
       const bucket = await getBucket();
-      const [files] = await bucket.getFiles();
-      const deletePromises = files.map((file) => file.delete());
+      const deletePromises = sizes.map(({ size }) =>
+        bucket.file(`avatars/${auth.uid}/${size}`).delete(),
+      );
 
-      await Promise.all(deletePromises);
+      await deletePromises;
     }
 
     const userProfileNewEntity = UserProfileEntity({
