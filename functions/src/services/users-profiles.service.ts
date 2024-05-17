@@ -3,7 +3,10 @@ import { errors } from '../core/errors';
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
 import { AuthService } from './auth.service';
-import { UserProfilePayload } from '../payloads/user-profile.payload';
+import {
+  IUserProfilePayload,
+  UserProfilePayload,
+} from '../payloads/user-profile.payload';
 import {
   IUserProfileEntity,
   IUserProfileEntityAvatar,
@@ -11,7 +14,8 @@ import {
 } from '../entities/user-profile.entity';
 import { ImageEntity } from '../entities/img.entity';
 import * as sharp from 'sharp';
-import { IUserProfileDto, UserProfileDto } from '../dtos/users-profiles.dto';
+import { IUserProfileDto } from '../dtos/users-profiles.dto';
+import { Id } from '../entities/general';
 
 const sizes = [
   {
@@ -36,18 +40,17 @@ const sizes = [
   },
 ] as const;
 
-const createProfileDto = (e: IUserProfileEntity): IUserProfileDto =>
-  UserProfileDto({
-    id: e.id,
-    avatar: e.avatar,
-    displayName: e.displayName,
-    bio: e.bio,
-    blogUrl: e.blogUrl,
-    fbUrl: e.fbUrl,
-    githubUrl: e.githubUrl,
-    twitterUrl: e.twitterUrl,
-    linkedInUrl: e.linkedInUrl,
-  });
+const createProfileDtoShape = (e: IUserProfileEntity): IUserProfileDto => ({
+  id: e.id,
+  avatar: e.avatar,
+  displayName: e.displayName,
+  bio: e.bio,
+  blogUrl: e.blogUrl,
+  fbUrl: e.fbUrl,
+  githubUrl: e.githubUrl,
+  twitterUrl: e.twitterUrl,
+  linkedInUrl: e.linkedInUrl,
+});
 
 const getBucket = async () => {
   const storage = admin.storage();
@@ -118,6 +121,28 @@ const rescaleAndUploadAvatars = async (uid: string, data: string) => {
   );
 };
 
+const checkIfDisplayNameIsTaken = async (
+  uid: Id,
+  displayName: IUserProfilePayload['displayName'],
+  collection: admin.firestore.CollectionReference<admin.firestore.DocumentData>,
+): Promise<void> => {
+  if (displayName === null) return;
+
+  const snapshot = await collection.get();
+
+  if (snapshot.empty) return;
+
+  snapshot.forEach((doc) => {
+    if (doc.id === uid) return;
+
+    const data = doc.data() as IUserProfileEntity;
+
+    if (data.displayName === displayName) {
+      throw errors.exists(`This display name is already taken by other user`);
+    }
+  });
+};
+
 const UsersProfilesService = {
   getYour: async (
     context: https.CallableContext,
@@ -133,9 +158,9 @@ const UsersProfilesService = {
       return null;
     }
 
-    const userProfileEntity = UserProfileEntity(userProfile.data());
+    const userProfileEntity = userProfile.data() as IUserProfileEntity;
 
-    return createProfileDto(userProfileEntity);
+    return createProfileDtoShape(userProfileEntity);
   },
   updateYour: async (
     payload: unknown,
@@ -146,6 +171,13 @@ const UsersProfilesService = {
     const userProfilesCollection = admin
       .firestore()
       .collection(`users-profiles`);
+
+    await checkIfDisplayNameIsTaken(
+      auth.uid,
+      userProfilePayload.displayName,
+      userProfilesCollection,
+    );
+
     const userProfileDocument = await userProfilesCollection.doc(auth.uid);
     const userProfile = await userProfileDocument.get();
 
@@ -174,7 +206,7 @@ const UsersProfilesService = {
 
       await userProfileDocument.set(userProfileNewEntity);
 
-      return createProfileDto(userProfileNewEntity);
+      return createProfileDtoShape(userProfileNewEntity);
     }
 
     const currentUserProfileEntity = userProfile.data();
@@ -216,7 +248,7 @@ const UsersProfilesService = {
 
     await userProfileDocument.set(userProfileNewEntity);
 
-    return createProfileDto(userProfileNewEntity);
+    return createProfileDtoShape(userProfileNewEntity);
   },
 };
 
