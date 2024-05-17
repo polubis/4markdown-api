@@ -20,6 +20,7 @@ import { DocsService } from './services/docs.service';
 import { AuthService } from './services/auth.service';
 import { UsersService } from './services/users.service';
 import { UploadImagePayload } from './payloads/images.payload';
+import { UsersProfilesService } from './services/users-profiles.service';
 
 admin.initializeApp();
 
@@ -222,3 +223,13 @@ export const uploadImage = onCall(
     return await UsersService.uploadImage(payload, context);
   },
 );
+
+export const updateYourUserProfile = onCall(
+  async (payload: unknown, context) => {
+    return await UsersProfilesService.updateYour(payload, context);
+  },
+);
+
+export const getYourUserProfile = onCall(async (_, context) => {
+  return await UsersProfilesService.getYour(context);
+});

@@ -25,4 +25,7 @@ export const errors = {
       `[${errors.outOfDateEntry.name}][${message}]`,
     );
   },
+  invalidSchema: (name: string): never => {
+    throw new HttpsError(`invalid-argument`, `Schema is not typeof ${name}`);
+  },
 };
