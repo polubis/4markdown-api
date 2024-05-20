@@ -2,6 +2,13 @@ import { BackupPayload, IBackupPayload } from '../payloads/backup.payload';
 import { errors } from '../core/errors';
 import { firestore, storage } from 'firebase-admin';
 import { z } from 'zod';
+import { logger } from 'firebase-functions/v1';
+
+type Bucket = ReturnType<ReturnType<typeof storage>['bucket']>;
+type BucketsPair = {
+  source: Bucket;
+  backup: Bucket;
+};
 
 const createBackupId = (): string => {
   const date = new Date();
@@ -60,7 +67,18 @@ const getDatabase = async (): Promise<DatabaseData> => {
   return data;
 };
 
-const createOrGetBucket = async () => {
+const getSourceBucket = async (): Promise<Bucket> => {
+  const bucket = storage().bucket();
+  const [exists] = await bucket.exists();
+
+  if (!exists) {
+    throw errors.invalidArg(`There is no bucket for backups`);
+  }
+
+  return bucket;
+};
+
+const getBackupBucket = async (): Promise<Bucket> => {
   const bucket = storage().bucket(
     z.string().parse(process.env.BACKUP_BUCKET_NAME),
   );
@@ -71,6 +89,24 @@ const createOrGetBucket = async () => {
   }
 
   return bucket;
+};
+
+const createDatabaseBackup = async (buckets: BucketsPair): Promise<void> => {
+  const data = await getDatabase();
+  const file = buckets.backup.file(`${createBackupId()}/db`);
+
+  await file.save(JSON.stringify(data), {
+    contentType: `application/json`,
+  });
+};
+
+const createStorageBackup = async (buckets: BucketsPair): Promise<void> => {
+  const [files] = await buckets.source.getFiles();
+
+  for (const file of files) {
+    logger.info(file.name);
+    // await file.copy(buckets.backup.file(file.name));
+  }
 };
 
 const BackupsService = {
@@ -85,16 +121,20 @@ const BackupsService = {
       throw errors.invalidArg(`Wrong token`);
     }
 
-    const data = await getDatabase();
-    const bucket = await createOrGetBucket();
+    const [sourceBucket, backupBucket] = await Promise.all([
+      getSourceBucket(),
+      getBackupBucket(),
+    ]);
 
-    const file = bucket.file(`${createBackupId()}/db`);
+    const buckets: BucketsPair = {
+      source: sourceBucket,
+      backup: backupBucket,
+    };
 
-    await file.save(JSON.stringify(data), {
-      contentType: `application/json`,
-    });
-
-    return Promise.resolve();
+    await Promise.all([
+      createDatabaseBackup(buckets),
+      createStorageBackup(buckets),
+    ]);
   },
 };
 
