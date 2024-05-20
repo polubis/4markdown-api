@@ -3,6 +3,19 @@ import { errors } from '../core/errors';
 import { firestore, storage } from 'firebase-admin';
 import { z } from 'zod';
 
+const createBackupId = (): string => {
+  const date = new Date();
+  const day = String(date.getDate()).padStart(2, `0`);
+  const month = String(date.getMonth() + 1).padStart(2, `0`);
+  const year = date.getFullYear();
+
+  const hours = String(date.getHours()).padStart(2, `0`);
+  const minutes = String(date.getMinutes()).padStart(2, `0`);
+  const seconds = String(date.getSeconds()).padStart(2, `0`);
+
+  return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+};
+
 const collectionIdSchema = z.enum([`docs`, `images`, `users-profiles`]);
 
 type CollectionId = z.infer<typeof collectionIdSchema>;
@@ -25,9 +38,7 @@ const getDatabase = async (): Promise<DatabaseData> => {
     const collectionId = collectionIdSchema.parse(collection.id);
 
     snap.docs.forEach((doc) => {
-      data[collectionId] = {
-        [doc.id]: doc.data(),
-      };
+      data[collectionId][doc.id] = doc.data();
     });
   }
 
@@ -62,8 +73,7 @@ const BackupsService = {
     const data = await getDatabase();
     const bucket = await createOrGetBucket();
 
-    const backupId = new Date().toISOString();
-    const file = bucket.file(`${backupId}/db`);
+    const file = bucket.file(`${createBackupId()}/db`);
 
     await file.save(JSON.stringify(data), {
       contentType: `application/json`,
