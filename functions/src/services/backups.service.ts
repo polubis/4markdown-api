@@ -91,22 +91,32 @@ const getBackupBucket = async (): Promise<Bucket> => {
   return bucket;
 };
 
-const createDatabaseBackup = async (buckets: BucketsPair): Promise<void> => {
+const createDatabaseBackup = async (
+  backupId: string,
+  buckets: BucketsPair,
+): Promise<void> => {
   const data = await getDatabase();
-  const file = buckets.backup.file(`${createBackupId()}/db`);
+  const file = buckets.backup.file(`${backupId}/db/data`);
 
   await file.save(JSON.stringify(data), {
     contentType: `application/json`,
   });
 };
 
-const createStorageBackup = async (buckets: BucketsPair): Promise<void> => {
-  const [files] = await buckets.source.getFiles();
+const createStorageBackup = async (
+  backupId: string,
+  buckets: BucketsPair,
+): Promise<void> => {
+  const [sourceFiles] = await buckets.source.getFiles();
 
   const copyPromises: Promise<CopyResponse>[] = [];
 
-  for (const file of files) {
-    copyPromises.push(file.copy(buckets.backup.file(file.name)));
+  for (const sourceFile of sourceFiles) {
+    copyPromises.push(
+      sourceFile.copy(
+        `${backupId}/storage/${buckets.backup.file(sourceFile.name).name}`,
+      ),
+    );
   }
 
   await Promise.all(copyPromises);
@@ -124,6 +134,8 @@ const BackupsService = {
       throw errors.invalidArg(`Wrong token`);
     }
 
+    const backupId = createBackupId();
+
     const [sourceBucket, backupBucket] = await Promise.all([
       getSourceBucket(),
       getBackupBucket(),
@@ -135,8 +147,8 @@ const BackupsService = {
     };
 
     await Promise.all([
-      createDatabaseBackup(buckets),
-      createStorageBackup(buckets),
+      createDatabaseBackup(backupId, buckets),
+      createStorageBackup(backupId, buckets),
     ]);
   },
 };
