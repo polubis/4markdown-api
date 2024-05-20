@@ -113,9 +113,7 @@ const createStorageBackup = async (
 
   for (const sourceFile of sourceFiles) {
     copyPromises.push(
-      sourceFile.copy(
-        `${backupId}/storage/${buckets.backup.file(sourceFile.name).name}`,
-      ),
+      sourceFile.copy(`${backupId}/storage/${sourceFile.name}`),
     );
   }
 
