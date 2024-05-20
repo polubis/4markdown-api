@@ -1,6 +1,6 @@
 import { BackupPayload, IBackupPayload } from '../payloads/backup.payload';
 import { errors } from '../core/errors';
-import { firestore } from 'firebase-admin';
+import { firestore, storage } from 'firebase-admin';
 import { z } from 'zod';
 
 const collectionIdSchema = z.enum([`docs`, `images`, `users-profiles`]);
@@ -9,10 +9,8 @@ type CollectionId = z.infer<typeof collectionIdSchema>;
 
 type DatabaseData = Record<CollectionId, Record<string, unknown>>;
 
-const getDatabase = async (
-  instance: firestore.Firestore,
-): Promise<DatabaseData> => {
-  const collections = await instance.listCollections();
+const getDatabase = async (db: firestore.Firestore): Promise<DatabaseData> => {
+  const collections = await db.listCollections();
 
   const data: DatabaseData = {
     docs: {},
@@ -47,13 +45,21 @@ const BackupsService = {
       throw errors.invalidArg(`Wrong token`);
     }
 
-    const instance = firestore();
+    const data = await getDatabase(firestore());
 
-    try {
-      const databaseData = await getDatabase(instance);
-    } catch (err) {
-      throw errors.internal(`Problem with database integrity`);
+    const bucket = storage().bucket(`backups`);
+    const [exists] = await bucket.exists();
+    const backupId = new Date().toISOString();
+
+    if (!exists) {
+      await bucket.create();
     }
+
+    const file = bucket.file(`db/${backupId}`);
+
+    file.save(JSON.stringify(data), {
+      contentType: `application/json`,
+    });
 
     return Promise.resolve();
   },
