@@ -49,7 +49,7 @@ export const DocsService = {
     }
   },
   update: async (uid: Id, payload: UpdateDocPayload) => {
-    const name = Doc.createName(payload.name);
+    const name = Doc.createName(payload.name, payload.visibility);
     const docsRepo = DocsRepository(uid);
 
     const docs = await docsRepo.getMy();
@@ -119,7 +119,7 @@ export const DocsService = {
           code: payload.code,
           name,
           id: payload.id,
-          path: Doc.createPath(name),
+          path: Doc.createPath(name, payload.visibility),
           description: Doc.createDescription(payload.description),
           tags,
         };

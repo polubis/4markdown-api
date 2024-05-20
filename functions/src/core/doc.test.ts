@@ -2,19 +2,25 @@ import { Doc } from './doc';
 
 describe(`Doc may be used when: `, () => {
   it(`creates name`, () => {
-    expect(Doc.createName(`Working with Zustand`)).toBe(`Working with Zustand`);
-    expect(() => Doc.createName(`Working-with-Zustand`)).toThrow();
-    expect(Doc.createName(`Test1`)).toBe(`Test1`);
+    expect(Doc.createName(`Working with Zustand`, `private`)).toBe(
+      `Working with Zustand`,
+    );
+    expect(() => Doc.createName(`Working-with-Zustand`, `private`)).toThrow();
+    expect(Doc.createName(`Test1`, `private`)).toBe(`Test1`);
+    expect(() => Doc.createName(`Test1`, `permanent`)).toThrow();
+    expect(Doc.createName(`Test1 other test`, `permanent`)).toBe(
+      `Test1 other test`,
+    );
   });
 
   it(`creates path`, () => {
-    expect(Doc.createPath(`Test siema 3`)).toBe(`/test-siema-3/`);
-    expect(Doc.createPath(`Test 1`)).toBe(`/test-1/`);
-    expect(Doc.createPath(`Test`)).toBe(`/test/`);
-    expect(() => Doc.createPath(`  Test   1    `)).toThrow();
-    expect(() => Doc.createPath(`Working-with-Zustand`)).toThrow();
-    expect(() => Doc.createPath(`docs`)).toThrow();
-    expect(() => Doc.createPath(`doc`)).toThrow();
+    expect(Doc.createPath(`Test siema 3`, `private`)).toBe(`/test-siema-3/`);
+    expect(Doc.createPath(`Test 1`, `private`)).toBe(`/test-1/`);
+    expect(Doc.createPath(`Test`, `private`)).toBe(`/test/`);
+    expect(() => Doc.createPath(`  Test   1    `, `private`)).toThrow();
+    expect(() => Doc.createPath(`Working-with-Zustand`, `private`)).toThrow();
+    expect(Doc.createPath(`docs`, `private`)).toBe(`/docs/`);
+    expect(Doc.createPath(`doc`, `private`)).toBe(`/doc/`);
   });
 
   it(`creates description`, () => {
