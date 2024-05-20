@@ -2,7 +2,7 @@ import { BackupPayload, IBackupPayload } from '../payloads/backup.payload';
 import { errors } from '../core/errors';
 import { firestore, storage } from 'firebase-admin';
 import { z } from 'zod';
-import { logger } from 'firebase-functions/v1';
+import { CopyResponse } from '@google-cloud/storage';
 
 type Bucket = ReturnType<ReturnType<typeof storage>['bucket']>;
 type BucketsPair = {
@@ -103,10 +103,13 @@ const createDatabaseBackup = async (buckets: BucketsPair): Promise<void> => {
 const createStorageBackup = async (buckets: BucketsPair): Promise<void> => {
   const [files] = await buckets.source.getFiles();
 
+  const copyPromises: Promise<CopyResponse>[] = [];
+
   for (const file of files) {
-    logger.info(file.name);
-    // await file.copy(buckets.backup.file(file.name));
+    copyPromises.push(file.copy(buckets.backup.file(file.name)));
   }
+
+  await Promise.all(copyPromises);
 };
 
 const BackupsService = {
