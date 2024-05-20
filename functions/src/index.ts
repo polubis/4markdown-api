@@ -36,7 +36,7 @@ export const createDoc = onCall(async (payload: CreateDocPayload, context) => {
   const cdate = new Date().toISOString();
 
   const field: DocEntityField = {
-    name: Doc.createName(payload.name),
+    name: Doc.createName(payload.name, `private`),
     code,
     cdate,
     mdate: cdate,
