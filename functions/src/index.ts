@@ -21,6 +21,9 @@ import { AuthService } from './services/auth.service';
 import { UsersService } from './services/users.service';
 import { UploadImagePayload } from './payloads/images.payload';
 import { UsersProfilesService } from './services/users-profiles.service';
+import { BackupsService } from './services/backups.service';
+import { Endpoint } from './core/endpoint';
+import { BackupPayload } from './payloads/backup.payload';
 
 admin.initializeApp();
 
@@ -232,4 +235,8 @@ export const updateYourUserProfile = onCall(
 
 export const getYourUserProfile = onCall(async (_, context) => {
   return await UsersProfilesService.getYour(context);
+});
+
+export const createBackup = Endpoint(async (payload) => {
+  return await BackupsService.create(BackupPayload(payload));
 });
