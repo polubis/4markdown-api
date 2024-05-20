@@ -9,7 +9,8 @@ type CollectionId = z.infer<typeof collectionIdSchema>;
 
 type DatabaseData = Record<CollectionId, Record<string, unknown>>;
 
-const getDatabase = async (db: firestore.Firestore): Promise<DatabaseData> => {
+const getDatabase = async (): Promise<DatabaseData> => {
+  const db = firestore();
   const collections = await db.listCollections();
 
   const data: DatabaseData = {
@@ -33,6 +34,17 @@ const getDatabase = async (db: firestore.Firestore): Promise<DatabaseData> => {
   return data;
 };
 
+const createOrGetBucket = async () => {
+  const bucket = storage().bucket(`backups`);
+  const [exists] = await bucket.exists();
+
+  if (!exists) {
+    await bucket.create();
+  }
+
+  return bucket;
+};
+
 const BackupsService = {
   create: async (payload: IBackupPayload): Promise<void> => {
     const backupSetup = { token: process.env.BACKUP_TOKEN };
@@ -45,19 +57,13 @@ const BackupsService = {
       throw errors.invalidArg(`Wrong token`);
     }
 
-    const data = await getDatabase(firestore());
+    const data = await getDatabase();
+    const bucket = await createOrGetBucket();
 
-    const bucket = storage().bucket(`backups`);
-    const [exists] = await bucket.exists();
     const backupId = new Date().toISOString();
-
-    if (!exists) {
-      await bucket.create();
-    }
-
     const file = bucket.file(`db/${backupId}`);
 
-    file.save(JSON.stringify(data), {
+    await file.save(JSON.stringify(data), {
       contentType: `application/json`,
     });
 
