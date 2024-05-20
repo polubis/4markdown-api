@@ -52,7 +52,7 @@ const createOrGetBucket = async () => {
   const [exists] = await bucket.exists();
 
   if (!exists) {
-    await bucket.create();
+    throw errors.invalidArg(`There is no bucket for backups`);
   }
 
   return bucket;
