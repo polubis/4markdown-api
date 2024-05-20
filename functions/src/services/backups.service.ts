@@ -16,7 +16,8 @@ const createBackupId = (): string => {
   return `${day}:${month}:${year}-${hours}:${minutes}:${seconds}`;
 };
 
-const collectionIdSchema = z.enum([`docs`, `images`, `users-profiles`]);
+const COLLECTION_IDS = [`docs`, `images`, `users-profiles`] as const;
+const collectionIdSchema = z.enum(COLLECTION_IDS);
 
 type CollectionId = z.infer<typeof collectionIdSchema>;
 
@@ -26,21 +27,35 @@ const getDatabase = async (): Promise<DatabaseData> => {
   const db = firestore();
   const collections = await db.listCollections();
 
-  const data: DatabaseData = {
-    docs: {},
-    images: {},
-    'users-profiles': {},
-  };
+  const data = COLLECTION_IDS.reduce<DatabaseData>(
+    (acc, id) => ({
+      ...acc,
+      [id]: {},
+    }),
+    {} as DatabaseData,
+  );
+
+  const promises: {
+    collectionId: CollectionId;
+    promise: Promise<firestore.QuerySnapshot<firestore.DocumentData>>;
+  }[] = [];
 
   for (const collection of collections) {
-    const snap = await collection.get();
-
-    const collectionId = collectionIdSchema.parse(collection.id);
-
-    snap.docs.forEach((doc) => {
-      data[collectionId][doc.id] = doc.data();
+    promises.push({
+      collectionId: collectionIdSchema.parse(collection.id),
+      promise: collection.get(),
     });
   }
+
+  const responses = await Promise.all(promises.map(({ promise }) => promise));
+
+  responses.forEach(({ docs }, idx) => {
+    const { collectionId } = promises[idx];
+
+    docs.forEach((doc) => {
+      data[collectionId][doc.id] = doc.data();
+    });
+  });
 
   return data;
 };
