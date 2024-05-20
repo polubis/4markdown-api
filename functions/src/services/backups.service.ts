@@ -35,7 +35,9 @@ const getDatabase = async (): Promise<DatabaseData> => {
 };
 
 const createOrGetBucket = async () => {
-  const bucket = storage().bucket(`backups`);
+  const bucket = storage().bucket(
+    z.string().parse(process.env.BACKUP_BUCKET_NAME),
+  );
   const [exists] = await bucket.exists();
 
   if (!exists) {
