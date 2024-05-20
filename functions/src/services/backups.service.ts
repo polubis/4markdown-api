@@ -61,7 +61,7 @@ const BackupsService = {
     const bucket = await createOrGetBucket();
 
     const backupId = new Date().toISOString();
-    const file = bucket.file(`db/${backupId}`);
+    const file = bucket.file(`${backupId}/db`);
 
     await file.save(JSON.stringify(data), {
       contentType: `application/json`,
