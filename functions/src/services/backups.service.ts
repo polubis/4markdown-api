@@ -4,9 +4,10 @@ import {
   IUseBackupPayload,
 } from '../payloads/backup.payload';
 import { errors } from '../core/errors';
-import { firestore, storage } from 'firebase-admin';
+import { app, firestore, storage } from 'firebase-admin';
 import { z } from 'zod';
 import { CopyResponse } from '@google-cloud/storage';
+import { logger } from 'firebase-functions/v1';
 
 type Bucket = ReturnType<ReturnType<typeof storage>['bucket']>;
 type BucketsPair = {
@@ -245,6 +246,7 @@ const BackupsService = {
     ]);
   },
   use: async (payload: IUseBackupPayload): Promise<void> => {
+    logger.log(app().options.projectId);
     verifySetup(payload.token);
 
     const buckets = await getBucketsPair();
