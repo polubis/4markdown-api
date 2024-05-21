@@ -234,7 +234,7 @@ const clearStorage = async (buckets: BucketsPair): Promise<void> => {
   const deletePromises: Promise<unknown>[] = [];
 
   for (const sourceFile of sourceFiles) {
-    deletePromises.push(sourceFile.delete());
+    deletePromises.push(buckets.source.file(sourceFile.name).delete());
   }
 
   await Promise.all(deletePromises);
