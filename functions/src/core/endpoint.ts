@@ -1,10 +1,11 @@
 import { https } from 'firebase-functions';
 
-type EndpointHandler = (
+type EndpointHandler<TResponse = unknown> = (
   payload: unknown,
   context: https.CallableContext,
-) => Promise<void>;
+) => Promise<TResponse>;
 
-const Endpoint = (handler: EndpointHandler) => https.onCall(handler);
+const Endpoint = <TResponse = unknown>(handler: EndpointHandler<TResponse>) =>
+  https.onCall(handler);
 
 export { Endpoint };
