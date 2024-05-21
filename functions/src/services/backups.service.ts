@@ -37,6 +37,7 @@ const getDatabase = async (): Promise<DatabaseData> => {
   }[] = [];
 
   for (const collection of collections) {
+    data[collection.id] = {};
     promises.push({
       collectionId: collection.id,
       promise: collection.get(),
