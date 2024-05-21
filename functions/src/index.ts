@@ -27,7 +27,7 @@ import {
   CreateBackupPayload,
   UseBackupPayload,
 } from './payloads/backup.payload';
-import { z } from 'zod';
+import { ProjectId } from './models/project-id';
 
 const app = admin.initializeApp();
 
@@ -242,13 +242,15 @@ export const getYourUserProfile = onCall(async (_, context) => {
 });
 
 export const createBackup = Endpoint<void>(async (payload) => {
-  const projectId = z.string().parse(app.options.projectId);
-
-  return await BackupsService.create(projectId, CreateBackupPayload(payload));
+  return await BackupsService.create(
+    ProjectId(app.options.projectId),
+    CreateBackupPayload(payload),
+  );
 });
 
 export const useBackup = Endpoint<void>(async (payload) => {
-  const projectId = z.string().parse(app.options.projectId);
-
-  return await BackupsService.use(projectId, UseBackupPayload(payload));
+  return await BackupsService.use(
+    ProjectId(app.options.projectId),
+    UseBackupPayload(payload),
+  );
 });

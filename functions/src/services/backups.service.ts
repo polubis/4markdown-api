@@ -6,6 +6,7 @@ import {
 import { errors } from '../core/errors';
 import { firestore, storage } from 'firebase-admin';
 import { CopyResponse } from '@google-cloud/storage';
+import { z } from 'zod';
 
 type Bucket = ReturnType<ReturnType<typeof storage>['bucket']>;
 type BucketsPair = {
@@ -229,6 +230,9 @@ const applyBackupToStorage = async (
   await Promise.all(copyPromises);
 };
 
+const ProjectId = (projectId: string | undefined): string =>
+  z.string().parse(projectId);
+
 const clearStorage = async (buckets: BucketsPair): Promise<void> => {
   const [sourceFiles] = await buckets.source.getFiles();
   await Promise.all(sourceFiles.map((file) => file.delete()));
@@ -236,24 +240,27 @@ const clearStorage = async (buckets: BucketsPair): Promise<void> => {
 
 const BackupsService = {
   create: async (
-    projectId: string,
+    projectId: string | undefined,
     payload: ICreateBackupPayload,
   ): Promise<void> => {
     verifySetup(payload.token);
 
     const backupId = createBackupId();
 
-    const buckets = await getBucketsPair(projectId);
+    const buckets = await getBucketsPair(ProjectId(projectId));
 
     await Promise.all([
       createDatabaseBackup(backupId, buckets),
       createStorageBackup(backupId, buckets),
     ]);
   },
-  use: async (projectId: string, payload: IUseBackupPayload): Promise<void> => {
+  use: async (
+    projectId: string | undefined,
+    payload: IUseBackupPayload,
+  ): Promise<void> => {
     verifySetup(payload.token);
 
-    const buckets = await getBucketsPair(projectId);
+    const buckets = await getBucketsPair(ProjectId(projectId));
 
     const [databaseData] = await Promise.all([
       getDatabaseBackupFile(buckets, payload.backupId),
