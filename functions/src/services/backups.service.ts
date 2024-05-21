@@ -162,7 +162,7 @@ const getDatabaseBackupFile = async (
   return databaseData;
 };
 
-const removeDatabase = async (): Promise<void> => {
+const clearDatabase = async (): Promise<void> => {
   const db = firestore();
   const collections = await db.listCollections();
 
@@ -228,6 +228,18 @@ const applyBackupToStorage = async (buckets: BucketsPair): Promise<void> => {
   await Promise.all(copyPromises);
 };
 
+const clearStorage = async (buckets: BucketsPair): Promise<void> => {
+  const [sourceFiles] = await buckets.source.getFiles();
+
+  const deletePromises: Promise<unknown>[] = [];
+
+  for (const sourceFile of sourceFiles) {
+    deletePromises.push(sourceFile.delete());
+  }
+
+  await Promise.all(deletePromises);
+};
+
 const BackupsService = {
   create: async (
     projectId: string,
@@ -251,7 +263,8 @@ const BackupsService = {
 
     const [databaseData] = await Promise.all([
       getDatabaseBackupFile(buckets, payload.backupId),
-      removeDatabase(),
+      clearDatabase(),
+      clearStorage(buckets),
     ]);
 
     await Promise.all([
