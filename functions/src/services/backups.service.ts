@@ -205,8 +205,14 @@ const applyBackupToDatabase = async (
   await Promise.all(restorePromises);
 };
 
-const applyBackupToStorage = async (buckets: BucketsPair): Promise<void> => {
-  const [backupFiles] = await buckets.backup.getFiles();
+const applyBackupToStorage = async (
+  buckets: BucketsPair,
+  backupId: string,
+): Promise<void> => {
+  const [backupFiles] = await buckets.backup.getFiles({
+    delimiter: `/`,
+    prefix: `${backupId}`,
+  });
 
   const copyPromises: Promise<CopyResponse>[] = [];
 
@@ -262,7 +268,7 @@ const BackupsService = {
 
     await Promise.all([
       applyBackupToDatabase(databaseData),
-      applyBackupToStorage(buckets),
+      applyBackupToStorage(buckets, payload.backupId),
     ]);
   },
 };
