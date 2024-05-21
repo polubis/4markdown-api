@@ -213,7 +213,11 @@ const applyBackupToStorage = async (buckets: BucketsPair): Promise<void> => {
 
   const copyPromises: Promise<CopyResponse>[] = [];
 
-  for (const backupFile of backupFiles) {
+  const filesWithoutDbData = backupFiles.filter(
+    (file) => !file.name.includes(`db/`),
+  );
+
+  for (const backupFile of filesWithoutDbData) {
     // Omits [date]/storage.
     const backupFileNameWithoutPrefixes = backupFile.name
       .split(`/`)
