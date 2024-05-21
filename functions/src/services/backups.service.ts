@@ -1,4 +1,8 @@
-import { BackupPayload, IBackupPayload } from '../payloads/backup.payload';
+import {
+  CreateBackupPayload,
+  ICreateBackupPayload,
+  IUseBackupPayload,
+} from '../payloads/backup.payload';
 import { errors } from '../core/errors';
 import { firestore, storage } from 'firebase-admin';
 import { z } from 'zod';
@@ -112,14 +116,14 @@ const createStorageBackup = async (
   await Promise.all(copyPromises);
 };
 
-const verifySetup = (payload: IBackupPayload): void | never => {
+const verifySetup = (token: string): void | never => {
   const backupSetup = { token: process.env.BACKUP_TOKEN };
 
-  if (!BackupPayload.is(backupSetup)) {
+  if (!CreateBackupPayload.is(backupSetup)) {
     throw errors.invalidArg(`Lack of token on server process`);
   }
 
-  if (payload.token !== backupSetup.token) {
+  if (token !== backupSetup.token) {
     throw errors.invalidArg(`Wrong token`);
   }
 };
@@ -138,9 +142,29 @@ const getBucketsPair = async (): Promise<BucketsPair> => {
   return buckets;
 };
 
+const getDatabaseBackupFile = async (
+  bucket: Bucket,
+  backupId: IUseBackupPayload['backupId'],
+) => {
+  const [files] = await bucket.getFiles({
+    delimiter: `/`,
+    prefix: `${backupId}/db/data`,
+  });
+
+  if (files.length === 0)
+    throw errors.invalidArg(`Cannot find database backup`);
+
+  if (files.length !== 1)
+    throw errors.invalidArg(`Multiple database backups found`);
+
+  const dbBackupFile = await files[0].download();
+
+  return [files.length, dbBackupFile, JSON.stringify(dbBackupFile)];
+};
+
 const BackupsService = {
-  create: async (payload: IBackupPayload): Promise<void> => {
-    verifySetup(payload);
+  create: async (payload: ICreateBackupPayload): Promise<void> => {
+    verifySetup(payload.token);
 
     const backupId = createBackupId();
 
@@ -151,14 +175,17 @@ const BackupsService = {
       createStorageBackup(backupId, buckets),
     ]);
   },
-  use: async (payload: IBackupPayload): Promise<unknown> => {
-    verifySetup(payload);
+  use: async (payload: IUseBackupPayload): Promise<unknown> => {
+    verifySetup(payload.token);
 
     const buckets = await getBucketsPair();
+    const result = await getDatabaseBackupFile(
+      buckets.backup,
+      payload.backupId,
+    );
 
-    const [files] = await buckets.backup.getFiles();
-
-    return files.map((file) => file.name);
+    // 21:05:2024-06:38:49/db/data
+    return result;
   },
 };
 

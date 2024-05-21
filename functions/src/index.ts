@@ -23,7 +23,10 @@ import { UploadImagePayload } from './payloads/images.payload';
 import { UsersProfilesService } from './services/users-profiles.service';
 import { BackupsService } from './services/backups.service';
 import { Endpoint } from './core/endpoint';
-import { BackupPayload } from './payloads/backup.payload';
+import {
+  CreateBackupPayload,
+  UseBackupPayload,
+} from './payloads/backup.payload';
 
 admin.initializeApp();
 
@@ -238,9 +241,9 @@ export const getYourUserProfile = onCall(async (_, context) => {
 });
 
 export const createBackup = Endpoint<void>(async (payload) => {
-  return await BackupsService.create(BackupPayload(payload));
+  return await BackupsService.create(CreateBackupPayload(payload));
 });
 
 export const useBackup = Endpoint(async (payload) => {
-  return await BackupsService.use(BackupPayload(payload));
+  return await BackupsService.use(UseBackupPayload(payload));
 });

@@ -1,13 +1,22 @@
 import { z } from 'zod';
 import { createSchema } from '../validation/create-schema';
 
-const schema = z.object({
+const creationSchema = z.object({
   token: z.string().uuid(),
 });
+const usageSchema = creationSchema.pick({ token: true }).merge(
+  z.object({
+    backupId: z
+      .string()
+      .regex(/^(\d{2}):(\d{2}):(\d{4})-(\d{2}):(\d{2}):(\d{2})$/),
+  }),
+);
 
-const BackupPayload = createSchema(schema, `BackupPayload`);
+const CreateBackupPayload = createSchema(creationSchema, `CreateBackupPayload`);
+const UseBackupPayload = createSchema(usageSchema, `UseBackupPayload`);
 
-type IBackupPayload = z.infer<typeof schema>;
+type ICreateBackupPayload = z.infer<typeof creationSchema>;
+type IUseBackupPayload = z.infer<typeof usageSchema>;
 
-export type { IBackupPayload };
-export { BackupPayload };
+export type { ICreateBackupPayload, IUseBackupPayload };
+export { CreateBackupPayload, UseBackupPayload };
