@@ -1,4 +1,4 @@
-import { https } from 'firebase-functions';
+import { https, logger } from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
 import type {
@@ -22,12 +22,13 @@ import { UsersService } from './services/users.service';
 import { UploadImagePayload } from './payloads/images.payload';
 import { UsersProfilesService } from './services/users-profiles.service';
 import { BackupsService } from './services/backups.service';
-import { Endpoint } from './core/endpoint';
 import {
   CreateBackupPayload,
   UseBackupPayload,
 } from './payloads/backup.payload';
 import { ProjectId } from './models/project-id';
+import { Job } from './libs/framework/job';
+import { Endpoint } from './libs/framework/endpoint';
 
 const app = admin.initializeApp();
 
@@ -241,6 +242,13 @@ export const getYourUserProfile = onCall(async (_, context) => {
   return await UsersProfilesService.getYour(context);
 });
 
+export const useBackup = Endpoint<void>(async (payload) => {
+  await BackupsService.use(
+    ProjectId(app.options.projectId),
+    UseBackupPayload(payload),
+  );
+});
+
 export const createBackup = Endpoint<void>(async (payload) => {
   return await BackupsService.create(
     ProjectId(app.options.projectId),
@@ -248,9 +256,12 @@ export const createBackup = Endpoint<void>(async (payload) => {
   );
 });
 
-export const useBackup = Endpoint<void>(async (payload) => {
-  return await BackupsService.use(
-    ProjectId(app.options.projectId),
-    UseBackupPayload(payload),
-  );
+export const autoCreateBackup = Job(`every 5 minutes`, async () => {
+  logger.info(`I will auto created backup!`);
+  // await BackupsService.create(
+  //   ProjectId(app.options.projectId),
+  //   CreateBackupPayload({
+  //     token: process.env.BACKUP_TOKEN,
+  //   }),
+  // );
 });
