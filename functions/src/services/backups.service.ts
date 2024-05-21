@@ -157,22 +157,15 @@ const BackupsService = {
 
     const buckets = await getBucketsPair();
 
-    const [files] = await buckets.backup.getFiles({
-      prefix: ``,
-      delimiter: `/`,
-    });
-    const topDirectories = new Set();
+    const [files] = await buckets.backup.getFiles();
+
+    logger.info(files.length);
 
     files.forEach((file) => {
       logger.info(file.name);
-      const parts = file.name.split(`/`);
-
-      if (parts.length > 1 && parts[1] === `db`) {
-        topDirectories.add(parts[0]);
-      }
     });
 
-    return topDirectories;
+    return files.length;
   },
 };
 
