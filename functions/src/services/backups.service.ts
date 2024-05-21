@@ -3,6 +3,7 @@ import { errors } from '../core/errors';
 import { firestore, storage } from 'firebase-admin';
 import { z } from 'zod';
 import { CopyResponse } from '@google-cloud/storage';
+import { logger } from 'firebase-functions/v1';
 
 type Bucket = ReturnType<ReturnType<typeof storage>['bucket']>;
 type BucketsPair = {
@@ -111,34 +112,58 @@ const createStorageBackup = async (
   await Promise.all(copyPromises);
 };
 
+const verifySetup = (payload: IBackupPayload): void | never => {
+  const backupSetup = { token: process.env.BACKUP_TOKEN };
+
+  if (!BackupPayload.is(backupSetup)) {
+    throw errors.invalidArg(`Lack of token on server process`);
+  }
+
+  if (payload.token !== backupSetup.token) {
+    throw errors.invalidArg(`Wrong token`);
+  }
+};
+
+const getBucketsPair = async (): Promise<BucketsPair> => {
+  const [sourceBucket, backupBucket] = await Promise.all([
+    getSourceBucket(),
+    getBackupBucket(),
+  ]);
+
+  const buckets: BucketsPair = {
+    source: sourceBucket,
+    backup: backupBucket,
+  };
+
+  return buckets;
+};
+
 const BackupsService = {
   create: async (payload: IBackupPayload): Promise<void> => {
-    const backupSetup = { token: process.env.BACKUP_TOKEN };
-
-    if (!BackupPayload.is(backupSetup)) {
-      throw errors.invalidArg(`Lack of token on server process`);
-    }
-
-    if (payload.token !== backupSetup.token) {
-      throw errors.invalidArg(`Wrong token`);
-    }
+    verifySetup(payload);
 
     const backupId = createBackupId();
 
-    const [sourceBucket, backupBucket] = await Promise.all([
-      getSourceBucket(),
-      getBackupBucket(),
-    ]);
-
-    const buckets: BucketsPair = {
-      source: sourceBucket,
-      backup: backupBucket,
-    };
+    const buckets = await getBucketsPair();
 
     await Promise.all([
       createDatabaseBackup(backupId, buckets),
       createStorageBackup(backupId, buckets),
     ]);
+  },
+  use: async (payload: IBackupPayload): Promise<void> => {
+    verifySetup(payload);
+
+    const buckets = await getBucketsPair();
+
+    const [files] = await buckets.backup.getFiles({
+      prefix: `db/data.json`,
+    });
+    logger.warn(files.length);
+    for (const file of files) {
+      console.log(file.name);
+      logger.warn(file.name);
+    }
   },
 };
 

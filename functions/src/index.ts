@@ -240,3 +240,7 @@ export const getYourUserProfile = onCall(async (_, context) => {
 export const createBackup = Endpoint(async (payload) => {
   return await BackupsService.create(BackupPayload(payload));
 });
+
+export const useBackup = Endpoint(async (payload) => {
+  return await BackupsService.use(BackupPayload(payload));
+});
