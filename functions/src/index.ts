@@ -1,4 +1,4 @@
-import { https, logger } from 'firebase-functions';
+import { https } from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
 import type {
@@ -27,7 +27,6 @@ import {
   UseBackupPayload,
 } from './payloads/backup.payload';
 import { ProjectId } from './models/project-id';
-import { Job } from './libs/framework/job';
 import { Endpoint } from './libs/framework/endpoint';
 
 const app = admin.initializeApp();
@@ -250,18 +249,18 @@ export const useBackup = Endpoint<void>(async (payload) => {
 });
 
 export const createBackup = Endpoint<void>(async (payload) => {
-  return await BackupsService.create(
+  await BackupsService.create(
     ProjectId(app.options.projectId),
     CreateBackupPayload(payload),
   );
 });
 
-export const autoCreateBackup = Job(`every 5 minutes`, async () => {
-  logger.info(`I will auto created backup!`);
-  // await BackupsService.create(
-  //   ProjectId(app.options.projectId),
-  //   CreateBackupPayload({
-  //     token: process.env.BACKUP_TOKEN,
-  //   }),
-  // );
-});
+// export const autoCreateBackup = Job(`every 5 minutes`, async () => {
+//   logger.info(`I will auto created backup!`);
+//   // await BackupsService.create(
+//   //   ProjectId(app.options.projectId),
+//   //   CreateBackupPayload({
+//   //     token: process.env.BACKUP_TOKEN,
+//   //   }),
+//   // );
+// });
