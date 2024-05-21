@@ -5,7 +5,6 @@ import {
 } from '../payloads/backup.payload';
 import { errors } from '../core/errors';
 import { firestore, storage } from 'firebase-admin';
-import { z } from 'zod';
 import { CopyResponse } from '@google-cloud/storage';
 
 type Bucket = ReturnType<ReturnType<typeof storage>['bucket']>;
@@ -72,10 +71,8 @@ const getSourceBucket = async (): Promise<Bucket> => {
   return bucket;
 };
 
-const getBackupBucket = async (): Promise<Bucket> => {
-  const bucket = storage().bucket(
-    z.string().parse(process.env.BACKUP_BUCKET_NAME),
-  );
+const getBackupBucket = async (projectId: string): Promise<Bucket> => {
+  const bucket = storage().bucket(`${projectId}-backup`);
   const [exists] = await bucket.exists();
 
   if (!exists) {
@@ -128,10 +125,10 @@ const verifySetup = (token: string): void | never => {
   }
 };
 
-const getBucketsPair = async (): Promise<BucketsPair> => {
+const getBucketsPair = async (projectId: string): Promise<BucketsPair> => {
   const [sourceBucket, backupBucket] = await Promise.all([
     getSourceBucket(),
-    getBackupBucket(),
+    getBackupBucket(projectId),
   ]);
 
   const buckets: BucketsPair = {
@@ -232,22 +229,25 @@ const applyBackupToStorage = async (buckets: BucketsPair): Promise<void> => {
 };
 
 const BackupsService = {
-  create: async (payload: ICreateBackupPayload): Promise<void> => {
+  create: async (
+    projectId: string,
+    payload: ICreateBackupPayload,
+  ): Promise<void> => {
     verifySetup(payload.token);
 
     const backupId = createBackupId();
 
-    const buckets = await getBucketsPair();
+    const buckets = await getBucketsPair(projectId);
 
     await Promise.all([
       createDatabaseBackup(backupId, buckets),
       createStorageBackup(backupId, buckets),
     ]);
   },
-  use: async (payload: IUseBackupPayload): Promise<void> => {
+  use: async (projectId: string, payload: IUseBackupPayload): Promise<void> => {
     verifySetup(payload.token);
 
-    const buckets = await getBucketsPair();
+    const buckets = await getBucketsPair(projectId);
 
     const [databaseData] = await Promise.all([
       getDatabaseBackupFile(buckets, payload.backupId),

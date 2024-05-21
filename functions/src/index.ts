@@ -27,6 +27,7 @@ import {
   CreateBackupPayload,
   UseBackupPayload,
 } from './payloads/backup.payload';
+import { z } from 'zod';
 
 const app = admin.initializeApp();
 
@@ -241,10 +242,13 @@ export const getYourUserProfile = onCall(async (_, context) => {
 });
 
 export const createBackup = Endpoint<void>(async (payload) => {
-  return await BackupsService.create(CreateBackupPayload(payload));
+  const projectId = z.string().parse(app.options.projectId);
+
+  return await BackupsService.create(projectId, CreateBackupPayload(payload));
 });
 
-export const useBackup = Endpoint(async (payload) => {
-  await BackupsService.use(UseBackupPayload(payload));
-  return app.options.projectId;
+export const useBackup = Endpoint<void>(async (payload) => {
+  const projectId = z.string().parse(app.options.projectId);
+
+  return await BackupsService.use(projectId, UseBackupPayload(payload));
 });
