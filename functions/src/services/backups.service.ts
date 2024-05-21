@@ -23,33 +23,22 @@ const createBackupId = (): string => {
   return `${day}:${month}:${year}-${hours}:${minutes}:${seconds}`;
 };
 
-const COLLECTION_IDS = [`docs`, `images`, `users-profiles`] as const;
-const collectionIdSchema = z.enum(COLLECTION_IDS);
-
-type CollectionId = z.infer<typeof collectionIdSchema>;
-
-type DatabaseData = Record<CollectionId, Record<string, unknown>>;
+type DatabaseData = Record<string, Record<string, unknown>>;
 
 const getDatabase = async (): Promise<DatabaseData> => {
   const db = firestore();
   const collections = await db.listCollections();
 
-  const data = COLLECTION_IDS.reduce<DatabaseData>(
-    (acc, id) => ({
-      ...acc,
-      [id]: {},
-    }),
-    {} as DatabaseData,
-  );
+  const data: DatabaseData = {};
 
   const promises: {
-    collectionId: CollectionId;
+    collectionId: string;
     promise: Promise<firestore.QuerySnapshot<firestore.DocumentData>>;
   }[] = [];
 
   for (const collection of collections) {
     promises.push({
-      collectionId: collectionIdSchema.parse(collection.id),
+      collectionId: collection.id,
       promise: collection.get(),
     });
   }
