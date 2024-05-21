@@ -1,4 +1,4 @@
-import { https, logger } from 'firebase-functions';
+import { https } from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
 import type {
@@ -244,7 +244,7 @@ export const createBackup = Endpoint<void>(async (payload) => {
   return await BackupsService.create(CreateBackupPayload(payload));
 });
 
-export const useBackup = Endpoint<void>(async (payload) => {
-  logger.info(app.options.projectId);
-  return await BackupsService.use(UseBackupPayload(payload));
+export const useBackup = Endpoint(async (payload) => {
+  await BackupsService.use(UseBackupPayload(payload));
+  return app.options.projectId;
 });
