@@ -145,7 +145,7 @@ const getBucketsPair = async (): Promise<BucketsPair> => {
 const getDatabaseBackupFile = async (
   bucket: Bucket,
   backupId: IUseBackupPayload['backupId'],
-) => {
+): Promise<DatabaseData> => {
   const [files] = await bucket.getFiles({
     delimiter: `/`,
     prefix: `${backupId}/db/data`,
@@ -157,9 +157,12 @@ const getDatabaseBackupFile = async (
   if (files.length !== 1)
     throw errors.invalidArg(`Multiple database backups found`);
 
-  const dbBackupFile = await files[0].download();
+  const [dbBackupFile] = await files[0].download();
+  const dbBackupJson = JSON.parse(
+    dbBackupFile.toString(`utf8`),
+  ) as DatabaseData;
 
-  return [files.length, dbBackupFile, JSON.stringify(dbBackupFile)];
+  return dbBackupJson;
 };
 
 const BackupsService = {
