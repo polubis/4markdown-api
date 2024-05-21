@@ -3,7 +3,6 @@ import { errors } from '../core/errors';
 import { firestore, storage } from 'firebase-admin';
 import { z } from 'zod';
 import { CopyResponse } from '@google-cloud/storage';
-import { logger } from 'firebase-functions/v1';
 
 type Bucket = ReturnType<ReturnType<typeof storage>['bucket']>;
 type BucketsPair = {
@@ -159,13 +158,7 @@ const BackupsService = {
 
     const [files] = await buckets.backup.getFiles();
 
-    logger.info(files.length);
-
-    files.forEach((file) => {
-      logger.info(file.name);
-    });
-
-    return files.length;
+    return files.map((file) => file.name);
   },
 };
 
