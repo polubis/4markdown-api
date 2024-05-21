@@ -184,14 +184,29 @@ const removeDatabase = async (): Promise<void> => {
   await Promise.all(removePromises);
 };
 
-// const applyBackupToDatabase = async (
-//   databaseData: DatabaseData,
-// ): Promise<void> => {
-//   const db = firestore();
+const applyBackupToDatabase = async (
+  databaseData: DatabaseData,
+): Promise<void> => {
+  const db = firestore();
 
-//   for (const collection in databaseData) {
-//   }
-// };
+  const restorePromises: Promise<firestore.WriteResult>[] = [];
+
+  for (const collectionId in databaseData) {
+    const collectionData = databaseData[collectionId];
+    const collectionInstance = db.collection(collectionId);
+
+    for (const documentId in collectionData) {
+      const documentData = collectionData[documentId];
+      const documentInstance = collectionInstance.doc(documentId);
+
+      if (typeof documentData === `object` && documentData !== null) {
+        restorePromises.push(documentInstance.set(documentData));
+      }
+    }
+  }
+
+  await Promise.all(restorePromises);
+};
 
 // const applyBackupToStorage = async (): Promise<void> => {
 //   console.log(``);
@@ -214,14 +229,16 @@ const BackupsService = {
     verifySetup(payload.token);
 
     const buckets = await getBucketsPair();
-    await getDatabaseBackupFile(buckets.backup, payload.backupId);
 
-    await removeDatabase();
+    const [databaseData] = await Promise.all([
+      getDatabaseBackupFile(buckets.backup, payload.backupId),
+      removeDatabase(),
+    ]);
 
-    // await Promise.all([
-    //   applyBackupToDatabase(databaseData),
-    //   applyBackupToStorage(),
-    // ]);
+    await Promise.all([
+      applyBackupToDatabase(databaseData),
+      // applyBackupToStorage(),
+    ]);
   },
 };
 
