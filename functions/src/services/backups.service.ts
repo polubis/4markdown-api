@@ -72,7 +72,7 @@ const getSourceBucket = async (): Promise<Bucket> => {
 };
 
 const getBackupBucket = async (projectId: string): Promise<Bucket> => {
-  const bucket = storage().bucket(`${projectId}-backup`);
+  const bucket = storage().bucket(`${projectId}-backups`);
   const [exists] = await bucket.exists();
 
   if (!exists) {
