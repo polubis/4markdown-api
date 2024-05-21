@@ -143,10 +143,10 @@ const getBucketsPair = async (): Promise<BucketsPair> => {
 };
 
 const getDatabaseBackupFile = async (
-  bucket: Bucket,
+  buckets: BucketsPair,
   backupId: IUseBackupPayload['backupId'],
 ): Promise<DatabaseData> => {
-  const [files] = await bucket.getFiles({
+  const [files] = await buckets.backup.getFiles({
     delimiter: `/`,
     prefix: `${backupId}/db/data`,
   });
@@ -208,9 +208,24 @@ const applyBackupToDatabase = async (
   await Promise.all(restorePromises);
 };
 
-// const applyBackupToStorage = async (): Promise<void> => {
-//   console.log(``);
-// };
+const applyBackupToStorage = async (buckets: BucketsPair): Promise<void> => {
+  const [backupFiles] = await buckets.backup.getFiles();
+
+  const copyPromises: Promise<CopyResponse>[] = [];
+
+  for (const backupFile of backupFiles) {
+    // Omits [date]/storage.
+    const backupFileNameWithoutPrefixes = backupFile.name
+      .split(`/`)
+      .slice(2)
+      .join(`/`);
+    copyPromises.push(
+      backupFile.copy(buckets.source.file(backupFileNameWithoutPrefixes)),
+    );
+  }
+
+  await Promise.all(copyPromises);
+};
 
 const BackupsService = {
   create: async (payload: ICreateBackupPayload): Promise<void> => {
@@ -231,13 +246,13 @@ const BackupsService = {
     const buckets = await getBucketsPair();
 
     const [databaseData] = await Promise.all([
-      getDatabaseBackupFile(buckets.backup, payload.backupId),
+      getDatabaseBackupFile(buckets, payload.backupId),
       removeDatabase(),
     ]);
 
     await Promise.all([
       applyBackupToDatabase(databaseData),
-      // applyBackupToStorage(),
+      applyBackupToStorage(buckets),
     ]);
   },
 };
