@@ -3,6 +3,7 @@ import { errors } from '../core/errors';
 import { firestore, storage } from 'firebase-admin';
 import { z } from 'zod';
 import { CopyResponse } from '@google-cloud/storage';
+import { logger } from 'firebase-functions/v1';
 
 type Bucket = ReturnType<ReturnType<typeof storage>['bucket']>;
 type BucketsPair = {
@@ -151,21 +152,27 @@ const BackupsService = {
       createStorageBackup(backupId, buckets),
     ]);
   },
-  use: async (payload: IBackupPayload): Promise<string[]> => {
+  use: async (payload: IBackupPayload): Promise<unknown> => {
     verifySetup(payload);
 
     const buckets = await getBucketsPair();
 
     const [files] = await buckets.backup.getFiles({
-      prefix: `db/data.json`,
+      prefix: ``,
+      delimiter: `/`,
     });
-    // logger.warn(files.length);
-    // for (const file of files) {
-    //   console.log(file.name);
-    //   logger.warn(file.name);
-    // }
+    const topDirectories = new Set();
 
-    return files.map((file) => file.name);
+    files.forEach((file) => {
+      logger.info(file.name);
+      const parts = file.name.split(`/`);
+
+      if (parts.length > 1 && parts[1] === `db`) {
+        topDirectories.add(parts[0]);
+      }
+    });
+
+    return topDirectories;
   },
 };
 

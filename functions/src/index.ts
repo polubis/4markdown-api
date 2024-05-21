@@ -241,6 +241,6 @@ export const createBackup = Endpoint<void>(async (payload) => {
   return await BackupsService.create(BackupPayload(payload));
 });
 
-export const useBackup = Endpoint<string[]>(async (payload) => {
+export const useBackup = Endpoint(async (payload) => {
   return await BackupsService.use(BackupPayload(payload));
 });
