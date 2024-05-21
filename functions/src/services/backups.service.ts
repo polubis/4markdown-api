@@ -230,14 +230,7 @@ const applyBackupToStorage = async (buckets: BucketsPair): Promise<void> => {
 
 const clearStorage = async (buckets: BucketsPair): Promise<void> => {
   const [sourceFiles] = await buckets.source.getFiles();
-
-  const deletePromises: Promise<unknown>[] = [];
-
-  for (const sourceFile of sourceFiles) {
-    deletePromises.push(buckets.source.file(sourceFile.name).delete());
-  }
-
-  await Promise.all(deletePromises);
+  await Promise.all(sourceFiles.map((file) => file.delete()));
 };
 
 const BackupsService = {
