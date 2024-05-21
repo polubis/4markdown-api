@@ -33,7 +33,7 @@ const getDatabase = async (): Promise<DatabaseData> => {
   const db = firestore();
   const collections = await db.listCollections();
 
-  const data: DatabaseData = {};
+  const databaseData: DatabaseData = {};
 
   const promises: {
     collectionId: string;
@@ -41,7 +41,7 @@ const getDatabase = async (): Promise<DatabaseData> => {
   }[] = [];
 
   for (const collection of collections) {
-    data[collection.id] = {};
+    databaseData[collection.id] = {};
     promises.push({
       collectionId: collection.id,
       promise: collection.get(),
@@ -54,11 +54,11 @@ const getDatabase = async (): Promise<DatabaseData> => {
     const { collectionId } = promises[idx];
 
     docs.forEach((doc) => {
-      data[collectionId][doc.id] = doc.data();
+      databaseData[collectionId][doc.id] = doc.data();
     });
   });
 
-  return data;
+  return databaseData;
 };
 
 const getSourceBucket = async (): Promise<Bucket> => {
@@ -158,12 +158,44 @@ const getDatabaseBackupFile = async (
     throw errors.invalidArg(`Multiple database backups found`);
 
   const [dbBackupFile] = await files[0].download();
-  const dbBackupJson = JSON.parse(
+  const databaseData = JSON.parse(
     dbBackupFile.toString(`utf8`),
   ) as DatabaseData;
 
-  return dbBackupJson;
+  return databaseData;
 };
+
+const removeDatabase = async (): Promise<void> => {
+  const db = firestore();
+  const collections = await db.listCollections();
+
+  const removePromises: Promise<firestore.WriteResult>[] = [];
+
+  for (const collection of collections) {
+    const collectionInstance = db.collection(collection.id);
+
+    const docs = await collectionInstance.listDocuments();
+
+    docs.forEach((doc) => {
+      removePromises.push(doc.delete());
+    });
+  }
+
+  await Promise.all(removePromises);
+};
+
+// const applyBackupToDatabase = async (
+//   databaseData: DatabaseData,
+// ): Promise<void> => {
+//   const db = firestore();
+
+//   for (const collection in databaseData) {
+//   }
+// };
+
+// const applyBackupToStorage = async (): Promise<void> => {
+//   console.log(``);
+// };
 
 const BackupsService = {
   create: async (payload: ICreateBackupPayload): Promise<void> => {
@@ -178,17 +210,18 @@ const BackupsService = {
       createStorageBackup(backupId, buckets),
     ]);
   },
-  use: async (payload: IUseBackupPayload): Promise<unknown> => {
+  use: async (payload: IUseBackupPayload): Promise<void> => {
     verifySetup(payload.token);
 
     const buckets = await getBucketsPair();
-    const result = await getDatabaseBackupFile(
-      buckets.backup,
-      payload.backupId,
-    );
+    await getDatabaseBackupFile(buckets.backup, payload.backupId);
 
-    // 21:05:2024-06:38:49/db/data
-    return result;
+    await removeDatabase();
+
+    // await Promise.all([
+    //   applyBackupToDatabase(databaseData),
+    //   applyBackupToStorage(),
+    // ]);
   },
 };
 
