@@ -21,8 +21,18 @@ import { AuthService } from './services/auth.service';
 import { UsersService } from './services/users.service';
 import { UploadImagePayload } from './payloads/images.payload';
 import { UsersProfilesService } from './services/users-profiles.service';
+import { BackupsService } from './services/backups.service';
+import {
+  CreateBackupPayload,
+  UseBackupPayload,
+} from './payloads/backup.payload';
+import { ProjectId } from './models/project-id';
+import { Endpoint } from './libs/framework/endpoint';
+import { Job } from './libs/framework/job';
+import { isDev } from './core/env-checks';
 
-admin.initializeApp();
+const app = admin.initializeApp();
+const projectId = ProjectId(app.options.projectId);
 
 const { onCall, HttpsError } = https;
 
@@ -232,4 +242,23 @@ export const updateYourUserProfile = onCall(
 
 export const getYourUserProfile = onCall(async (_, context) => {
   return await UsersProfilesService.getYour(context);
+});
+
+export const useBackup = Endpoint<void>(async (payload) => {
+  await BackupsService.use(projectId, UseBackupPayload(payload));
+});
+
+export const createBackup = Endpoint<void>(async (payload) => {
+  await BackupsService.create(projectId, CreateBackupPayload(payload));
+});
+
+export const autoCreateBackup = Job(`every sunday 23:59`, async () => {
+  if (isDev(projectId)) return;
+
+  await BackupsService.create(
+    ProjectId(app.options.projectId),
+    CreateBackupPayload({
+      token: process.env.BACKUP_TOKEN,
+    }),
+  );
 });
