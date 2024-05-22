@@ -7,6 +7,7 @@ import { errors } from '../core/errors';
 import { firestore, storage } from 'firebase-admin';
 import { CopyResponse } from '@google-cloud/storage';
 import { IProjectId } from '../models/project-id';
+import { logger } from 'firebase-functions/v1';
 
 type Bucket = ReturnType<ReturnType<typeof storage>['bucket']>;
 type BucketsPair = {
@@ -235,6 +236,28 @@ const clearStorage = async (buckets: BucketsPair): Promise<void> => {
   await Promise.all(sourceFiles.map((file) => file.delete()));
 };
 
+const removeLatestBackup = async (buckets: BucketsPair): Promise<void> => {
+  const BACKUPS_LIMIT = 3;
+
+  const [backupFiles] = await buckets.backup.getFiles();
+
+  const backupDatesSet = new Set<string>();
+
+  backupFiles.forEach((file) => {
+    backupDatesSet.add(file.name.split(`/`)[0]);
+  });
+
+  const backupDatesList = Array.from(backupDatesSet).sort(
+    (a, b) => new Date(a).getTime() - new Date(b).getTime(),
+  );
+
+  if (backupDatesList.length > BACKUPS_LIMIT) {
+    logger.log(backupDatesList);
+  }
+
+  // await Promise.all(backupFiles.map((file) => file.delete()));
+};
+
 const BackupsService = {
   create: async (
     projectId: IProjectId,
@@ -245,6 +268,8 @@ const BackupsService = {
     const backupId = createBackupId();
 
     const buckets = await getBucketsPair(projectId);
+
+    await removeLatestBackup(buckets);
 
     await Promise.all([
       createDatabaseBackup(backupId, buckets),

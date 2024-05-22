@@ -28,8 +28,10 @@ import {
 } from './payloads/backup.payload';
 import { ProjectId } from './models/project-id';
 import { Endpoint } from './libs/framework/endpoint';
+import { Job } from './libs/framework/job';
 
 const app = admin.initializeApp();
+const projectId = ProjectId(app.options.projectId);
 
 const { onCall, HttpsError } = https;
 
@@ -242,25 +244,21 @@ export const getYourUserProfile = onCall(async (_, context) => {
 });
 
 export const useBackup = Endpoint<void>(async (payload) => {
-  await BackupsService.use(
-    ProjectId(app.options.projectId),
-    UseBackupPayload(payload),
-  );
+  await BackupsService.use(projectId, UseBackupPayload(payload));
 });
 
 export const createBackup = Endpoint<void>(async (payload) => {
+  await BackupsService.create(projectId, CreateBackupPayload(payload));
+});
+// isDev(projectId)
+//   ? undefined
+//   :
+// every sunday 23:59
+export const autoCreateBackup = Job(`every sunday 23:59`, async () => {
   await BackupsService.create(
     ProjectId(app.options.projectId),
-    CreateBackupPayload(payload),
+    CreateBackupPayload({
+      token: process.env.BACKUP_TOKEN,
+    }),
   );
 });
-
-// export const autoCreateBackup = Job(`every 5 minutes`, async () => {
-//   logger.info(`I will auto created backup!`);
-//   // await BackupsService.create(
-//   //   ProjectId(app.options.projectId),
-//   //   CreateBackupPayload({
-//   //     token: process.env.BACKUP_TOKEN,
-//   //   }),
-//   // );
-// });
