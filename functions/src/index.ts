@@ -29,6 +29,7 @@ import {
 import { ProjectId } from './models/project-id';
 import { Endpoint } from './libs/framework/endpoint';
 import { Job } from './libs/framework/job';
+import { isDev } from './core/env-checks';
 
 const app = admin.initializeApp();
 const projectId = ProjectId(app.options.projectId);
@@ -250,15 +251,14 @@ export const useBackup = Endpoint<void>(async (payload) => {
 export const createBackup = Endpoint<void>(async (payload) => {
   await BackupsService.create(projectId, CreateBackupPayload(payload));
 });
-// isDev(projectId)
-//   ? undefined
-//   :
-// every sunday 23:59
-export const autoCreateBackup = Job(`every sunday 23:59`, async () => {
-  await BackupsService.create(
-    ProjectId(app.options.projectId),
-    CreateBackupPayload({
-      token: process.env.BACKUP_TOKEN,
-    }),
-  );
-});
+
+export const autoCreateBackup = isDev(projectId)
+  ? undefined
+  : Job(`every sunday 23:59`, async () => {
+      await BackupsService.create(
+        ProjectId(app.options.projectId),
+        CreateBackupPayload({
+          token: process.env.BACKUP_TOKEN,
+        }),
+      );
+    });

@@ -7,6 +7,7 @@ import { errors } from '../core/errors';
 import { firestore, storage } from 'firebase-admin';
 import { CopyResponse } from '@google-cloud/storage';
 import { IProjectId } from '../models/project-id';
+import { z } from 'zod';
 
 type Bucket = ReturnType<ReturnType<typeof storage>['bucket']>;
 type BucketsPair = {
@@ -73,7 +74,8 @@ const getSourceBucket = async (): Promise<Bucket> => {
 };
 
 const getBackupBucket = async (projectId: string): Promise<Bucket> => {
-  const bucket = storage().bucket(`${projectId}-backups`);
+  const backupPostfix = z.string().parse(process.env.BACKUP_POSTFIX);
+  const bucket = storage().bucket(`${projectId}-${backupPostfix}`);
   const [exists] = await bucket.exists();
 
   if (!exists) {
