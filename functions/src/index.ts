@@ -252,13 +252,13 @@ export const createBackup = Endpoint<void>(async (payload) => {
   await BackupsService.create(projectId, CreateBackupPayload(payload));
 });
 
-export const autoCreateBackup = isDev(projectId)
-  ? undefined
-  : Job(`every sunday 23:59`, async () => {
-      await BackupsService.create(
-        ProjectId(app.options.projectId),
-        CreateBackupPayload({
-          token: process.env.BACKUP_TOKEN,
-        }),
-      );
-    });
+export const autoCreateBackup = Job(`every sunday 23:59`, async () => {
+  if (isDev(projectId)) return;
+
+  await BackupsService.create(
+    ProjectId(app.options.projectId),
+    CreateBackupPayload({
+      token: process.env.BACKUP_TOKEN,
+    }),
+  );
+});
