@@ -7,8 +7,10 @@ const CreateDocDto = PrivateDocEntityField.pick({
   cdate: true,
   mdate: true,
   visibility: true,
-}).extend({
-  id: Id,
-});
+})
+  .extend({
+    id: Id,
+  })
+  .strict();
 
 export { CreateDocDto };

@@ -25,6 +25,8 @@ const createDocController = Controller<void>(async (context, payload) => {
     name,
   });
 
+  // Auto Schema Creation
+  // Repos
   const entity = DocEntity.parse({
     [id]: entityField,
   });
