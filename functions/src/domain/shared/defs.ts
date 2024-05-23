@@ -1,6 +1,11 @@
 import { https } from 'firebase-functions';
 
-type IErrorHandler = (symbol: string, message: string) => https.HttpsError;
+type IErrorSymbol = `UNAUTHENTICATED`;
+
+type IErrorHandler = (
+  symbol: IErrorSymbol,
+  message: string,
+) => https.HttpsError;
 type IErrors = Record<string, IErrorHandler>;
 type IErrorHandlerFactory = (code: https.FunctionsErrorCode) => IErrorHandler;
 

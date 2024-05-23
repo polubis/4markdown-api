@@ -244,11 +244,11 @@ export const getYourUserProfile = onCall(async (_, context) => {
   return await UsersProfilesService.getYour(context);
 });
 
-export const useBackup = Controller<void>(async (payload) => {
+export const useBackup = Controller<void>(async (_, payload) => {
   await BackupsService.use(projectId, UseBackupPayload(payload));
 });
 
-export const createBackup = Controller<void>(async (payload) => {
+export const createBackup = Controller<void>(async (_, payload) => {
   await BackupsService.create(projectId, CreateBackupPayload(payload));
 });
 

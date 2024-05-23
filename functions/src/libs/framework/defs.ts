@@ -6,12 +6,17 @@ import type {
 } from 'firebase-functions';
 
 type IControllerHandler<TResponse = unknown> = (
-  payload: unknown,
   context: https.CallableContext,
+  payload: unknown,
 ) => Promise<TResponse>;
+type IControllerMiddleware = (
+  context: https.CallableContext,
+  payload: unknown,
+) => void;
+
 type IController = <TResponse = unknown>(
-  handler: IControllerHandler<TResponse>,
-) => HttpsFunction & Runnable<any>;
+  ...middleware: IControllerMiddleware[]
+) => (handler: IControllerHandler<TResponse>) => HttpsFunction & Runnable<any>;
 
 type IJobHandler = () => Promise<void>;
 type IJob = (interval: string, handler: IJobHandler) => CloudFunction<unknown>;
