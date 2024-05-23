@@ -28,4 +28,10 @@ const DocEntityField = z.union([
 
 const DocEntity = z.record(DocEntityField);
 
-export { DocEntity, DocEntityField };
+export {
+  DocEntity,
+  DocEntityField,
+  PrivateDocEntityField,
+  PublicDocEntityField,
+  PermamentDocEntityField,
+};
