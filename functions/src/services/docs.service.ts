@@ -11,16 +11,35 @@ import { Doc, getAllDocs } from '../core/doc';
 import { Id } from '../entities/general';
 import { DocsRepository } from '../repositories/docs.repository';
 import * as admin from 'firebase-admin';
+import { IUserProfileEntity } from '../entities/user-profile.entity';
 
 export const DocsService = {
   getAllPermanent: async (): Promise<GetPermanentDocsDto> => {
     try {
-      const allDocs = (await admin.firestore().collection(`docs`).get()).docs;
+      const [allDocsResponse, allUsersProfilesResponse] = await Promise.all([
+        admin.firestore().collection(`docs`).get(),
+        admin.firestore().collection(`users-profiles`).get(),
+      ]);
+
+      const allDocs = allDocsResponse.docs;
+      const allUsersProfiles = allUsersProfilesResponse.docs.reduce(
+        (acc, doc) => {
+          const userId = doc.id;
+          const profileEntity = doc.data();
+
+          acc[userId] = profileEntity as IUserProfileEntity;
+
+          return acc;
+        },
+        {} as Record<Id, IUserProfileEntity>,
+      );
 
       return allDocs
         .reduce<GetPermanentDocsDto>((acc, doc) => {
           Object.entries(doc.data()).forEach(
             ([id, field]: [string, DocEntityField]) => {
+              const userId = doc.id;
+
               if (field.visibility === `permanent`) {
                 acc.push({
                   id,
@@ -32,6 +51,7 @@ export const DocsService = {
                   description: field.description,
                   path: field.path,
                   tags: field.tags ?? [],
+                  author: allUsersProfiles[userId] ?? null,
                 });
               }
             },
