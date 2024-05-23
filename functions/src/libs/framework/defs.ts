@@ -5,15 +5,15 @@ import type {
   https,
 } from 'firebase-functions';
 
-type IEndpointHandler<TResponse = unknown> = (
+type IControllerHandler<TResponse = unknown> = (
   payload: unknown,
   context: https.CallableContext,
 ) => Promise<TResponse>;
-type IEndpoint = <TResponse = unknown>(
-  handler: IEndpointHandler<TResponse>,
+type IController = <TResponse = unknown>(
+  handler: IControllerHandler<TResponse>,
 ) => HttpsFunction & Runnable<any>;
 
 type IJobHandler = () => Promise<void>;
 type IJob = (interval: string, handler: IJobHandler) => CloudFunction<unknown>;
 
-export type { IEndpointHandler, IEndpoint, IJob, IJobHandler };
+export type { IControllerHandler, IController, IJob, IJobHandler };

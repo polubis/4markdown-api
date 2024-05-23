@@ -27,7 +27,7 @@ import {
   UseBackupPayload,
 } from './payloads/backup.payload';
 import { ProjectId } from './models/project-id';
-import { Endpoint } from './libs/framework/endpoint';
+import { Controller } from './libs/framework/controller';
 import { Job } from './libs/framework/job';
 import { isDev } from './core/env-checks';
 
@@ -244,11 +244,11 @@ export const getYourUserProfile = onCall(async (_, context) => {
   return await UsersProfilesService.getYour(context);
 });
 
-export const useBackup = Endpoint<void>(async (payload) => {
+export const useBackup = Controller<void>(async (payload) => {
   await BackupsService.use(projectId, UseBackupPayload(payload));
 });
 
-export const createBackup = Endpoint<void>(async (payload) => {
+export const createBackup = Controller<void>(async (payload) => {
   await BackupsService.create(projectId, CreateBackupPayload(payload));
 });
 
