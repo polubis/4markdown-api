@@ -33,7 +33,10 @@ type GetDocsDto = GetDocsDtoItem[];
 
 type DeleteDocDto = { id: Id };
 
-type GetPermanentDocsDto = (Omit<PermanentDocEntityField, 'tags'> & {
+type GetPermanentDocsDto = (Omit<
+  PermanentDocEntityField,
+  'tags' | 'code' | 'visibility'
+> & {
   id: Id;
   tags: Tags;
   author: IDocAuthorDto;
