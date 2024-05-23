@@ -4,7 +4,6 @@ import { createSchema } from '../validation/create-schema';
 
 const schema = UserProfileEntity.schema.pick({
   displayName: true,
-  id: true,
   avatar: true,
   bio: true,
   githubUrl: true,

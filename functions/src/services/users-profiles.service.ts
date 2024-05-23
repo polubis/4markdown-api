@@ -41,7 +41,6 @@ const sizes = [
 ] as const;
 
 const createProfileDtoShape = (e: IUserProfileEntity): IUserProfileDto => ({
-  id: e.id,
   avatar: e.avatar,
   displayName: e.displayName,
   bio: e.bio,

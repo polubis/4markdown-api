@@ -1,9 +1,12 @@
-import {
+import type {
   PermanentDocEntityField,
   PrivateDocEntityField,
   PublicDocEntityField,
 } from '../entities/doc.entity';
 import type { Id, Tags } from '../entities/general';
+import type { IUserProfileDto } from './users-profiles.dto';
+
+type IDocAuthorDto = IUserProfileDto | null;
 
 type CreateDocDto = PrivateDocEntityField & { id: Id };
 
@@ -33,6 +36,7 @@ type DeleteDocDto = { id: Id };
 type GetPermanentDocsDto = (Omit<PermanentDocEntityField, 'tags'> & {
   id: Id;
   tags: Tags;
+  author: IDocAuthorDto;
 })[];
 
 export type {
@@ -46,4 +50,5 @@ export type {
   GetDocDto,
   GetPermanentDocsDto,
   DeleteDocDto,
+  IDocAuthorDto,
 };
