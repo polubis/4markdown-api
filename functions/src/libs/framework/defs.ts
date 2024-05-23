@@ -21,4 +21,25 @@ type IController = <TResponse = unknown>(
 type IJobHandler = () => Promise<void>;
 type IJob = (interval: string, handler: IJobHandler) => CloudFunction<unknown>;
 
-export type { IControllerHandler, IController, IJob, IJobHandler };
+type IErrorSymbol =
+  | `UNAUTHENTICATED`
+  | `INVALID_PAYLOAD`
+  | `INTERNAL`
+  | `INVALID_SCHEMA`;
+
+type IErrorHandler = (
+  symbol: IErrorSymbol,
+  message: string,
+) => https.HttpsError;
+type IErrors = Record<string, IErrorHandler>;
+type IErrorHandlerFactory = (code: https.FunctionsErrorCode) => IErrorHandler;
+
+export type {
+  IControllerHandler,
+  IController,
+  IJob,
+  IJobHandler,
+  IErrorHandler,
+  IErrors,
+  IErrorHandlerFactory,
+};

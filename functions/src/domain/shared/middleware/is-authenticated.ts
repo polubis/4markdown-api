@@ -1,5 +1,5 @@
 import { https } from 'firebase-functions';
-import { errors } from '../errors/errors';
+import { errors } from '../../../libs/framework/errors';
 
 const isAuthenticated = (context: https.CallableContext) => {
   if (!context.auth) {
