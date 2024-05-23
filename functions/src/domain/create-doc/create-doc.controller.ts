@@ -6,8 +6,8 @@ import {
   PrivateDocEntityField,
 } from '../shared/entities/doc.entity';
 import { isAuthenticated } from '../shared/middleware/is-authenticated';
+import { DocsRepository } from '../shared/repositories/docs.repository';
 import { CreateDocPayload } from './create-doc.payload';
-import { firestore } from 'firebase-admin';
 
 const createDocController = Controller<void>(async (context, payload) => {
   const { uid } = isAuthenticated(context);
@@ -25,14 +25,20 @@ const createDocController = Controller<void>(async (context, payload) => {
     name,
   });
 
-  // Auto Schema Creation
-  // Repos
   const entity = DocEntity.parse({
     [id]: entityField,
   });
 
-  const collection = firestore().collection(`docs`).doc(uid);
-  const docs = await collection.get();
+  const docsRepository = DocsRepository();
+  const docs = await docsRepository.getEntity(uid);
+  console.log(entity, docs);
+
+  // if (!docs.exists) {
+  //   await docsCollection.set(<DocEntity>{
+  //     [id]: field,
+  //   });
+  //   return dto;
+  // }
 });
 
 export { createDocController };

@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
-const Id = z.string().uuid();
+const Id = z.string();
+const Uid = z.string();
+const EntityName = z.enum([`docs`, `users-profiles`, `images`]);
 
-export { Id };
+export { Id, Uid, EntityName };

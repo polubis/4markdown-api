@@ -1,9 +1,13 @@
 import { z } from 'zod';
 import { DocEntity } from './doc.entity';
-import { Id } from './atoms';
+import { EntityName, Id, Uid } from './atoms';
 
 type IDocEntity = z.infer<typeof DocEntity>;
 
 type IId = z.infer<typeof Id>;
 
-export type { IDocEntity, IId };
+type IUid = z.infer<typeof Uid>;
+
+type IEntityName = z.infer<typeof EntityName>;
+
+export type { IDocEntity, IId, IUid, IEntityName };

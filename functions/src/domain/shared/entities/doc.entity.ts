@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { dateRgx, docNameRgx, noEdgeSpacesRgx } from '../consts/regexes';
-import { Id } from './atoms';
+import { Uid } from './atoms';
 
 const DocEntityFieldBase = z
   .object({
@@ -29,7 +29,7 @@ const DocEntityField = z.union([
   PermamentDocEntityField,
 ]);
 
-const DocEntity = z.record(Id, DocEntityField);
+const DocEntity = z.record(Uid, DocEntityField);
 
 export {
   DocEntity,
