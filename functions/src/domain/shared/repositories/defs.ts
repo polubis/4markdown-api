@@ -10,7 +10,7 @@ type ICollectionGetter = (
 type IDocsRepository = {
   getEntity(uid: IUid): Promise<{
     exists: boolean;
-    data: IDocEntity | undefined;
+    data: () => IDocEntity | undefined;
   }>;
 };
 type IDocsRepositoryFactory = () => IDocsRepository;

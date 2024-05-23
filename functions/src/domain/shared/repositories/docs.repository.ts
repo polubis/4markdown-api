@@ -11,7 +11,7 @@ const DocsRepository: IDocsRepositoryFactory = () => {
 
       return {
         exists,
-        data: data(),
+        data,
       };
     },
   };
