@@ -1,6 +1,6 @@
 import { https } from 'firebase-functions';
 
-type IErrorSymbol = `UNAUTHENTICATED`;
+type IErrorSymbol = `UNAUTHENTICATED` | `INVALID_PAYLOAD` | `INTERNAL`;
 
 type IErrorHandler = (
   symbol: IErrorSymbol,

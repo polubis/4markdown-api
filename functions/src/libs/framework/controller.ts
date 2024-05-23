@@ -6,10 +6,10 @@ const Controller: IController =
   (handler) =>
     https.onCall((payload, context) => {
       middleware.forEach((fn) => {
-        fn(payload, context);
+        fn(context, payload);
       });
 
-      return handler(payload, context);
+      return handler(context, payload);
     });
 
 export { Controller };
