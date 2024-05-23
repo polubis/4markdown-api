@@ -7,12 +7,9 @@ import {
 } from '../shared/entities/doc.entity';
 import { isAuthenticated } from '../shared/middleware/is-authenticated';
 import { CreateDocPayload } from './create-doc.payload';
-import * as admin from 'firebase-admin';
+import { firestore } from 'firebase-admin';
 
-const createDocController = Controller<void>(isAuthenticated)(async (
-  context,
-  payload,
-) => {
+const createDocController = Controller<void>(async (context, payload) => {
   const { uid } = isAuthenticated(context);
   const { name, code } = CreateDocPayload.parse(payload);
   const id = uuid();
@@ -32,7 +29,7 @@ const createDocController = Controller<void>(isAuthenticated)(async (
     [id]: entityField,
   });
 
-  const collection = admin.firestore().collection(`docs`).doc(uid);
+  const collection = firestore().collection(`docs`).doc(uid);
   const docs = await collection.get();
 });
 
