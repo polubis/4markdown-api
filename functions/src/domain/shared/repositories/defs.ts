@@ -8,10 +8,8 @@ type ICollectionGetter = (
 ) => ICollection;
 
 type IDocsRepository = {
-  getEntity(uid: IUid): Promise<{
-    exists: boolean;
-    data: () => IDocEntity | undefined;
-  }>;
+  getEntity(uid: IUid): Promise<IDocEntity | undefined>;
+  setEntity(uid: IUid, entity: IDocEntity): Promise<void>;
 };
 type IDocsRepositoryFactory = () => IDocsRepository;
 

@@ -21,7 +21,8 @@ type IErrorSymbol =
   | `UNAUTHENTICATED`
   | `INVALID_PAYLOAD`
   | `INTERNAL`
-  | `INVALID_SCHEMA`;
+  | `INVALID_SCHEMA`
+  | `ALREADY_EXISTS`;
 
 type IErrorHandler = (
   symbol: IErrorSymbol,

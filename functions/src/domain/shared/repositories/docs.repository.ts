@@ -9,10 +9,10 @@ const DocsRepository: IDocsRepositoryFactory = () => {
     getEntity: async (uid) => {
       const { exists, data } = await getCollection(db, `docs`).doc(uid).get();
 
-      return {
-        exists,
-        data,
-      };
+      return exists ? data() : undefined;
+    },
+    setEntity: async (uid, entity) => {
+      await getCollection(db, `docs`).doc(uid).set(entity);
     },
   };
 };
