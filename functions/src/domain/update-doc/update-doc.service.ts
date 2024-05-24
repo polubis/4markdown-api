@@ -1,10 +1,18 @@
 import { errors } from '../../libs/framework/errors';
 import { nowISO } from '../../libs/utils/date';
 import { pick } from '../../libs/utils/pick';
-import { PrivateDocEntityField } from '../shared/entities/doc.entity';
+import {
+  PermamentDocEntityField,
+  PrivateDocEntityField,
+  PublicDocEntityField,
+} from '../shared/entities/doc.entity';
 import { DocsRepository } from '../shared/repositories/docs.repository';
 import { IUpdateDocService } from './defs';
-import { UpdatePrivateDocDto } from './update-doc.dto';
+import {
+  UpdatePermamentDocDto,
+  UpdatePrivateDocDto,
+  UpdatePublicDocDto,
+} from './update-doc.dto';
 
 const UpdateDocService: IUpdateDocService = {
   update: async (uid, payload) => {
@@ -43,6 +51,53 @@ const UpdateDocService: IUpdateDocService = {
       const dto = await UpdatePrivateDocDto.parseAsync({
         ...pick(payload, `id`),
         ...pick(field, `visibility`, `mdate`, `cdate`, `code`, `name`),
+      });
+
+      docEntity[payload.id] = field;
+
+      await docsRepository.setEntity(uid, docEntity);
+
+      return dto;
+    }
+
+    if (payload.visibility === `public`) {
+      const field = await PublicDocEntityField.parseAsync({
+        mdate: now,
+        ...pick(doc, `cdate`),
+        ...pick(payload, `visibility`, `name`, `code`),
+      });
+
+      const dto = await UpdatePublicDocDto.parseAsync({
+        ...pick(payload, `id`),
+        ...pick(field, `visibility`, `mdate`, `cdate`, `code`, `name`),
+      });
+
+      docEntity[payload.id] = field;
+
+      await docsRepository.setEntity(uid, docEntity);
+
+      return dto;
+    }
+
+    if (payload.visibility === `permament`) {
+      const field = await PermamentDocEntityField.parseAsync({
+        mdate: now,
+        ...pick(doc, `cdate`),
+        ...pick(payload, `visibility`, `name`, `code`, `description`, `tags`),
+      });
+
+      const dto = await UpdatePermamentDocDto.parseAsync({
+        ...pick(payload, `id`),
+        ...pick(
+          field,
+          `visibility`,
+          `mdate`,
+          `cdate`,
+          `code`,
+          `name`,
+          `tags`,
+          `description`,
+        ),
       });
 
       docEntity[payload.id] = field;
