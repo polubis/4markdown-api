@@ -32,17 +32,17 @@ const UpdateDocService: IUpdateDocService = {
       );
     }
 
-    const mdate = nowISO();
+    const now = nowISO();
 
     if (payload.visibility === `private`) {
       const field = await PrivateDocEntityField.parseAsync({
-        mdate,
-        cdate: doc.cdate,
-        ...pick(payload, [`visibility`, `name`, `code`]),
+        mdate: now,
+        ...pick(doc, `cdate`),
+        ...pick(payload, `visibility`, `name`, `code`),
       });
       const dto = await UpdatePrivateDocDto.parseAsync({
-        id: payload.id,
-        ...pick(field, [`visibility`, `mdate`, `cdate`, `code`, `name`]),
+        ...pick(payload, `id`),
+        ...pick(field, `visibility`, `mdate`, `cdate`, `code`, `name`),
       });
 
       docEntity[payload.id] = field;

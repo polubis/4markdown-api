@@ -1,7 +1,11 @@
 import { errors } from '../../libs/framework/errors';
 import { nowISO } from '../../libs/utils/date';
+import { pick } from '../../libs/utils/pick';
 import { uuid } from '../../libs/utils/uuid';
-import { DocEntity } from '../shared/entities/doc.entity';
+import {
+  DocEntity,
+  PrivateDocEntityField,
+} from '../shared/entities/doc.entity';
 import { DocsRepository } from '../shared/repositories/docs.repository';
 import { CreateDocDto } from './create-doc.dto';
 import { ICreateDocService } from './defs';
@@ -9,22 +13,22 @@ import { ICreateDocService } from './defs';
 const CreateDocService: ICreateDocService = {
   create: async (uid, { name, code }) => {
     const id = uuid();
-    const cdate = nowISO();
-    const visibility = `private`;
-    const mdate = cdate;
+    const now = nowISO();
 
-    const [entity, dto] = await Promise.all([
-      DocEntity.parseAsync({
-        [id]: {
-          cdate,
-          mdate,
-          visibility,
-          code,
-          name,
-        },
-      }),
-      CreateDocDto.parseAsync({ cdate, mdate, visibility, code, name, id }),
-    ]);
+    const field = await PrivateDocEntityField.parse({
+      cdate: now,
+      mdate: now,
+      visibility: `private`,
+      code,
+      name,
+    });
+    const entity = await DocEntity.parseAsync({
+      [id]: field,
+    });
+    const dto = await CreateDocDto.parseAsync({
+      ...pick(field, `cdate`, `mdate`, `visibility`, `code`, `name`),
+      id,
+    });
 
     const docsRepository = DocsRepository();
     const docEntity = await docsRepository.getEntity(uid);
