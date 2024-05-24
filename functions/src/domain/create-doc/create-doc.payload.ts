@@ -1,8 +1,5 @@
-import { DocEntityField } from '../shared/entities/doc.entity';
+import { PrivateDocEntityField } from '../shared/entities/doc.entity';
 
-const CreateDocPayload = DocEntityField.transform(({ name, code }) => ({
-  name,
-  code,
-}));
+const CreateDocPayload = PrivateDocEntityField.pick({ name: true, code: true });
 
 export { CreateDocPayload };
