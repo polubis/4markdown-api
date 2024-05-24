@@ -22,7 +22,9 @@ type IErrorSymbol =
   | `INVALID_PAYLOAD`
   | `INTERNAL`
   | `INVALID_SCHEMA`
-  | `ALREADY_EXISTS`;
+  | `ALREADY_EXISTS`
+  | `NOT_FOUND_RECORD`
+  | `NOT_UP_TO_DATE_ENTRY`;
 
 type IErrorHandler = (
   symbol: IErrorSymbol,

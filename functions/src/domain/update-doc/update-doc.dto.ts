@@ -6,34 +6,54 @@ import {
 } from '../shared/entities/doc.entity';
 import { Id } from '../shared/entities/atoms';
 
+const UpdatePrivateDocDto = PrivateDocEntityField.pick({
+  name: true,
+  cdate: true,
+  mdate: true,
+  code: true,
+  visibility: true,
+})
+  .extend({
+    id: Id,
+  })
+  .strict();
+
+const UpdatePublicDocDto = PublicDocEntityField.pick({
+  name: true,
+  cdate: true,
+  mdate: true,
+  code: true,
+  visibility: true,
+})
+  .extend({
+    id: Id,
+  })
+  .strict();
+
+const UpdatePermamentDocDto = PermamentDocEntityField.pick({
+  name: true,
+  description: true,
+  visibility: true,
+  cdate: true,
+  mdate: true,
+  code: true,
+  tags: true,
+  path: true,
+})
+  .extend({
+    id: Id,
+  })
+  .strict();
+
 const UpdateDocDto = z.union([
-  PrivateDocEntityField.pick({
-    name: true,
-    cdate: true,
-    mdate: true,
-    visibility: true,
-  }).extend({
-    id: Id,
-  }),
-  PublicDocEntityField.pick({
-    name: true,
-    cdate: true,
-    mdate: true,
-    visibility: true,
-  }).extend({
-    id: Id,
-  }),
-  PermamentDocEntityField.pick({
-    name: true,
-    description: true,
-    visibility: true,
-    cdate: true,
-    mdate: true,
-    tags: true,
-    path: true,
-  }).extend({
-    id: Id,
-  }),
+  UpdatePrivateDocDto,
+  UpdatePublicDocDto,
+  UpdatePermamentDocDto,
 ]);
 
-export { UpdateDocDto };
+export {
+  UpdateDocDto,
+  UpdatePrivateDocDto,
+  UpdatePublicDocDto,
+  UpdatePermamentDocDto,
+};

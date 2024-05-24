@@ -12,26 +12,33 @@ const UpdateDocPayload = z.union([
     code: true,
     visibility: true,
     mdate: true,
-  }).extend({
-    id: Id,
-  }),
+  })
+    .extend({
+      id: Id,
+    })
+    .strict(),
   PublicDocEntityField.pick({
     name: true,
     code: true,
     visibility: true,
     mdate: true,
-  }).extend({
-    id: Id,
-  }),
+  })
+    .extend({
+      id: Id,
+    })
+    .strict(),
   PermamentDocEntityField.pick({
     name: true,
     code: true,
     visibility: true,
     description: true,
     mdate: true,
-  }).extend({
-    id: Id,
-  }),
+    tags: true,
+  })
+    .extend({
+      id: Id,
+    })
+    .strict(),
 ]);
 
 export { UpdateDocPayload };
