@@ -10,7 +10,6 @@ import type {
 } from './dtos/docs.dto';
 import { errors } from './core/errors';
 import { DocsService } from './services/docs.service';
-import { AuthService } from './services/auth.service';
 import { UsersService } from './services/users.service';
 import { UploadImagePayload } from './payloads/images.payload';
 import { UsersProfilesService } from './services/users-profiles.service';
@@ -24,6 +23,7 @@ import { Controller } from './libs/framework/controller';
 import { Job } from './libs/framework/job';
 import { isDev } from './core/env-checks';
 import { createDocController } from './domain/create-doc/create-doc.controller';
+import { updateDocController } from './domain/update-doc/update-doc.controller';
 
 const app = admin.initializeApp();
 const projectId = ProjectId(app.options.projectId);
@@ -31,11 +31,7 @@ const projectId = ProjectId(app.options.projectId);
 const { onCall } = https;
 
 export const createDoc = createDocController;
-
-export const updateDoc = onCall(async (payload, context) => {
-  const user = AuthService.authorize(context);
-  return DocsService.update(user.uid, payload);
-});
+export const updateDoc = updateDocController;
 
 export const getDocs = onCall(async (_, context) => {
   if (!context.auth) {

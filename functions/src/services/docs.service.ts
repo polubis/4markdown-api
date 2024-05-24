@@ -1,15 +1,6 @@
-import { UpdateDocPayload } from '../payloads/docs.payload';
 import { errors } from '../core/errors';
-import { DocEntity, DocEntityField } from '../entities/doc.entity';
-import {
-  GetPermanentDocsDto,
-  UpdateDocPermanentDto,
-  UpdateDocPrivateDto,
-  UpdateDocPublicDto,
-} from '../dtos/docs.dto';
-import { Doc, getAllDocs } from '../core/doc';
-import { Id } from '../entities/general';
-import { DocsRepository } from '../repositories/docs.repository';
+import { DocEntityField } from '../entities/doc.entity';
+import { GetPermanentDocsDto } from '../dtos/docs.dto';
 import * as admin from 'firebase-admin';
 
 export const DocsService = {
@@ -46,109 +37,6 @@ export const DocsService = {
         });
     } catch (err) {
       throw errors.internal(`Server error`);
-    }
-  },
-  update: async (uid: Id, payload: UpdateDocPayload) => {
-    const name = Doc.createName(payload.name, payload.visibility);
-    const docsRepo = DocsRepository(uid);
-
-    const docs = await docsRepo.getMy();
-
-    if (!docs.exists) {
-      throw errors.notFound();
-    }
-
-    const mdate = new Date().toISOString();
-    const fields = docs.data() as DocEntity;
-    const doc = fields[payload.id];
-
-    if (!doc) {
-      throw errors.notFound();
-    }
-
-    if (doc.mdate !== payload.mdate) {
-      throw errors.outOfDateEntry(
-        `You cannot edit this document. You've changed it on another device.`,
-      );
-    }
-
-    switch (payload.visibility) {
-      case `public`: {
-        const dto: UpdateDocPublicDto = {
-          cdate: doc.cdate,
-          mdate,
-          visibility: payload.visibility,
-          code: payload.code,
-          name,
-          id: payload.id,
-        };
-
-        const docEntity: DocEntity = {
-          [payload.id]: dto,
-        };
-
-        await docsRepo.update(docEntity);
-
-        return dto;
-      }
-      case `private`: {
-        const dto: UpdateDocPrivateDto = {
-          cdate: doc.cdate,
-          mdate,
-          visibility: payload.visibility,
-          code: payload.code,
-          name,
-          id: payload.id,
-        };
-
-        const docEntity: DocEntity = {
-          [payload.id]: dto,
-        };
-
-        await docsRepo.update(docEntity);
-
-        return dto;
-      }
-      case `permanent`: {
-        const tags = Doc.createTags(payload.tags);
-
-        const dto: UpdateDocPermanentDto = {
-          cdate: doc.cdate,
-          mdate,
-          visibility: payload.visibility,
-          code: payload.code,
-          name,
-          id: payload.id,
-          path: Doc.createPath(name, payload.visibility),
-          description: Doc.createDescription(payload.description),
-          tags,
-        };
-
-        const alreadyExists =
-          (await getAllDocs()).filter(
-            (doc) =>
-              doc.id !== payload.id &&
-              doc.visibility === `permanent` &&
-              doc.name === dto.name,
-          ).length > 0;
-
-        if (alreadyExists) {
-          throw errors.exists(
-            `Document with provided name already exists, please change name`,
-          );
-        }
-
-        const docEntity: DocEntity = {
-          [payload.id]: dto,
-        };
-
-        await docsRepo.update(docEntity);
-
-        return dto;
-      }
-      default: {
-        throw errors.invalidArg(`Wrong visiblity value`);
-      }
     }
   },
 };

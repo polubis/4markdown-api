@@ -2,17 +2,43 @@ import { errors } from '../../libs/framework/errors';
 import { nowISO } from '../../libs/utils/date';
 import { pick } from '../../libs/utils/pick';
 import {
+  DocEntity,
   PermamentDocEntityField,
   PrivateDocEntityField,
   PublicDocEntityField,
 } from '../shared/entities/doc.entity';
+import { IDocsRepository } from '../shared/repositories/defs';
 import { DocsRepository } from '../shared/repositories/docs.repository';
-import { IUpdateDocService } from './defs';
+import { IUpdateDocService, IUpdatePermamentDocPayload } from './defs';
 import {
   UpdatePermamentDocDto,
   UpdatePrivateDocDto,
   UpdatePublicDocDto,
 } from './update-doc.dto';
+
+const isDuplicated = async (
+  docsRepository: IDocsRepository,
+  payload: IUpdatePermamentDocPayload,
+): Promise<boolean> => {
+  const collection = await docsRepository.getCollection();
+
+  for (const item of collection) {
+    const entity = item.data();
+
+    for (const fieldId in entity) {
+      const field = entity[fieldId];
+
+      if (
+        fieldId !== payload.id &&
+        field.visibility === payload.visibility &&
+        field.name === payload.name
+      )
+        return true;
+    }
+  }
+
+  return false;
+};
 
 const UpdateDocService: IUpdateDocService = {
   update: async (uid, payload) => {
@@ -52,10 +78,11 @@ const UpdateDocService: IUpdateDocService = {
         ...pick(payload, `id`),
         ...pick(field, `visibility`, `mdate`, `cdate`, `code`, `name`),
       });
+      const entity = await DocEntity.parse({
+        [payload.id]: field,
+      });
 
-      docEntity[payload.id] = field;
-
-      await docsRepository.setEntity(uid, docEntity);
+      await docsRepository.updateEntity(uid, entity);
 
       return dto;
     }
@@ -66,15 +93,15 @@ const UpdateDocService: IUpdateDocService = {
         ...pick(doc, `cdate`),
         ...pick(payload, `visibility`, `name`, `code`),
       });
-
       const dto = await UpdatePublicDocDto.parseAsync({
         ...pick(payload, `id`),
         ...pick(field, `visibility`, `mdate`, `cdate`, `code`, `name`),
       });
+      const entity = await DocEntity.parse({
+        [payload.id]: field,
+      });
 
-      docEntity[payload.id] = field;
-
-      await docsRepository.setEntity(uid, docEntity);
+      await docsRepository.updateEntity(uid, entity);
 
       return dto;
     }
@@ -85,7 +112,6 @@ const UpdateDocService: IUpdateDocService = {
         ...pick(doc, `cdate`),
         ...pick(payload, `visibility`, `name`, `code`, `description`, `tags`),
       });
-
       const dto = await UpdatePermamentDocDto.parseAsync({
         ...pick(payload, `id`),
         ...pick(
@@ -99,10 +125,18 @@ const UpdateDocService: IUpdateDocService = {
           `description`,
         ),
       });
+      const entity = await DocEntity.parse({
+        [payload.id]: field,
+      });
 
-      docEntity[payload.id] = field;
+      if (await isDuplicated(docsRepository, payload)) {
+        throw errors.alreadyExists(
+          `ALREADY_EXISTS`,
+          `Document with provided name already exists, please change name`,
+        );
+      }
 
-      await docsRepository.setEntity(uid, docEntity);
+      await docsRepository.updateEntity(uid, entity);
 
       return dto;
     }
