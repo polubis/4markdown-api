@@ -1,10 +1,7 @@
 import { errors } from '../../libs/framework/errors';
 import { nowISO } from '../../libs/utils/date';
 import { uuid } from '../../libs/utils/uuid';
-import {
-  DocEntity,
-  PrivateDocEntityField,
-} from '../shared/entities/doc.entity';
+import { DocEntity } from '../shared/entities/doc.entity';
 import { DocsRepository } from '../shared/repositories/docs.repository';
 import { CreateDocDto } from './create-doc.dto';
 import { ICreateDocService } from './defs';
@@ -16,30 +13,30 @@ const CreateDocService: ICreateDocService = {
     const visibility = `private`;
     const mdate = cdate;
 
-    const entityField = await PrivateDocEntityField.parseAsync({
-      cdate,
-      mdate,
-      visibility,
-      code,
-      name,
-    });
-
     const [entity, dto] = await Promise.all([
       DocEntity.parseAsync({
-        [id]: entityField,
+        [id]: {
+          cdate,
+          mdate,
+          visibility,
+          code,
+          name,
+        },
       }),
-      CreateDocDto.parseAsync({ ...entityField, id }),
+      CreateDocDto.parseAsync({ cdate, mdate, visibility, code, name, id }),
     ]);
 
     const docsRepository = DocsRepository();
-    const doc = await docsRepository.getEntity(uid);
+    const docEntity = await docsRepository.getEntity(uid);
 
-    if (!doc) {
+    if (!docEntity) {
       await docsRepository.setEntity(uid, entity);
       return dto;
     }
 
-    const hasDuplicate = Object.values(doc).some((f) => f.name === dto.name);
+    const hasDuplicate = Object.values(docEntity).some(
+      (field) => field.name === dto.name,
+    );
 
     if (hasDuplicate) {
       throw errors.alreadyExists(
@@ -48,10 +45,9 @@ const CreateDocService: ICreateDocService = {
       );
     }
 
-    await docsRepository.setEntity(uid, {
-      ...doc,
-      ...entity,
-    });
+    docEntity[id] = entity[id];
+
+    await docsRepository.setEntity(uid, docEntity);
 
     return dto;
   },
