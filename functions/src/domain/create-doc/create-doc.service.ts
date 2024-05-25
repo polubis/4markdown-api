@@ -15,7 +15,7 @@ const CreateDocService: ICreateDocService = {
     const id = uuid();
     const now = nowISO();
 
-    const field = await PrivateDocEntityField.parse({
+    const field = await PrivateDocEntityField.parseAsync({
       cdate: now,
       mdate: now,
       visibility: `private`,
