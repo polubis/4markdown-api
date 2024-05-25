@@ -78,7 +78,7 @@ const UpdateDocService: IUpdateDocService = {
         ...pick(payload, `id`),
         ...pick(field, `visibility`, `mdate`, `cdate`, `code`, `name`),
       });
-      const entity = await DocEntity.parse({
+      const entity = await DocEntity.parseAsync({
         [payload.id]: field,
       });
 
@@ -97,7 +97,7 @@ const UpdateDocService: IUpdateDocService = {
         ...pick(payload, `id`),
         ...pick(field, `visibility`, `mdate`, `cdate`, `code`, `name`),
       });
-      const entity = await DocEntity.parse({
+      const entity = await DocEntity.parseAsync({
         [payload.id]: field,
       });
 
@@ -125,7 +125,7 @@ const UpdateDocService: IUpdateDocService = {
           `description`,
         ),
       });
-      const entity = await DocEntity.parse({
+      const entity = await DocEntity.parseAsync({
         [payload.id]: field,
       });
 
