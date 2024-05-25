@@ -1,13 +1,8 @@
 import { https } from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import type { DeleteDocPayload, GetDocPayload } from './payloads/docs.payload';
+import type { GetDocPayload } from './payloads/docs.payload';
 import type { DocEntityField } from './entities/doc.entity';
-import type {
-  DeleteDocDto,
-  GetDocDto,
-  GetDocsDto,
-  GetDocsDtoItem,
-} from './dtos/docs.dto';
+import type { GetDocDto, GetDocsDto, GetDocsDtoItem } from './dtos/docs.dto';
 import { errors } from './core/errors';
 import { DocsService } from './services/docs.service';
 import { UsersService } from './services/users.service';
@@ -24,6 +19,7 @@ import { Job } from './libs/framework/job';
 import { isDev } from './core/env-checks';
 import { createDocController } from './domain/create-doc/create-doc.controller';
 import { updateDocController } from './domain/update-doc/update-doc.controller';
+import { deleteDocController } from './domain/delete-doc/delete-doc.controller';
 
 const app = admin.initializeApp();
 const projectId = ProjectId(app.options.projectId);
@@ -81,30 +77,7 @@ export const getDocs = onCall(async (_, context) => {
   return docs;
 });
 
-export const deleteDoc = onCall(async (payload: DeleteDocPayload, context) => {
-  if (!context.auth) {
-    throw errors.notAuthorized();
-  }
-
-  const docsCollection = admin
-    .firestore()
-    .collection(`docs`)
-    .doc(context.auth.uid);
-
-  const result = (await docsCollection.get()).data();
-
-  if (result === undefined) {
-    throw errors.notFound();
-  }
-
-  result[payload.id] = admin.firestore.FieldValue.delete();
-
-  await docsCollection.update(result);
-
-  const dto: DeleteDocDto = { id: payload.id };
-
-  return dto;
-});
+export const deleteDoc = deleteDocController;
 
 export const deleteAccount = onCall(async (_, context) => {
   if (!context.auth) {
