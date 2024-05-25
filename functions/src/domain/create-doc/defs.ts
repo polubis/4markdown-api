@@ -1,10 +1,12 @@
 import { z } from 'zod';
 import { CreateDocPayload } from './create-doc.payload';
-import { CreateDocDto } from './create-doc.dto';
-import { IUid } from '../shared/entities/defs';
+import { IId, IPrivateDocEntityField, IUid } from '../shared/entities/defs';
 
 type ICreateDocPayload = z.infer<typeof CreateDocPayload>;
-type ICreateDocDto = z.infer<typeof CreateDocDto>;
+type ICreateDocDto = Pick<
+  IPrivateDocEntityField,
+  'cdate' | 'code' | 'mdate' | 'name' | 'visibility'
+> & { id: IId };
 
 type ICreateDocService = {
   create(uid: IUid, payload: ICreateDocPayload): Promise<ICreateDocDto>;
