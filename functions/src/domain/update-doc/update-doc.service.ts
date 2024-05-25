@@ -74,13 +74,15 @@ const UpdateDocService: IUpdateDocService = {
         ...pick(doc, `cdate`),
         ...pick(payload, `visibility`, `name`, `code`),
       });
-      const dto = await UpdatePrivateDocDto.parseAsync({
-        ...pick(payload, `id`),
-        ...pick(field, `visibility`, `mdate`, `cdate`, `code`, `name`),
-      });
-      const entity = await DocEntity.parseAsync({
-        [payload.id]: field,
-      });
+      const [entity, dto] = await Promise.all([
+        DocEntity.parseAsync({
+          [payload.id]: field,
+        }),
+        UpdatePrivateDocDto.parseAsync({
+          ...pick(payload, `id`),
+          ...pick(field, `visibility`, `mdate`, `cdate`, `code`, `name`),
+        }),
+      ]);
 
       await docsRepository.updateEntity(uid, entity);
 
@@ -93,13 +95,15 @@ const UpdateDocService: IUpdateDocService = {
         ...pick(doc, `cdate`),
         ...pick(payload, `visibility`, `name`, `code`),
       });
-      const dto = await UpdatePublicDocDto.parseAsync({
-        ...pick(payload, `id`),
-        ...pick(field, `visibility`, `mdate`, `cdate`, `code`, `name`),
-      });
-      const entity = await DocEntity.parseAsync({
-        [payload.id]: field,
-      });
+      const [entity, dto] = await Promise.all([
+        DocEntity.parseAsync({
+          [payload.id]: field,
+        }),
+        UpdatePublicDocDto.parseAsync({
+          ...pick(payload, `id`),
+          ...pick(field, `visibility`, `mdate`, `cdate`, `code`, `name`),
+        }),
+      ]);
 
       await docsRepository.updateEntity(uid, entity);
 
@@ -112,22 +116,24 @@ const UpdateDocService: IUpdateDocService = {
         ...pick(doc, `cdate`),
         ...pick(payload, `visibility`, `name`, `code`, `description`, `tags`),
       });
-      const dto = await UpdatePermamentDocDto.parseAsync({
-        ...pick(payload, `id`),
-        ...pick(
-          field,
-          `visibility`,
-          `mdate`,
-          `cdate`,
-          `code`,
-          `name`,
-          `tags`,
-          `description`,
-        ),
-      });
-      const entity = await DocEntity.parseAsync({
-        [payload.id]: field,
-      });
+      const [entity, dto] = await Promise.all([
+        DocEntity.parseAsync({
+          [payload.id]: field,
+        }),
+        UpdatePermamentDocDto.parseAsync({
+          ...pick(payload, `id`),
+          ...pick(
+            field,
+            `visibility`,
+            `mdate`,
+            `cdate`,
+            `code`,
+            `name`,
+            `tags`,
+            `description`,
+          ),
+        }),
+      ]);
 
       if (await isDuplicated(docsRepository, payload)) {
         throw errors.alreadyExists(

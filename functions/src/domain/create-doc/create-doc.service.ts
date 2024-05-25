@@ -22,13 +22,15 @@ const CreateDocService: ICreateDocService = {
       code,
       name,
     });
-    const entity = await DocEntity.parseAsync({
-      [id]: field,
-    });
-    const dto = await CreateDocDto.parseAsync({
-      ...pick(field, `cdate`, `mdate`, `visibility`, `code`, `name`),
-      id,
-    });
+    const [entity, dto] = await Promise.all([
+      DocEntity.parseAsync({
+        [id]: field,
+      }),
+      CreateDocDto.parseAsync({
+        ...pick(field, `cdate`, `mdate`, `visibility`, `code`, `name`),
+        id,
+      }),
+    ]);
 
     const docsRepository = DocsRepository();
     const docEntity = await docsRepository.getEntity(uid);
