@@ -1,10 +1,9 @@
 import { z } from 'zod';
-import { IUid } from '../shared/entities/defs';
+import { IId, IUid } from '../shared/entities/defs';
 import { DeleteDocPayload } from './delete-doc.payload';
-import { DeleteDocDto } from './delete-doc.dto';
 
 type IDeleteDocPayload = z.infer<typeof DeleteDocPayload>;
-type IDeleteDocDto = z.infer<typeof DeleteDocDto>;
+type IDeleteDocDto = { id: IId };
 
 type IDeleteDocService = {
   delete(uid: IUid, payload: IDeleteDocPayload): Promise<IDeleteDocDto>;

@@ -28,7 +28,7 @@ const UpdatePublicDtoPayload = PublicDocEntityField.pick({
   })
   .strict();
 
-const UpdatePermamentDocPayload = PermamentDocEntityField.pick({
+const UpdatePermanentDocPayload = PermamentDocEntityField.pick({
   name: true,
   code: true,
   visibility: true,
@@ -44,12 +44,12 @@ const UpdatePermamentDocPayload = PermamentDocEntityField.pick({
 const UpdateDocPayload = z.union([
   UpdatePrivateDocPayload,
   UpdatePublicDtoPayload,
-  UpdatePermamentDocPayload,
+  UpdatePermanentDocPayload,
 ]);
 
 export {
   UpdateDocPayload,
   UpdatePrivateDocPayload,
   UpdatePublicDtoPayload,
-  UpdatePermamentDocPayload,
+  UpdatePermanentDocPayload,
 };

@@ -2,23 +2,28 @@ import { errors } from '../../libs/framework/errors';
 import { nowISO } from '../../libs/utils/date';
 import { pick } from '../../libs/utils/pick';
 import {
+  IDocEntity,
+  IPrivateDocEntityField,
+  IPublicDocEntityField,
+  IPermanentDocEntityField,
+} from '../shared/entities/defs';
+import {
   DocEntity,
   PermamentDocEntityField,
-  PrivateDocEntityField,
-  PublicDocEntityField,
 } from '../shared/entities/doc.entity';
 import { IDocsRepository } from '../shared/repositories/defs';
 import { DocsRepository } from '../shared/repositories/docs.repository';
-import { IUpdateDocService, IUpdatePermamentDocPayload } from './defs';
 import {
-  UpdatePermamentDocDto,
-  UpdatePrivateDocDto,
-  UpdatePublicDocDto,
-} from './update-doc.dto';
+  IUpdateDocService,
+  IUpdatePermamentDocDto,
+  IUpdatePermanentDocPayload,
+  IUpdatePrivateDocDto,
+  IUpdatePublicDocDto,
+} from './defs';
 
 const isDuplicated = async (
   docsRepository: IDocsRepository,
-  payload: IUpdatePermamentDocPayload,
+  payload: IUpdatePermanentDocPayload,
 ): Promise<boolean> => {
   const collection = await docsRepository.getCollection();
 
@@ -69,20 +74,18 @@ const UpdateDocService: IUpdateDocService = {
     const now = nowISO();
 
     if (payload.visibility === `private`) {
-      const field = await PrivateDocEntityField.parseAsync({
+      const field: IPrivateDocEntityField = {
         mdate: now,
         ...pick(doc, `cdate`),
         ...pick(payload, `visibility`, `name`, `code`),
-      });
-      const [entity, dto] = await Promise.all([
-        DocEntity.parseAsync({
-          [payload.id]: field,
-        }),
-        UpdatePrivateDocDto.parseAsync({
-          ...pick(payload, `id`),
-          ...pick(field, `visibility`, `mdate`, `cdate`, `code`, `name`),
-        }),
-      ]);
+      };
+      const entity: IDocEntity = {
+        [payload.id]: field,
+      };
+      const dto: IUpdatePrivateDocDto = {
+        ...pick(payload, `id`),
+        ...pick(field, `visibility`, `mdate`, `cdate`, `code`, `name`),
+      };
 
       await docsRepository.updateEntity(uid, entity);
 
@@ -90,50 +93,49 @@ const UpdateDocService: IUpdateDocService = {
     }
 
     if (payload.visibility === `public`) {
-      const field = await PublicDocEntityField.parseAsync({
+      const field: IPublicDocEntityField = {
         mdate: now,
         ...pick(doc, `cdate`),
         ...pick(payload, `visibility`, `name`, `code`),
-      });
-      const [entity, dto] = await Promise.all([
-        DocEntity.parseAsync({
-          [payload.id]: field,
-        }),
-        UpdatePublicDocDto.parseAsync({
-          ...pick(payload, `id`),
-          ...pick(field, `visibility`, `mdate`, `cdate`, `code`, `name`),
-        }),
-      ]);
+      };
+      const entity: IDocEntity = {
+        [payload.id]: field,
+      };
+      const dto: IUpdatePublicDocDto = {
+        ...pick(payload, `id`),
+        ...pick(field, `visibility`, `mdate`, `cdate`, `code`, `name`),
+      };
 
       await docsRepository.updateEntity(uid, entity);
 
       return dto;
     }
 
-    if (payload.visibility === `permament`) {
-      const field = await PermamentDocEntityField.parseAsync({
+    if (payload.visibility === `permanent`) {
+      const field: IPermanentDocEntityField = {
         mdate: now,
         ...pick(doc, `cdate`),
         ...pick(payload, `visibility`, `name`, `code`, `description`, `tags`),
-      });
-      const [entity, dto] = await Promise.all([
-        DocEntity.parseAsync({
-          [payload.id]: field,
-        }),
-        UpdatePermamentDocDto.parseAsync({
-          ...pick(payload, `id`),
-          ...pick(
-            field,
-            `visibility`,
-            `mdate`,
-            `cdate`,
-            `code`,
-            `name`,
-            `tags`,
-            `description`,
-          ),
-        }),
-      ]);
+        path: `/`,
+        // TODO_ADD_PATH
+      };
+      const entity: IDocEntity = {
+        [payload.id]: field,
+      };
+      const dto: IUpdatePermamentDocDto = {
+        ...pick(payload, `id`),
+        ...pick(
+          field,
+          `visibility`,
+          `mdate`,
+          `cdate`,
+          `code`,
+          `name`,
+          `tags`,
+          `description`,
+          `path`,
+        ),
+      };
 
       if (await isDuplicated(docsRepository, payload)) {
         throw errors.alreadyExists(

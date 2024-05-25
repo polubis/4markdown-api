@@ -32,7 +32,7 @@ const PermamentDocEntityField = DocEntityFieldBase.extend({
       message: `Name must consist of at least three words`,
     },
   ),
-  visibility: z.literal(`permament`),
+  visibility: z.literal(`permanent`),
   description: z.string().regex(noEdgeSpacesRgx).min(50).max(250),
   tags: z
     .array(z.string().regex(docTagRgx).min(2).max(50).regex(noEdgeSpacesRgx))
