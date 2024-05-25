@@ -28,6 +28,7 @@ const { onCall } = https;
 
 export const createDoc = createDocController;
 export const updateDoc = updateDocController;
+export const deleteDoc = deleteDocController;
 
 export const getDocs = onCall(async (_, context) => {
   if (!context.auth) {
@@ -76,8 +77,6 @@ export const getDocs = onCall(async (_, context) => {
 
   return docs;
 });
-
-export const deleteDoc = deleteDocController;
 
 export const deleteAccount = onCall(async (_, context) => {
   if (!context.auth) {
