@@ -143,7 +143,26 @@ const checkIfDisplayNameIsTaken = async (
   });
 };
 
+type UsersProfilesLookup = Record<string, IUserProfileEntity>;
+
 const UsersProfilesService = {
+  getAll: async (): Promise<UsersProfilesLookup> => {
+    const usersProfilesCollection = await admin
+      .firestore()
+      .collection(`users-profiles`)
+      .get();
+
+    const usersProfiles =
+      usersProfilesCollection.docs.reduce<UsersProfilesLookup>(
+        (acc, profile) => {
+          acc[profile.id] = profile.data() as IUserProfileEntity;
+          return acc;
+        },
+        {} as UsersProfilesLookup,
+      );
+
+    return usersProfiles;
+  },
   getYour: async (
     context: https.CallableContext,
   ): Promise<IUserProfileDto | null> => {

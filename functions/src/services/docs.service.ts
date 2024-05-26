@@ -11,13 +11,18 @@ import { Doc, getAllDocs } from '../core/doc';
 import { Id } from '../entities/general';
 import { DocsRepository } from '../repositories/docs.repository';
 import * as admin from 'firebase-admin';
+import { UsersProfilesService } from './users-profiles.service';
 
 export const DocsService = {
   getAllPermanent: async (): Promise<GetPermanentDocsDto> => {
     try {
-      const allDocs = (await admin.firestore().collection(`docs`).get()).docs;
+      const [docsCollection, usersProfiles] = await Promise.all([
+        admin.firestore().collection(`docs`).get(),
+        UsersProfilesService.getAll(),
+      ]);
+      const docs = docsCollection.docs;
 
-      return allDocs
+      return docs
         .reduce<GetPermanentDocsDto>((acc, doc) => {
           Object.entries(doc.data()).forEach(
             ([id, field]: [string, DocEntityField]) => {
@@ -32,6 +37,7 @@ export const DocsService = {
                   description: field.description,
                   path: field.path,
                   tags: field.tags ?? [],
+                  author: usersProfiles[doc.id] ?? null,
                 });
               }
             },
