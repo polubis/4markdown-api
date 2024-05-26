@@ -124,6 +124,7 @@ export const getDocs = onCall(async (_, context) => {
               visibility: field.visibility,
               description: field.description,
               path: field.path,
+              author: null,
               tags: field.tags ?? [],
             }
           : {
@@ -133,6 +134,7 @@ export const getDocs = onCall(async (_, context) => {
               cdate: field.cdate,
               mdate: field.mdate,
               visibility: field.visibility,
+              author: null,
             },
     )
     .sort((prev, curr) => {
@@ -180,13 +182,16 @@ export const deleteAccount = onCall(async (_, context) => {
 });
 
 export const getPublicDoc = onCall(async (payload: GetDocPayload) => {
-  const docs = (await admin.firestore().collection(`docs`).get()).docs.map(
-    (doc) => doc.data(),
-  );
+  const [docsCollection, usersProfiles] = await Promise.all([
+    admin.firestore().collection(`docs`).get(),
+    UsersProfilesService.getAll(),
+  ]);
+
   let docDto: GetDocDto | undefined;
 
-  for (let i = 0; i < docs.length; i++) {
-    const doc = docs[i];
+  for (let i = 0; i < docsCollection.docs.length; i++) {
+    const doc = docsCollection.docs[i].data();
+    const userId = docsCollection.docs[i].id;
     const field: DocEntityField = doc[payload.id];
 
     if (field) {
@@ -201,6 +206,7 @@ export const getPublicDoc = onCall(async (payload: GetDocPayload) => {
           description: field.description,
           path: field.path,
           tags: field.tags ?? [],
+          author: usersProfiles[userId] ?? null,
         };
       } else {
         docDto = {
@@ -210,6 +216,7 @@ export const getPublicDoc = onCall(async (payload: GetDocPayload) => {
           mdate: field.mdate,
           code: field.code,
           visibility: field.visibility,
+          author: usersProfiles[userId] ?? null,
         };
       }
 
