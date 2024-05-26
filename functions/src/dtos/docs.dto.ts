@@ -4,8 +4,11 @@ import {
   PublicDocEntityField,
 } from '../entities/doc.entity';
 import type { Id, Tags } from '../entities/general';
+import { IUserProfileDto } from './users-profiles.dto';
 
 type CreateDocDto = PrivateDocEntityField & { id: Id };
+
+type DocAuthorDto = IUserProfileDto | null;
 
 type UpdateDocPublicDto = PublicDocEntityField & { id: Id };
 type UpdateDocPrivateDto = PrivateDocEntityField & { id: Id };
@@ -20,9 +23,13 @@ type UpdateDocDto =
   | UpdateDocPermanentDto;
 
 type GetDocDto =
-  | (PublicDocEntityField & { id: Id })
+  | (PublicDocEntityField & { id: Id; author: DocAuthorDto })
   | (PrivateDocEntityField & { id: Id })
-  | (Omit<PermanentDocEntityField, 'tags'> & { id: Id; tags: Tags });
+  | (Omit<PermanentDocEntityField, 'tags'> & {
+      id: Id;
+      tags: Tags;
+      author: DocAuthorDto;
+    });
 
 type GetDocsDtoItem = GetDocDto;
 
@@ -33,6 +40,7 @@ type DeleteDocDto = { id: Id };
 type GetPermanentDocsDto = (Omit<PermanentDocEntityField, 'tags'> & {
   id: Id;
   tags: Tags;
+  author: DocAuthorDto;
 })[];
 
 export type {
@@ -43,6 +51,7 @@ export type {
   UpdateDocPermanentDto,
   GetDocsDto,
   GetDocsDtoItem,
+  DocAuthorDto,
   GetDocDto,
   GetPermanentDocsDto,
   DeleteDocDto,
