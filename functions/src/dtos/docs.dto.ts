@@ -24,7 +24,7 @@ type UpdateDocDto =
 
 type GetDocDto =
   | (PublicDocEntityField & { id: Id; author: DocAuthorDto })
-  | (PrivateDocEntityField & { id: Id; author: DocAuthorDto })
+  | (PrivateDocEntityField & { id: Id })
   | (Omit<PermanentDocEntityField, 'tags'> & {
       id: Id;
       tags: Tags;

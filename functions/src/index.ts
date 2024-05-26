@@ -112,31 +112,47 @@ export const getDocs = onCall(async (_, context) => {
   if (result === undefined) return [];
 
   const docs: GetDocsDto = Object.entries(result)
-    .map(
-      ([id, field]: [string, DocEntityField]): GetDocsDtoItem =>
-        field.visibility === `permanent`
-          ? {
-              id,
-              name: field.name,
-              code: field.code,
-              cdate: field.cdate,
-              mdate: field.mdate,
-              visibility: field.visibility,
-              description: field.description,
-              path: field.path,
-              author: null,
-              tags: field.tags ?? [],
-            }
-          : {
-              id,
-              name: field.name,
-              code: field.code,
-              cdate: field.cdate,
-              mdate: field.mdate,
-              visibility: field.visibility,
-              author: null,
-            },
-    )
+    .map(([id, field]: [string, DocEntityField]): GetDocsDtoItem => {
+      if (field.visibility === `permanent`) {
+        return {
+          id,
+          name: field.name,
+          code: field.code,
+          cdate: field.cdate,
+          mdate: field.mdate,
+          visibility: field.visibility,
+          description: field.description,
+          path: field.path,
+          author: null,
+          tags: field.tags ?? [],
+        };
+      }
+
+      if (field.visibility === `public`) {
+        return {
+          id,
+          name: field.name,
+          code: field.code,
+          cdate: field.cdate,
+          mdate: field.mdate,
+          visibility: field.visibility,
+          author: null,
+        };
+      }
+
+      if (field.visibility === `private`) {
+        return {
+          id,
+          name: field.name,
+          code: field.code,
+          cdate: field.cdate,
+          mdate: field.mdate,
+          visibility: field.visibility,
+        };
+      }
+
+      throw errors.internal(`Invalid document visibility`);
+    })
     .sort((prev, curr) => {
       if (prev.mdate > curr.mdate) return -1;
       if (prev.mdate === curr.mdate) return 0;
@@ -182,10 +198,7 @@ export const deleteAccount = onCall(async (_, context) => {
 });
 
 export const getPublicDoc = onCall(async (payload: GetDocPayload) => {
-  const [docsCollection, usersProfiles] = await Promise.all([
-    admin.firestore().collection(`docs`).get(),
-    UsersProfilesService.getAll(),
-  ]);
+  const docsCollection = await admin.firestore().collection(`docs`).get();
 
   let docDto: GetDocDto | undefined;
 
@@ -196,6 +209,8 @@ export const getPublicDoc = onCall(async (payload: GetDocPayload) => {
 
     if (field) {
       if (field.visibility === `permanent`) {
+        const profile = await UsersProfilesService.getProfile(userId);
+
         docDto = {
           id: payload.id,
           name: field.name,
@@ -206,9 +221,13 @@ export const getPublicDoc = onCall(async (payload: GetDocPayload) => {
           description: field.description,
           path: field.path,
           tags: field.tags ?? [],
-          author: usersProfiles[userId] ?? null,
+          author: profile,
         };
-      } else {
+      }
+
+      if (field.visibility === `public`) {
+        const profile = await UsersProfilesService.getProfile(userId);
+
         docDto = {
           id: payload.id,
           name: field.name,
@@ -216,7 +235,18 @@ export const getPublicDoc = onCall(async (payload: GetDocPayload) => {
           mdate: field.mdate,
           code: field.code,
           visibility: field.visibility,
-          author: usersProfiles[userId] ?? null,
+          author: profile,
+        };
+      }
+
+      if (field.visibility === `private`) {
+        docDto = {
+          id: payload.id,
+          name: field.name,
+          cdate: field.cdate,
+          mdate: field.mdate,
+          code: field.code,
+          visibility: field.visibility,
         };
       }
 
