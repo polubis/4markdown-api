@@ -34,6 +34,8 @@ export const DocsService = {
                   name: field.name,
                   description: field.description,
                   path: field.path,
+                  code: field.code,
+                  visibility: field.visibility,
                   tags: field.tags ?? [],
                   author: usersProfiles[doc.id] ?? null,
                 });
