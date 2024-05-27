@@ -1,4 +1,4 @@
-import { GetDocDto, GetPermanentDocsDto } from '../dtos/docs.dto';
+import { GetDocDto } from '../dtos/docs.dto';
 import { DocEntityField, DocVisibility } from '../entities/doc.entity';
 import * as admin from 'firebase-admin';
 import type { Description, Name, Path, Tags } from '../entities/general';
@@ -21,8 +21,27 @@ export const getAllDocs = async () => {
             description: field.description,
             path: field.path,
             tags: field.tags ?? [],
+            author: null,
           });
-        } else {
+
+          return;
+        }
+
+        if (field.visibility === `public`) {
+          acc.push({
+            id,
+            cdate: field.cdate,
+            mdate: field.mdate,
+            code: field.code,
+            name: field.name,
+            visibility: field.visibility,
+            author: null,
+          });
+
+          return;
+        }
+
+        if (field.visibility === `private`) {
           acc.push({
             id,
             cdate: field.cdate,
@@ -31,7 +50,11 @@ export const getAllDocs = async () => {
             name: field.name,
             visibility: field.visibility,
           });
+
+          return;
         }
+
+        throw errors.internal(`Invalid document visibility`);
       },
     );
 
@@ -39,32 +62,6 @@ export const getAllDocs = async () => {
   }, [] as GetDocDto[]);
 
   return flattenDocs;
-};
-
-export const getPermanentDocs = async (): Promise<GetPermanentDocsDto> => {
-  const allDocs = (await admin.firestore().collection(`docs`).get()).docs;
-
-  return allDocs.reduce<GetPermanentDocsDto>((acc, doc) => {
-    Object.entries(doc.data()).forEach(
-      ([id, field]: [string, DocEntityField]) => {
-        if (field.visibility === `permanent`) {
-          acc.push({
-            id,
-            cdate: field.cdate,
-            mdate: field.mdate,
-            code: field.code,
-            name: field.name,
-            visibility: field.visibility,
-            description: field.description,
-            path: field.path,
-            tags: field.tags ?? [],
-          });
-        }
-      },
-    );
-
-    return acc;
-  }, [] as GetPermanentDocsDto);
 };
 
 const Doc = () => {};
