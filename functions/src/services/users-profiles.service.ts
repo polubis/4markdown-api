@@ -16,6 +16,7 @@ import { ImageEntity } from '../entities/img.entity';
 import * as sharp from 'sharp';
 import { IUserProfileDto } from '../dtos/users-profiles.dto';
 import { Id } from '../entities/general';
+import { DocAuthorDto } from '../dtos/docs.dto';
 
 const sizes = [
   {
@@ -143,7 +144,40 @@ const checkIfDisplayNameIsTaken = async (
   });
 };
 
+type UsersProfilesLookup = Record<string, IUserProfileEntity>;
+
 const UsersProfilesService = {
+  getProfile: async (userId: Id): Promise<DocAuthorDto> => {
+    const profile = await admin
+      .firestore()
+      .collection(`users-profiles`)
+      .doc(userId)
+      .get();
+
+    if (!profile.exists) return null;
+    const data = profile.data();
+
+    if (!data) return null;
+
+    return data as IUserProfileEntity;
+  },
+  getAll: async (): Promise<UsersProfilesLookup> => {
+    const usersProfilesCollection = await admin
+      .firestore()
+      .collection(`users-profiles`)
+      .get();
+
+    const usersProfiles =
+      usersProfilesCollection.docs.reduce<UsersProfilesLookup>(
+        (acc, profile) => {
+          acc[profile.id] = profile.data() as IUserProfileEntity;
+          return acc;
+        },
+        {} as UsersProfilesLookup,
+      );
+
+    return usersProfiles;
+  },
   getYour: async (
     context: https.CallableContext,
   ): Promise<IUserProfileDto | null> => {
