@@ -287,13 +287,9 @@ const BackupsService = {
     verifySetup(payload.token);
 
     const buckets = await getBucketsPair(projectId);
+    const databaseData = await getDatabaseBackupFile(buckets, payload.backupId);
 
-    const [databaseData] = await Promise.all([
-      getDatabaseBackupFile(buckets, payload.backupId),
-      clearDatabase(),
-      clearStorage(buckets),
-    ]);
-
+    await Promise.all([clearDatabase(), clearStorage(buckets)]);
     await Promise.all([
       applyBackupToDatabase(databaseData),
       applyBackupToStorage(buckets, payload.backupId),
