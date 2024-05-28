@@ -78,6 +78,16 @@ export const DocsService = {
       );
     }
 
+    if (payload.visibility === `public` || payload.visibility === `private`) {
+      const alreadyExists = Object.entries(fields).some(
+        ([id, field]) => id !== payload.id && field.name === name,
+      );
+
+      if (alreadyExists) {
+        throw errors.exists(`Document with provided name already exist`);
+      }
+    }
+
     switch (payload.visibility) {
       case `public`: {
         const dto: UpdateDocPublicDto = {
