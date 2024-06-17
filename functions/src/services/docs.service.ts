@@ -126,26 +126,18 @@ export const DocsService = {
         return dto;
       }
       case `permanent`: {
+        const { cdate } = doc;
+        const { id, code, visibility } = payload;
         const tags = Doc.createTags(payload.tags);
-
-        const dto: UpdateDocPermanentDto = {
-          cdate: doc.cdate,
-          mdate,
-          visibility: payload.visibility,
-          code: payload.code,
-          name,
-          id: payload.id,
-          path: Doc.createPath(name, payload.visibility),
-          description: Doc.createDescription(payload.description),
-          tags,
-        };
+        const description = Doc.createDescription(payload.description);
+        const path = Doc.createPath(name, payload.visibility);
 
         const alreadyExists =
           (await getAllDocs()).filter(
             (doc) =>
-              doc.id !== payload.id &&
-              doc.visibility === `permanent` &&
-              doc.name === dto.name,
+              doc.id !== id &&
+              doc.visibility === visibility &&
+              doc.name === name,
           ).length > 0;
 
         if (alreadyExists) {
@@ -154,11 +146,32 @@ export const DocsService = {
           );
         }
 
-        const docEntity: DocEntity = {
-          [payload.id]: dto,
-        };
+        await docsRepo.update({
+          [payload.id]: {
+            visibility,
+            cdate,
+            mdate,
+            code,
+            name,
+            path,
+            description,
+            tags,
+            thumbnail: null,
+          },
+        });
 
-        await docsRepo.update(docEntity);
+        const dto: UpdateDocPermanentDto = {
+          cdate,
+          mdate,
+          visibility,
+          code,
+          name,
+          id,
+          path,
+          description,
+          tags,
+          thumbnail: null,
+        };
 
         return dto;
       }

@@ -1,4 +1,5 @@
 import {
+  DocThumbnail,
   PermanentDocEntityField,
   PrivateDocEntityField,
   PublicDocEntityField,
@@ -12,9 +13,13 @@ type DocAuthorDto = IUserProfileDto | null;
 
 type UpdateDocPublicDto = PublicDocEntityField & { id: Id };
 type UpdateDocPrivateDto = PrivateDocEntityField & { id: Id };
-type UpdateDocPermanentDto = Omit<PermanentDocEntityField, 'tags'> & {
+type UpdateDocPermanentDto = Omit<
+  PermanentDocEntityField,
+  'tags' | 'thumbnail'
+> & {
   id: Id;
   tags: Tags;
+  thumbnail: DocThumbnail;
 };
 
 type UpdateDocDto =
