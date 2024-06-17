@@ -8,6 +8,13 @@ import type { Id, Tags } from '../entities/general';
 
 interface CreateDocPayload extends Pick<DocEntityField, 'name' | 'code'> {}
 
+type ThumbnailAction =
+  | {
+      type: `noop`;
+    }
+  | { type: `remove` }
+  | { type: `update`; data: string };
+
 type UpdateDocPrivatePayload = Pick<
   PrivateDocEntityField,
   'name' | 'code' | 'visibility' | 'mdate'
@@ -21,7 +28,11 @@ type UpdateDocPublicPayload = Pick<
 type UpdateDocPermanentPayload = Pick<
   PermanentDocEntityField,
   'name' | 'code' | 'visibility' | 'description' | 'mdate'
-> & { id: Id; tags: Tags };
+> & {
+  id: Id;
+  tags: Tags;
+  thumbnail: ThumbnailAction;
+};
 
 type UpdateDocPayload =
   | UpdateDocPrivatePayload

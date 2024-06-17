@@ -6,6 +6,7 @@ import type {
   Path,
   Description,
   Tags,
+  Blob,
 } from './general';
 
 interface DocEntityFieldBase {
@@ -15,11 +16,24 @@ interface DocEntityFieldBase {
   mdate: DateStamp;
 }
 
+type DocThumbnail =
+  | (Record<
+      'xl' | 'lg' | 'md' | 'sm' | 'tn',
+      {
+        h: number;
+        w: number;
+        src: Path;
+        ext: 'jpg' | 'jpeg' | 'webp' | 'png';
+      }
+    > & { placeholder: Blob })
+  | null;
+
 interface PermanentDocEntityField extends DocEntityFieldBase {
   visibility: 'permanent';
   description: Description;
   path: Path;
   tags?: Tags;
+  thumbnail?: DocThumbnail;
 }
 
 interface PublicDocEntityField extends DocEntityFieldBase {
@@ -46,4 +60,5 @@ export type {
   PermanentDocEntityField,
   PublicDocEntityField,
   PrivateDocEntityField,
+  DocThumbnail,
 };
