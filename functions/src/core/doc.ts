@@ -22,6 +22,7 @@ export const getAllDocs = async () => {
             path: field.path,
             tags: field.tags ?? [],
             author: null,
+            thumbnail: field.thumbnail ?? null,
           });
 
           return;
