@@ -42,10 +42,14 @@ type GetDocsDto = GetDocsDtoItem[];
 
 type DeleteDocDto = { id: Id };
 
-type GetPermanentDocsDto = (Omit<PermanentDocEntityField, 'tags'> & {
+type GetPermanentDocsDto = (Omit<
+  PermanentDocEntityField,
+  'tags' | 'thumbnail'
+> & {
   id: Id;
   tags: Tags;
   author: DocAuthorDto;
+  thumbnail: DocThumbnail;
 })[];
 
 export type {

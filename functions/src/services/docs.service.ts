@@ -39,6 +39,7 @@ export const DocsService = {
                   visibility: field.visibility,
                   tags: field.tags ?? [],
                   author: usersProfiles[doc.id] ?? null,
+                  thumbnail: field.thumbnail ?? null,
                 });
               }
             },
