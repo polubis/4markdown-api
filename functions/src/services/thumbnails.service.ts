@@ -73,7 +73,7 @@ const ThumbnailsService = {
     });
 
     const [placeholderBuffer] = await Promise.all([
-      sharp(buffer).resize(12, 12).webp({ quality: 1 }).toBuffer(),
+      sharp(buffer).resize(64, 64).webp({ quality: 1 }).toBuffer(),
       ...savePromises,
     ]);
 

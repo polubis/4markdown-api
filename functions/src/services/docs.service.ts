@@ -127,23 +127,7 @@ export const DocsService = {
         return dto;
       }
       case `permanent`: {
-        if (payload.thumbnail.type === `remove`) {
-          await ThumbnailsService.delete(uid);
-        }
-
-        const { cdate } = doc;
         const { id, code, visibility } = payload;
-        const tags = Doc.createTags(payload.tags);
-        const description = Doc.createDescription(payload.description);
-        const path = Doc.createPath(name, payload.visibility);
-        const currentThumbnail =
-          doc.visibility === `permanent` ? doc.thumbnail ?? null : null;
-        const thumbnail =
-          payload.thumbnail.type === `noop`
-            ? currentThumbnail
-            : payload.thumbnail.type === `remove`
-            ? null
-            : await ThumbnailsService.upload(uid, payload.thumbnail.data);
 
         const alreadyExists =
           (await getAllDocs()).filter(
@@ -158,6 +142,23 @@ export const DocsService = {
             `Document with provided name already exists, please change name`,
           );
         }
+
+        if (payload.thumbnail.type === `remove`) {
+          await ThumbnailsService.delete(uid);
+        }
+
+        const { cdate } = doc;
+        const tags = Doc.createTags(payload.tags);
+        const description = Doc.createDescription(payload.description);
+        const path = Doc.createPath(name, payload.visibility);
+        const currentThumbnail =
+          doc.visibility === `permanent` ? doc.thumbnail ?? null : null;
+        const thumbnail =
+          payload.thumbnail.type === `noop`
+            ? currentThumbnail
+            : payload.thumbnail.type === `remove`
+            ? null
+            : await ThumbnailsService.upload(uid, payload.thumbnail.data);
 
         await docsRepo.update({
           [id]: {
