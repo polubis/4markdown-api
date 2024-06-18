@@ -16,16 +16,22 @@ interface DocEntityFieldBase {
   mdate: DateStamp;
 }
 
+type DocThumbnailVariant<TKey extends string> = {
+  [key in TKey]: {
+    h: number;
+    w: number;
+    src: Path;
+    ext: 'jpg' | 'jpeg' | 'webp' | 'png';
+    id: Id;
+  };
+};
+
 type DocThumbnail =
-  | (Record<
-      'xl' | 'lg' | 'md' | 'sm' | 'tn',
-      {
-        h: number;
-        w: number;
-        src: Path;
-        ext: 'jpg' | 'jpeg' | 'webp' | 'png';
-      }
-    > & { placeholder: Blob })
+  | (DocThumbnailVariant<`xl`> &
+      DocThumbnailVariant<'lg'> &
+      DocThumbnailVariant<'md'> &
+      DocThumbnailVariant<'sm'> &
+      DocThumbnailVariant<'tn'> & { placeholder: Blob })
   | null;
 
 interface PermanentDocEntityField extends DocEntityFieldBase {

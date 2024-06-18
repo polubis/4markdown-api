@@ -17,6 +17,7 @@ import * as sharp from 'sharp';
 import { IUserProfileDto } from '../dtos/users-profiles.dto';
 import { Id } from '../entities/general';
 import { DocAuthorDto } from '../dtos/docs.dto';
+import { getBucket } from '../core/bucket';
 
 const sizes = [
   {
@@ -52,18 +53,6 @@ const createProfileDtoShape = (e: IUserProfileEntity): IUserProfileDto => ({
   twitterUrl: e.twitterUrl,
   linkedInUrl: e.linkedInUrl,
 });
-
-const getBucket = async () => {
-  const storage = admin.storage();
-  const bucket = storage.bucket();
-  const [bucketExists] = await bucket.exists();
-
-  if (!bucketExists) {
-    throw errors.internal(`Cannot find bucket for avatars`);
-  }
-
-  return bucket;
-};
 
 const rescaleAndUploadAvatars = async (uid: string, data: string) => {
   const avatar = ImageEntity(data);
@@ -255,7 +244,7 @@ const UsersProfilesService = {
         bucket.file(`${auth.uid}/avatars/${size}`).delete(),
       );
 
-      await deletePromises;
+      await Promise.all(deletePromises);
     }
 
     const userProfileNewEntity = UserProfileEntity({

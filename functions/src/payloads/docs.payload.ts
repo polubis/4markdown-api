@@ -48,4 +48,5 @@ export type {
   UpdateDocPayload,
   DeleteDocPayload,
   GetDocPayload,
+  ThumbnailAction,
 };

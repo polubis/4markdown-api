@@ -12,6 +12,7 @@ import { Id } from '../entities/general';
 import { DocsRepository } from '../repositories/docs.repository';
 import * as admin from 'firebase-admin';
 import { UsersProfilesService } from './users-profiles.service';
+import { ThumbnailsService } from './thumbnails.service';
 
 export const DocsService = {
   getAllPermanent: async (): Promise<GetPermanentDocsDto> => {
@@ -126,11 +127,23 @@ export const DocsService = {
         return dto;
       }
       case `permanent`: {
+        if (payload.thumbnail.type === `remove`) {
+          await ThumbnailsService.delete(uid);
+        }
+
         const { cdate } = doc;
         const { id, code, visibility } = payload;
         const tags = Doc.createTags(payload.tags);
         const description = Doc.createDescription(payload.description);
         const path = Doc.createPath(name, payload.visibility);
+        const currentThumbnail =
+          doc.visibility === `permanent` ? doc.thumbnail ?? null : null;
+        const thumbnail =
+          payload.thumbnail.type === `noop`
+            ? currentThumbnail
+            : payload.thumbnail.type === `remove`
+            ? null
+            : await ThumbnailsService.upload(uid, payload.thumbnail.data);
 
         const alreadyExists =
           (await getAllDocs()).filter(
@@ -147,7 +160,7 @@ export const DocsService = {
         }
 
         await docsRepo.update({
-          [payload.id]: {
+          [id]: {
             visibility,
             cdate,
             mdate,
@@ -156,7 +169,7 @@ export const DocsService = {
             path,
             description,
             tags,
-            thumbnail: null,
+            thumbnail,
           },
         });
 
@@ -170,7 +183,7 @@ export const DocsService = {
           path,
           description,
           tags,
-          thumbnail: null,
+          thumbnail,
         };
 
         return dto;
