@@ -125,6 +125,7 @@ export const getDocs = onCall(async (_, context) => {
           path: field.path,
           author: null,
           tags: field.tags ?? [],
+          thumbnail: field.thumbnail ?? null,
         };
       }
 
@@ -222,6 +223,7 @@ export const getPublicDoc = onCall(async (payload: GetDocPayload) => {
           path: field.path,
           tags: field.tags ?? [],
           author: profile,
+          thumbnail: field.thumbnail ?? null,
         };
       }
 

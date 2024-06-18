@@ -30,10 +30,11 @@ type UpdateDocDto =
 type GetDocDto =
   | (PublicDocEntityField & { id: Id; author: DocAuthorDto })
   | (PrivateDocEntityField & { id: Id })
-  | (Omit<PermanentDocEntityField, 'tags'> & {
+  | (Omit<PermanentDocEntityField, 'tags' | 'thumbnail'> & {
       id: Id;
       tags: Tags;
       author: DocAuthorDto;
+      thumbnail: DocThumbnail;
     });
 
 type GetDocsDtoItem = GetDocDto;
