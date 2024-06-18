@@ -1,6 +1,6 @@
 import { https } from 'firebase-functions';
 
-type IExceptionsLookup = Record<
+type IErrorsLookup = Record<
   string,
   (symbol: string, content: string) => https.HttpsError
 >;
@@ -10,7 +10,7 @@ type IErrorFactory = (
   symbol: string,
 ) => (content: string) => https.HttpsError;
 
-const error: IErrorFactory = (code, symbol) => (content) =>
+const createError: IErrorFactory = (code, symbol) => (content) =>
   new https.HttpsError(
     code,
     JSON.stringify({
@@ -20,14 +20,15 @@ const error: IErrorFactory = (code, symbol) => (content) =>
   );
 
 const errors = {
-  exists: error(`already-exists`, `exists`),
-} satisfies IExceptionsLookup;
+  exists: createError(`already-exists`, `exists`),
+} satisfies IErrorsLookup;
 
 type IErrorSymbol = keyof typeof errors;
-type IExceptionThrower = (key: IErrorSymbol, content: string) => never;
+type IExceptionThrower = (
+  key: IErrorSymbol,
+  content: string,
+) => https.HttpsError;
 
-const exception: IExceptionThrower = (key, content) => {
-  throw errors[key](content);
-};
+const error: IExceptionThrower = (key, content) => errors[key](content);
 
-export { exception };
+export { error };

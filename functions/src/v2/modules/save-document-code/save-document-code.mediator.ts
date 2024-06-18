@@ -1,4 +1,4 @@
-import { errors } from '../../../core/errors';
+import { error } from '../../libs/framework/exceptions';
 import { mediator } from '../../libs/framework/mediator';
 
 // DEFS //
@@ -19,7 +19,7 @@ import { mediator } from '../../libs/framework/mediator';
 // const dispatch = dispatcher(query)(command);
 // payload, context
 const saveDocumentCodeMediator = mediator<Response>(async () => {
-  throw errors.exists(`Record already exists`);
+  throw error(`exists`, `Something is really wrong`);
 });
 
 export { saveDocumentCodeMediator };
