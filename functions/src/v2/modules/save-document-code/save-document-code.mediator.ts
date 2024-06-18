@@ -1,4 +1,4 @@
-import { errors } from '../../libs/framework/exceptions';
+import { errors } from '../../libs/framework/errors';
 import { mediator } from '../../libs/framework/mediator';
 
 // DEFS //
@@ -19,9 +19,8 @@ import { mediator } from '../../libs/framework/mediator';
 // const dispatch = dispatcher(query)(command);
 // payload, context
 const saveDocumentCodeMediator = mediator<Response>(
-  async (payload, context, authenticated) => {
-    if (!authenticated) throw errors.unauthenticated();
-
+  { authentication: true },
+  async () => {
     throw errors.exists();
   },
 );

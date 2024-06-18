@@ -1,4 +1,5 @@
 import { https, HttpsFunction, Runnable } from 'firebase-functions';
+import { errors } from './errors';
 
 type IMediatorHandler<TResponse = unknown> = (
   payload: unknown,
@@ -6,11 +7,22 @@ type IMediatorHandler<TResponse = unknown> = (
   authenticated: boolean,
 ) => Promise<TResponse>;
 
+type IMediatorConfig = {
+  authentication: boolean;
+};
+
 const mediator = <TResponse = unknown>(
+  config: IMediatorConfig,
   handler: IMediatorHandler<TResponse>,
 ): HttpsFunction & Runnable<unknown> =>
   https.onCall(async (payload, context) => {
-    return await handler(payload, context, !!context.auth);
+    const authenticated = !!context.auth;
+
+    if (config.authentication && !authenticated) {
+      throw errors.unauthenticated();
+    }
+
+    return await handler(payload, context, authenticated);
   });
 
 export { mediator };
