@@ -21,6 +21,11 @@ import { mediator } from '../../libs/framework/mediator';
 const saveDocumentCodeMediator = mediator<Response>(
   { authentication: true },
   async () => {
+    // payload
+    // const id = payload.id;
+    // const code = payload.code;
+    // const mdate = payload.mdate;
+
     throw errors.exists();
   },
 );
