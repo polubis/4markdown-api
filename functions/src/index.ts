@@ -30,6 +30,7 @@ import { ProjectId } from './models/project-id';
 import { Endpoint } from './libs/framework/endpoint';
 import { Job } from './libs/framework/job';
 import { isDev } from './core/env-checks';
+import { saveDocumentCodeMediator } from './v2/modules/save-document-code/save-document-code.mediator';
 
 const app = admin.initializeApp();
 const projectId = ProjectId(app.options.projectId);
@@ -299,3 +300,5 @@ export const autoCreateBackup = Job(`every sunday 23:59`, async () => {
     }),
   );
 });
+
+export const saveDocumentCode = saveDocumentCodeMediator;
