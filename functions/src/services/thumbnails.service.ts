@@ -1,5 +1,4 @@
 import { getBucket } from '../core/bucket';
-import { errors } from '../core/errors';
 import { DocThumbnail } from '../entities/doc.entity';
 import { Blob, Id } from '../entities/general';
 import { ThumbnailEntity } from '../entities/thumbnail.entity';
@@ -44,12 +43,7 @@ const createThumbnailPath = (uid: Id, key: string): string =>
 
 const ThumbnailsService = {
   upload: async (uid: Id, data: Blob): Promise<DocThumbnail> => {
-    const { buffer, size } = ThumbnailEntity(data);
-
-    if (size > 2) {
-      throw errors.invalidArg(`Invalid avatar size`);
-    }
-
+    const { buffer } = await ThumbnailEntity(data);
     const bucket = await getBucket();
 
     const rescalePromises: Promise<Buffer>[] = [];
