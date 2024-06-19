@@ -4,7 +4,10 @@ import { z } from 'zod';
 import { validators } from '../utils/validators';
 import { parse } from '../../libs/framework/parse';
 import { collections } from '../database/collections';
-import { DocumentModelObject } from '../../domain/models/document';
+import {
+  DocumentModel,
+  DocumentObjectModel,
+} from '../../domain/models/document';
 
 const payloadSchema = z.object({
   id: validators.id,
@@ -16,8 +19,11 @@ type Payload = z.infer<typeof payloadSchema>;
 
 const commands = {
   parsePayload: (rawPayload: unknown) => parse(payloadSchema, rawPayload),
-  updateDocument: async (payload: Payload, document: DocumentModelObject) => {
-    if (payload.mdate !== document.mdate) {
+  updateDocument: async (
+    payload: Payload,
+    documentObject: DocumentObjectModel,
+  ) => {
+    if (payload.mdate !== documentObject.mdate) {
       throw errors.outOfDate(`The document has been already changed`);
     }
   },
@@ -31,20 +37,22 @@ const queries = {
     uid: string;
     documentId: string;
   }) => {
-    const documents = await collections.documents().doc(uid).get();
+    const documentsRecord = await collections.documents().doc(uid).get();
 
-    if (!documents.exists)
+    if (!documentsRecord.exists)
       throw errors.notFound(`Documents collection not found`);
 
-    const data = documents.data();
+    const documentModel = documentsRecord.data() as DocumentModel | undefined;
 
-    if (!data) throw errors.notFound(`Document data not found`);
+    if (!documentModel) throw errors.notFound(`Document data not found`);
 
-    const doc = data[documentId];
+    const document = documentModel[documentId] as
+      | DocumentObjectModel
+      | undefined;
 
-    if (!doc) throw errors.notFound(`Document not found`);
+    if (!document) throw errors.notFound(`Document not found`);
 
-    return doc;
+    return document;
   },
 };
 

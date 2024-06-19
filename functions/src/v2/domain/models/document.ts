@@ -1,22 +1,30 @@
-import { z } from 'zod';
-import { validators } from '../../application/utils/validators';
+type DocumentModelObjectBase = {
+  code: string;
+  name: string;
+  cdate: string;
+  mdate: string;
+};
 
-const documentObjSchema = z.object({
-  name: z
-    .string()
-    .min(2)
-    .max(100)
-    .refine((name) => /^[a-zA-Z0-9]+(?:\s[a-zA-Z0-9]+)*$/.test(name.trim())),
-  code: z.string(),
-  mdate: validators.date,
-  cdate: validators.date,
-  id: validators.id,
-});
+type PrivateDocumentObjectModel = DocumentModelObjectBase & {
+  visibility: `private`;
+};
 
-const documentSchema = z.record(z.string(), documentObjSchema);
+type PublicDocumentObjectModel = DocumentModelObjectBase & {
+  visibility: `public`;
+};
 
-type DocumentModelObject = z.infer<typeof documentObjSchema>;
-type DocumentModel = z.infer<typeof documentSchema>;
+type PermanentDocumentObjectModel = DocumentModelObjectBase & {
+  visibility: `permanent`;
+  description: string;
+  path: string;
+  tags?: string[];
+};
 
-export type { DocumentModel, DocumentModelObject };
-export { documentObjSchema, documentSchema };
+type DocumentObjectModel =
+  | PrivateDocumentObjectModel
+  | PublicDocumentObjectModel
+  | PermanentDocumentObjectModel;
+
+type DocumentModel = Record<string, DocumentObjectModel>;
+
+export type { DocumentModel, DocumentObjectModel };
