@@ -9,7 +9,7 @@ const parse = async <TSchema extends AnyZodObject>(
     const result = await schema.strict().parseAsync(payload);
     return result;
   } catch (e: unknown) {
-    return errors.schema(e);
+    throw errors.schema(e);
   }
 };
 
