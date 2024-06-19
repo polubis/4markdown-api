@@ -19,36 +19,43 @@ type Payload = z.infer<typeof payloadSchema>;
 
 const commands = {
   parsePayload: (rawPayload: unknown) => parse(payloadSchema, rawPayload),
-  updateDocument: async (
-    payload: Payload,
-    documentObject: DocumentObjectModel,
-  ) => {
+  updateDocument: async ({
+    uid,
+    payload,
+    documentObject,
+  }: {
+    uid: string;
+    payload: Payload;
+    documentObject: DocumentObjectModel;
+  }) => {
     if (payload.mdate !== documentObject.mdate) {
       throw errors.outOfDate(`The document has been already changed`);
     }
+
+    await collections
+      .documents()
+      .doc(uid)
+      .update({
+        [payload.id]: {
+          ...documentObject,
+          code: payload.code,
+        },
+      });
   },
 };
 
 const queries = {
-  getUserDocument: async ({
-    uid,
-    documentId,
-  }: {
-    uid: string;
-    documentId: string;
-  }) => {
-    const documentsRecord = await collections.documents().doc(uid).get();
+  getUserDocument: async (uid: string, documentId: string) => {
+    const snapshot = await collections.documents().doc(uid).get();
 
-    if (!documentsRecord.exists)
+    if (!snapshot.exists)
       throw errors.notFound(`Documents collection not found`);
 
-    const documentModel = documentsRecord.data() as DocumentModel | undefined;
+    const data = snapshot.data() as DocumentModel | undefined;
 
-    if (!documentModel) throw errors.notFound(`Document data not found`);
+    if (!data) throw errors.notFound(`Document data not found`);
 
-    const document = documentModel[documentId] as
-      | DocumentObjectModel
-      | undefined;
+    const document = data[documentId] as DocumentObjectModel | undefined;
 
     if (!document) throw errors.notFound(`Document not found`);
 
@@ -59,11 +66,12 @@ const queries = {
 const saveDocumentCodeController = protectedController(
   async (rawPayload, { uid }) => {
     const payload = await commands.parsePayload(rawPayload);
-    const document = await queries.getUserDocument({
+    const document = await queries.getUserDocument(uid, payload.id);
+    await commands.updateDocument({
       uid,
-      documentId: payload.id,
+      payload,
+      documentObject: document,
     });
-    await commands.updateDocument(payload, document);
   },
 );
 
