@@ -25,6 +25,7 @@ type DocumentObjectModel =
   | PublicDocumentObjectModel
   | PermanentDocumentObjectModel;
 
+// { [id: string]: DocumentObject }
 type DocumentModel = Record<string, DocumentObjectModel>;
 
 export type { DocumentModel, DocumentObjectModel };
