@@ -6,7 +6,7 @@ import { parse } from '../../../libs/framework/parse';
 import { collections } from '../../database/collections';
 import {
   DocumentModel,
-  DocumentObjectModel,
+  DocumentModelValue,
 } from '../../../domain/models/document';
 
 const payloadSchema = z.object({
@@ -22,13 +22,13 @@ const commands = {
   updateDocument: async ({
     uid,
     payload,
-    documentObject,
+    value,
   }: {
     uid: string;
     payload: Payload;
-    documentObject: DocumentObjectModel;
+    value: DocumentModelValue;
   }) => {
-    if (payload.mdate !== documentObject.mdate) {
+    if (payload.mdate !== value.mdate) {
       throw errors.outOfDate(`The document has been already changed`);
     }
 
@@ -37,7 +37,7 @@ const commands = {
       .doc(uid)
       .update({
         [payload.id]: {
-          ...documentObject,
+          ...value,
           code: payload.code,
         },
       });
@@ -45,7 +45,7 @@ const commands = {
 };
 
 const queries = {
-  getUserDocument: async (uid: string, documentId: string) => {
+  getUserDocument: async (uid: string, payload: Payload) => {
     const snapshot = await collections.documents().doc(uid).get();
 
     if (!snapshot.exists)
@@ -55,22 +55,22 @@ const queries = {
 
     if (!data) throw errors.notFound(`Document data not found`);
 
-    const document = data[documentId] as DocumentObjectModel | undefined;
+    const value = data[payload.id] as DocumentModelValue | undefined;
 
-    if (!document) throw errors.notFound(`Document not found`);
+    if (!value) throw errors.notFound(`Document not found`);
 
-    return document;
+    return value;
   },
 };
 
 const saveDocumentCodeController = protectedController(
   async (rawPayload, { uid }) => {
     const payload = await commands.parsePayload(rawPayload);
-    const document = await queries.getUserDocument(uid, payload.id);
+    const value = await queries.getUserDocument(uid, payload);
     await commands.updateDocument({
       uid,
       payload,
-      documentObject: document,
+      value,
     });
   },
 );
