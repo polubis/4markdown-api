@@ -33,6 +33,8 @@ const errors = {
     return errors.internal();
   },
   notFound: (content = `Not found`) => error(`not-found`, `not-found`, content),
+  outOfDate: (content = `Resource out of date`) =>
+    error(`resource-exhausted`, `out-of-date`, content),
 };
 
 export { errors };

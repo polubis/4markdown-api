@@ -5,15 +5,20 @@ import { validators } from '../utils/validators';
 import { parse } from '../../libs/framework/parse';
 import { collections } from '../database/collections';
 
-const commands = {
-  parsePayload: async (rawPayload: unknown) => {
-    const schema = z.object({
-      id: validators.id,
-      mdate: validators.date,
-      code: z.string(),
-    });
+const payloadSchema = z.object({
+  id: validators.id,
+  mdate: validators.date,
+  code: z.string(),
+});
 
-    return await parse(schema, rawPayload);
+type Payload = z.infer<typeof payloadSchema>;
+
+const commands = {
+  parsePayload: (rawPayload: unknown) => parse(payloadSchema, rawPayload),
+  updateDocument: (payload: Payload, document: any) => {
+    if (payload.mdate !== document.mdate) {
+      throw errors.outOfDate(`The document has been already changed`);
+    }
   },
 };
 
@@ -49,6 +54,7 @@ const saveDocumentCodeController = protectedController(
       uid,
       documentId: payload.id,
     });
+    commands.updateDocument(document.mdate, payload.mdate);
   },
 );
 
