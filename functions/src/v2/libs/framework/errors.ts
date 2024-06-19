@@ -26,7 +26,7 @@ const errors = {
       return error(
         `invalid-argument`,
         `invalid-schema`,
-        e.errors.map((error) => error.message),
+        e.errors.map(({ message, path }) => ({ message, path })),
       );
     }
 
