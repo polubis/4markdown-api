@@ -1,9 +1,10 @@
 import { https } from 'firebase-functions';
+import { z } from 'zod';
 
 const error = (
   code: https.FunctionsErrorCode,
   symbol: string,
-  content: string,
+  content: unknown,
 ): https.HttpsError =>
   new https.HttpsError(
     code,
@@ -18,6 +19,19 @@ const errors = {
     error(`already-exists`, `exists`, content),
   unauthenticated: (content = `Unauthenticated`) =>
     error(`unauthenticated`, `unauthenticated`, content),
+  internal: (content = `Something went wrong`) =>
+    error(`internal`, `internal`, content),
+  schema: (e: unknown) => {
+    if (e instanceof z.ZodError) {
+      return error(
+        `invalid-argument`,
+        `invalid-schema`,
+        e.errors.map((error) => error.message),
+      );
+    }
+
+    return errors.internal();
+  },
 };
 
 export { errors };
