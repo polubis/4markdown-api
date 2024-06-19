@@ -16,7 +16,7 @@ const error = (
 
 const errors = {
   exists: (content = `Record already exists`) =>
-    error(`already-exists`, `exists`, content),
+    error(`already-exists`, `already-exists`, content),
   unauthenticated: (content = `Unauthenticated`) =>
     error(`unauthenticated`, `unauthenticated`, content),
   internal: (content = `Something went wrong`) =>
@@ -32,6 +32,7 @@ const errors = {
 
     return errors.internal();
   },
+  notFound: (content = `Not found`) => error(`not-found`, `not-found`, content),
 };
 
 export { errors };

@@ -30,7 +30,7 @@ import { ProjectId } from './models/project-id';
 import { Endpoint } from './libs/framework/endpoint';
 import { Job } from './libs/framework/job';
 import { isDev } from './core/env-checks';
-import { saveDocumentCodeController } from './v2/modules/save-document-code/save-document-code.controller';
+import { saveDocumentCodeController } from './v2/application/controllers/save-document-code.controller';
 
 const app = admin.initializeApp();
 const projectId = ProjectId(app.options.projectId);

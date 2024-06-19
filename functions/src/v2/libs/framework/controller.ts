@@ -1,28 +1,33 @@
 import { https, HttpsFunction, Runnable } from 'firebase-functions';
 import { errors } from './errors';
 
-type IControllerHandler<TResponse = unknown> = (
+type ControllerHandler<TResponse = unknown> = (
   rawPayload: unknown,
   context: https.CallableContext,
-  authenticated: boolean,
 ) => Promise<TResponse>;
 
-type IControllerConfig = {
-  authentication: boolean;
-};
-
 const controller = <TResponse = unknown>(
-  config: IControllerConfig,
-  handler: IControllerHandler<TResponse>,
+  handler: ControllerHandler<TResponse>,
+): HttpsFunction & Runnable<unknown> => https.onCall(handler);
+
+type ProtectedControllerHandler<TResponse = unknown> = (
+  rawPayload: unknown,
+  context: { uid: string },
+) => Promise<TResponse>;
+
+const protectedController = <TResponse = unknown>(
+  handler: ProtectedControllerHandler<TResponse>,
 ): HttpsFunction & Runnable<unknown> =>
   https.onCall(async (rawPayload, context) => {
-    const authenticated = !!context.auth;
+    const { auth } = context;
 
-    if (config.authentication && !authenticated) {
+    if (!auth) {
       throw errors.unauthenticated();
     }
 
-    return await handler(rawPayload, context, authenticated);
+    const { uid } = auth;
+
+    return await handler(rawPayload, { uid });
   });
 
-export { controller };
+export { controller, protectedController };
