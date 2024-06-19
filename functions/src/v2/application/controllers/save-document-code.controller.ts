@@ -5,7 +5,7 @@ import { validators } from '../utils/validators';
 import { parse } from '../../libs/framework/parse';
 import { collections } from '../database/collections';
 
-const command = {
+const commands = {
   parsePayload: async (rawPayload: unknown) => {
     const schema = z.object({
       id: validators.id,
@@ -17,7 +17,7 @@ const command = {
   },
 };
 
-const query = {
+const queries = {
   getUserDocument: async ({
     uid,
     documentId,
@@ -44,8 +44,8 @@ const query = {
 
 const saveDocumentCodeController = protectedController(
   async (rawPayload, { uid }) => {
-    const payload = await command.parsePayload(rawPayload);
-    const document = await query.getUserDocument({
+    const payload = await commands.parsePayload(rawPayload);
+    const document = await queries.getUserDocument({
       uid,
       documentId: payload.id,
     });
