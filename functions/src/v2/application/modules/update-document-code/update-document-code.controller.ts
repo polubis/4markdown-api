@@ -4,10 +4,7 @@ import { z } from 'zod';
 import { validators } from '../../utils/validators';
 import { parse } from '../../../libs/framework/parse';
 import { collections } from '../../database/collections';
-import {
-  DocumentModel,
-  DocumentModelValue,
-} from '../../../domain/models/document';
+import { DocumentModel, DocumentsModel } from '../../../domain/models/document';
 
 const payloadSchema = z.object({
   id: validators.id,
@@ -22,13 +19,19 @@ const commands = {
   updateDocument: async ({
     uid,
     payload,
-    value,
+    documents,
   }: {
     uid: string;
     payload: Payload;
-    value: DocumentModelValue;
+    documents: DocumentsModel;
   }) => {
-    if (payload.mdate !== value.mdate) {
+    const document = documents[payload.id] as DocumentModel | undefined;
+
+    if (!document) {
+      throw errors.notFound(`Document not found`);
+    }
+
+    if (payload.mdate !== document.mdate) {
       throw errors.outOfDate(`The document has been already changed`);
     }
 
@@ -37,7 +40,7 @@ const commands = {
       .doc(uid)
       .update({
         [payload.id]: {
-          ...value,
+          ...document,
           code: payload.code,
         },
       });
@@ -45,32 +48,28 @@ const commands = {
 };
 
 const queries = {
-  getUserDocument: async (uid: string, payload: Payload) => {
+  getUserDocument: async (uid: string) => {
     const snapshot = await collections.documents().doc(uid).get();
 
     if (!snapshot.exists)
       throw errors.notFound(`Documents collection not found`);
 
-    const data = snapshot.data() as DocumentModel | undefined;
+    const documents = snapshot.data() as DocumentsModel | undefined;
 
-    if (!data) throw errors.notFound(`Document data not found`);
+    if (!documents) throw errors.notFound(`Document data not found`);
 
-    const value = data[payload.id] as DocumentModelValue | undefined;
-
-    if (!value) throw errors.notFound(`Document not found`);
-
-    return value;
+    return documents;
   },
 };
 
 const updateDocumentCodeController = protectedController(
   async (rawPayload, { uid }) => {
     const payload = await commands.parsePayload(rawPayload);
-    const value = await queries.getUserDocument(uid, payload);
+    const documents = await queries.getUserDocument(uid);
     await commands.updateDocument({
+      documents,
       uid,
       payload,
-      value,
     });
   },
 );

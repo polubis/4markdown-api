@@ -19,13 +19,13 @@ const commands = {
   updateDocument: async ({
     uid,
     payload,
-    documents,
+    userDocuments,
   }: {
     uid: string;
     payload: Payload;
-    documents: DocumentsModel;
+    userDocuments: DocumentsModel;
   }) => {
-    const document = documents[payload.id] as DocumentModel | undefined;
+    const document = userDocuments[payload.id] as DocumentModel | undefined;
 
     if (!document) {
       throw errors.notFound(`Document not found`);
@@ -44,9 +44,23 @@ const commands = {
     }
 
     if (document.visibility === `permanent`) {
-      // TODO
+      const allDocumentsSnapshot = (await collections.documents().get()).docs;
+
+      allDocumentsSnapshot.forEach((snapshot) => {
+        Object.entries(snapshot.data()).forEach(
+          ([id, currentDocument]: [string, DocumentModel]) => {
+            if (
+              id !== payload.id &&
+              currentDocument.visibility === `permanent` &&
+              currentDocument.name === payload.name
+            ) {
+              throw errors.exists(`Document with provided name exists`);
+            }
+          },
+        );
+      });
     } else {
-      const alreadyExists = Object.entries(documents).some(
+      const alreadyExists = Object.entries(userDocuments).some(
         ([id, document]) => id !== payload.id && document.name === payload.name,
       );
 
@@ -85,11 +99,11 @@ const queries = {
 const updateDocumentNameController = protectedController(
   async (rawPayload, { uid }) => {
     const payload = await commands.parsePayload(rawPayload);
-    const documents = await queries.getUserDocuments(uid);
+    const userDocuments = await queries.getUserDocuments(uid);
     await commands.updateDocument({
       uid,
       payload,
-      documents,
+      userDocuments,
     });
   },
 );
