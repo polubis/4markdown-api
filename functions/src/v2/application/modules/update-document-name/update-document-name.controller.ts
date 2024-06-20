@@ -4,10 +4,7 @@ import { z } from 'zod';
 import { validators } from '../../utils/validators';
 import { parse } from '../../../libs/framework/parse';
 import { collections } from '../../database/collections';
-import {
-  DocumentModel,
-  DocumentModelValue,
-} from '../../../domain/models/document';
+import { DocumentModel, DocumentsModel } from '../../../domain/models/document';
 
 const payloadSchema = z.object({
   id: validators.id,
@@ -26,9 +23,9 @@ const commands = {
   }: {
     uid: string;
     payload: Payload;
-    documents: DocumentModel;
+    documents: DocumentsModel;
   }) => {
-    const document = documents[payload.id] as DocumentModelValue | undefined;
+    const document = documents[payload.id] as DocumentModel | undefined;
 
     if (!document) {
       throw errors.notFound(`Document not found`);
@@ -77,7 +74,7 @@ const queries = {
     if (!snapshot.exists)
       throw errors.notFound(`Documents collection not found`);
 
-    const documents = snapshot.data() as DocumentModel | undefined;
+    const documents = snapshot.data() as DocumentsModel | undefined;
 
     if (!documents) throw errors.notFound(`Document data not found`);
 

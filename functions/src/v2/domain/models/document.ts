@@ -20,12 +20,12 @@ type PermanentDocumentValue = DocumentValueBase & {
   tags?: string[];
 };
 
-type DocumentModelValue =
+type DocumentModel =
   | PrivateDocumentValue
   | PublicDocumentValue
   | PermanentDocumentValue;
 
 // { [id: string]: DocumentObject }
-type DocumentModel = Record<string, DocumentModelValue>;
+type DocumentsModel = Record<string, DocumentModel>;
 
-export type { DocumentModel, DocumentModelValue };
+export type { DocumentsModel, DocumentModel };
