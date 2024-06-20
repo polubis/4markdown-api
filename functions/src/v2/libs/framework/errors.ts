@@ -35,6 +35,8 @@ const errors = {
   notFound: (content = `Not found`) => error(`not-found`, `not-found`, content),
   outOfDate: (content = `Resource out of date`) =>
     error(`resource-exhausted`, `out-of-date`, content),
+  badRequest: (content = `Bad request`) =>
+    error(`invalid-argument`, `bad-request`, content),
 };
 
 export { errors };

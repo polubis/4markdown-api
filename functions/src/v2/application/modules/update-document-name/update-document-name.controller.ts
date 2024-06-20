@@ -12,7 +12,7 @@ import {
 const payloadSchema = z.object({
   id: validators.id,
   mdate: validators.date,
-  code: z.string(),
+  name: validators.document.name,
 });
 
 type Payload = z.infer<typeof payloadSchema>;
@@ -22,14 +22,40 @@ const commands = {
   updateDocument: async ({
     uid,
     payload,
-    value,
+    documents,
   }: {
     uid: string;
     payload: Payload;
-    value: DocumentModelValue;
+    documents: DocumentModel;
   }) => {
-    if (payload.mdate !== value.mdate) {
+    const document = documents[payload.id] as DocumentModelValue | undefined;
+
+    if (!document) {
+      throw errors.notFound(`Document not found`);
+    }
+
+    if (payload.mdate !== document.mdate) {
       throw errors.outOfDate(`The document has been already changed`);
+    }
+
+    if (document.visibility === `permanent`) {
+      const hasAtLeast3Words = payload.name.trim().split(` `).length >= 3;
+
+      if (!hasAtLeast3Words) {
+        throw errors.badRequest(`At least 3 words in name are required`);
+      }
+    }
+
+    if (document.visibility === `permanent`) {
+      // TODO
+    } else {
+      const alreadyExists = Object.entries(documents).some(
+        ([id, document]) => id !== payload.id && document.name === payload.name,
+      );
+
+      if (alreadyExists) {
+        throw errors.exists(`Document with provided name exists`);
+      }
     }
 
     await collections
@@ -37,42 +63,38 @@ const commands = {
       .doc(uid)
       .update({
         [payload.id]: {
-          ...value,
-          code: payload.code,
+          ...document,
+          name: payload.name,
         },
       });
   },
 };
 
 const queries = {
-  getUserDocument: async (uid: string, payload: Payload) => {
+  getUserDocuments: async (uid: string) => {
     const snapshot = await collections.documents().doc(uid).get();
 
     if (!snapshot.exists)
       throw errors.notFound(`Documents collection not found`);
 
-    const data = snapshot.data() as DocumentModel | undefined;
+    const documents = snapshot.data() as DocumentModel | undefined;
 
-    if (!data) throw errors.notFound(`Document data not found`);
+    if (!documents) throw errors.notFound(`Document data not found`);
 
-    const value = data[payload.id] as DocumentModelValue | undefined;
-
-    if (!value) throw errors.notFound(`Document not found`);
-
-    return value;
+    return documents;
   },
 };
 
-const saveDocumentCodeController = protectedController(
+const updateDocumentNameController = protectedController(
   async (rawPayload, { uid }) => {
     const payload = await commands.parsePayload(rawPayload);
-    const value = await queries.getUserDocument(uid, payload);
+    const documents = await queries.getUserDocuments(uid);
     await commands.updateDocument({
       uid,
       payload,
-      value,
+      documents,
     });
   },
 );
 
-export { saveDocumentCodeController };
+export { updateDocumentNameController };
