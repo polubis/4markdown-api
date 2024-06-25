@@ -1,15 +1,10 @@
 import { https } from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
-import type {
-  CreateDocPayload,
-  DeleteDocPayload,
-  GetDocPayload,
-} from './payloads/docs.payload';
+import type { CreateDocPayload, GetDocPayload } from './payloads/docs.payload';
 import type { DocEntity, DocEntityField } from './entities/doc.entity';
 import type {
   CreateDocDto,
-  DeleteDocDto,
   GetDocDto,
   GetDocsDto,
   GetDocsDtoItem,
@@ -32,6 +27,7 @@ import { Job } from './libs/framework/job';
 import { isDev } from './core/env-checks';
 import { updateDocumentCodeController } from './v2/application/modules/update-document-code/update-document-code.controller';
 import { updateDocumentNameController } from './v2/application/modules/update-document-name/update-document-name.controller';
+import { deleteDocumentController } from './v2/application/modules/delete-document/delete-document.controller';
 
 const app = admin.initializeApp();
 const projectId = ProjectId(app.options.projectId);
@@ -164,41 +160,6 @@ export const getDocs = onCall(async (_, context) => {
   return docs;
 });
 
-export const deleteDoc = onCall(async (payload: DeleteDocPayload, context) => {
-  if (!context.auth) {
-    throw errors.notAuthorized();
-  }
-
-  const docsCollection = admin
-    .firestore()
-    .collection(`docs`)
-    .doc(context.auth.uid);
-
-  const result = (await docsCollection.get()).data();
-
-  if (result === undefined) {
-    throw errors.notFound();
-  }
-
-  result[payload.id] = admin.firestore.FieldValue.delete();
-
-  await docsCollection.update(result);
-
-  const dto: DeleteDocDto = { id: payload.id };
-
-  return dto;
-});
-
-export const deleteAccount = onCall(async (_, context) => {
-  if (!context.auth) {
-    throw errors.notAuthorized();
-  }
-
-  await admin.auth().deleteUser(context.auth.uid);
-  await admin.firestore().collection(`docs`).doc(context.auth.uid).delete();
-  return null;
-});
-
 export const getPublicDoc = onCall(async (payload: GetDocPayload) => {
   const docsCollection = await admin.firestore().collection(`docs`).get();
 
@@ -305,3 +266,4 @@ export const autoCreateBackup = Job(`every sunday 23:59`, async () => {
 // NEW
 export const updateDocumentCode = updateDocumentCodeController;
 export const updateDocumentName = updateDocumentNameController;
+export const deleteDocument = deleteDocumentController;
