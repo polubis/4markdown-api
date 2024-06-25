@@ -18,6 +18,7 @@ import { regexes } from '../../utils/regexes';
 const payloadSchema = z.object({
   image: z
     .string()
+    // @TODO: Parase and Valdiate it separately.
     .regex(regexes.base64)
     .transform(async (value) => {
       const [meta] = value.split(`,`);
