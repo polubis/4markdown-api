@@ -26,13 +26,10 @@ const createDefaultBucketDownloadURL = ({
     location,
   )}?alt=media`;
 
-type DefaultBucket = Awaited<ReturnType<typeof getDefaultBucket>>;
-
 const defaultBucketFolders = {
   images: `images`,
 };
 
-export type { DefaultBucket };
 export {
   getDefaultBucket,
   createDefaultBucketDownloadURL,

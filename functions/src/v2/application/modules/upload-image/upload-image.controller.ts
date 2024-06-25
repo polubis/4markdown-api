@@ -1,22 +1,54 @@
 import { z } from 'zod';
 import { protectedController } from '../../../libs/framework/controller';
-import { validators } from '../../utils/validators';
 import { parse } from '../../../libs/framework/parse';
 import { collections } from '../../database/collections';
 import {
   getDefaultBucket,
   createDefaultBucketDownloadURL,
-  DefaultBucket,
   defaultBucketFolders,
 } from '../../storage/buckets';
 import { uuid } from '../../../libs/helpers/stamps';
-import { ImagesModel } from '../../../domain/models/image';
+import {
+  ImagesModel,
+  imageModelContentTypes,
+  imageModelExtensions,
+} from '../../../domain/models/image';
+import { regexes } from '../../utils/regexes';
 
 const payloadSchema = z.object({
-  image: validators.image,
-});
+  image: z
+    .string()
+    .regex(regexes.base64)
+    .transform(async (value) => {
+      const [meta] = value.split(`,`);
+      const contentType = meta.split(`:`)[1].split(`;`)[0];
+      const extension = contentType.replace(`image/`, ``);
+      const blob = value.replace(/^data:image\/\w+;base64,/, ``);
+      const buffer = Buffer.from(blob, `base64`);
+      // Size in Megabytes.
+      const size = Number.parseFloat(
+        (Buffer.byteLength(buffer) / 1024 / 1024).toFixed(2),
+      );
 
-type Payload = z.infer<typeof payloadSchema>;
+      const schema = z.object({
+        blob: z.string().min(1),
+        contentType: z.enum(imageModelContentTypes),
+        extension: z.enum(imageModelExtensions),
+        buffer: z.instanceof(Buffer),
+        size: z.number().min(0).max(4),
+      });
+
+      const image = {
+        blob,
+        contentType,
+        extension,
+        buffer,
+        size,
+      };
+
+      return await parse(schema, image);
+    }),
+});
 
 const generateMetadata = ({
   uid,
@@ -34,21 +66,6 @@ const generateMetadata = ({
   });
 
   return { id, location, url };
-};
-
-const uploadImageToBucket = async ({
-  payload: {
-    image: { buffer, contentType },
-  },
-  bucket,
-  location,
-}: {
-  payload: Payload;
-  bucket: DefaultBucket;
-  location: string;
-}) => {
-  const file = bucket.file(location);
-  await file.save(buffer, { contentType });
 };
 
 const saveImageMetadata = async ({
@@ -82,10 +99,11 @@ const uploadImageController = protectedController(
       uid,
       bucketName: bucket.name,
     });
-    const { contentType, extension } = payload.image;
+    const { contentType, extension, buffer } = payload.image;
+    const file = bucket.file(location);
 
     await Promise.all([
-      uploadImageToBucket({ payload, location, bucket }),
+      file.save(buffer, { contentType }),
       saveImageMetadata({
         uid,
         model: {
