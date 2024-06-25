@@ -7,6 +7,7 @@ import {
   getDefaultBucket,
   createDefaultBucketDownloadURL,
   DefaultBucket,
+  defaultBucketFolders,
 } from '../../storage/buckets';
 import { uuid } from '../../../libs/helpers/stamps';
 import { ImagesModel } from '../../../domain/models/image';
@@ -25,7 +26,7 @@ const generateMetadata = ({
   bucketName: string;
 }) => {
   const id = uuid();
-  const location = `${uid}/images/${id}`;
+  const location = `${uid}/${defaultBucketFolders.images}/${id}`;
 
   const url = createDefaultBucketDownloadURL({
     name: bucketName,
