@@ -13,8 +13,6 @@ import { errors } from './core/errors';
 import { Doc } from './core/doc';
 import { DocsService } from './services/docs.service';
 import { AuthService } from './services/auth.service';
-import { UsersService } from './services/users.service';
-import { UploadImagePayload } from './payloads/images.payload';
 import { UsersProfilesService } from './services/users-profiles.service';
 import { BackupsService } from './services/backups.service';
 import {
@@ -28,6 +26,7 @@ import { isDev } from './core/env-checks';
 import { updateDocumentCodeController } from './v2/application/modules/update-document-code/update-document-code.controller';
 import { updateDocumentNameController } from './v2/application/modules/update-document-name/update-document-name.controller';
 import { deleteDocumentController } from './v2/application/modules/delete-document/delete-document.controller';
+import { uploadImageController } from './v2/application/modules/upload-image/upload-image.controller';
 
 const app = admin.initializeApp();
 const projectId = ProjectId(app.options.projectId);
@@ -228,12 +227,6 @@ export const getPermanentDocs = onCall(async () => {
   return await DocsService.getAllPermanent();
 });
 
-export const uploadImage = onCall(
-  async (payload: UploadImagePayload, context) => {
-    return await UsersService.uploadImage(payload, context);
-  },
-);
-
 export const updateYourUserProfile = onCall(
   async (payload: unknown, context) => {
     return await UsersProfilesService.updateYour(payload, context);
@@ -267,3 +260,4 @@ export const autoCreateBackup = Job(`every sunday 23:59`, async () => {
 export const updateDocumentCode = updateDocumentCodeController;
 export const updateDocumentName = updateDocumentNameController;
 export const deleteDocument = deleteDocumentController;
+export const uploadImage = uploadImageController;
