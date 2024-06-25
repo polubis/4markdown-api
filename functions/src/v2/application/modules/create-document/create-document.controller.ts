@@ -18,8 +18,8 @@ const payloadSchema = z.object({
 const createDocumentController = protectedController(
   async (rawPayload, { uid }) => {
     const { code, name } = await parse(payloadSchema, rawPayload);
-    const reference = collections.documents().doc(uid);
-    const snapshot = await reference.get();
+    const ref = collections.documents().doc(uid);
+    const snapshot = await ref.get();
     const documents = snapshot.data() as DocumentsModel | undefined;
 
     const cdate = nowISO();
@@ -40,7 +40,7 @@ const createDocumentController = protectedController(
     };
 
     if (!snapshot.exists || !documents) {
-      await reference.set(<DocumentsModel>{
+      await ref.set(<DocumentsModel>{
         [id]: document,
       });
       return dto;
@@ -54,7 +54,7 @@ const createDocumentController = protectedController(
       throw errors.exists(`Document with provided name already exist`);
     }
 
-    await reference.update(<DocumentsModel>{
+    await ref.update(<DocumentsModel>{
       [id]: document,
     });
 
