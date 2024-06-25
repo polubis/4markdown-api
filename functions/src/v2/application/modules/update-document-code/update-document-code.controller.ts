@@ -44,7 +44,7 @@ const updateDocument = async ({
     });
 };
 
-const getUserDocument = async (uid: string) => {
+const getUserDocuments = async (uid: string) => {
   const snapshot = await collections.documents().doc(uid).get();
 
   if (!snapshot.exists) throw errors.notFound(`Documents collection not found`);
@@ -59,7 +59,7 @@ const getUserDocument = async (uid: string) => {
 const updateDocumentCodeController = protectedController(
   async (rawPayload, { uid }) => {
     const payload = await parse(payloadSchema, rawPayload);
-    const documents = await getUserDocument(uid);
+    const documents = await getUserDocuments(uid);
     await updateDocument({
       documents,
       uid,

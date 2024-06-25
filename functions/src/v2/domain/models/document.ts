@@ -1,19 +1,19 @@
-type DocumentValueBase = {
+type DocumentModelBase = {
   code: string;
   name: string;
   cdate: string;
   mdate: string;
 };
 
-type PrivateDocumentValue = DocumentValueBase & {
+type PrivateDocumentModel = DocumentModelBase & {
   visibility: `private`;
 };
 
-type PublicDocumentValue = DocumentValueBase & {
+type PublicDocumentModel = DocumentModelBase & {
   visibility: `public`;
 };
 
-type PermanentDocumentValue = DocumentValueBase & {
+type PermanentDocumentModel = DocumentModelBase & {
   visibility: `permanent`;
   description: string;
   path: string;
@@ -21,11 +21,17 @@ type PermanentDocumentValue = DocumentValueBase & {
 };
 
 type DocumentModel =
-  | PrivateDocumentValue
-  | PublicDocumentValue
-  | PermanentDocumentValue;
+  | PrivateDocumentModel
+  | PublicDocumentModel
+  | PermanentDocumentModel;
 
 // { [id: string]: DocumentObject }
 type DocumentsModel = Record<string, DocumentModel>;
 
-export type { DocumentsModel, DocumentModel };
+export type {
+  DocumentsModel,
+  DocumentModel,
+  PrivateDocumentModel,
+  PublicDocumentModel,
+  PermanentDocumentModel,
+};
