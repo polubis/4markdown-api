@@ -9,7 +9,7 @@ import { DocumentModel, DocumentsModel } from '../../../domain/models/document';
 const payloadSchema = z.object({
   id: validators.id,
   mdate: validators.date,
-  code: z.string(),
+  code: validators.document.code,
 });
 
 type Payload = z.infer<typeof payloadSchema>;

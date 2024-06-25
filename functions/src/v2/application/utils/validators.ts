@@ -11,6 +11,7 @@ const validators = {
       .max(100)
       .regex(regexes.noEdgeSpaces)
       .refine((value) => regexes.document.name.test(value.trim())),
+    code: z.string(),
   },
 };
 
