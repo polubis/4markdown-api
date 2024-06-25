@@ -22,13 +22,12 @@ const createDocumentController = protectedController(
     const snapshot = await ref.get();
     const documents = snapshot.data() as DocumentsModel | undefined;
 
-    const cdate = nowISO();
-    const mdate = cdate;
+    const now = nowISO();
     const id = uuid();
 
     const document: PrivateDocumentModel = {
-      cdate,
-      mdate,
+      cdate: now,
+      mdate: now,
       code,
       name,
       visibility: `private`,
