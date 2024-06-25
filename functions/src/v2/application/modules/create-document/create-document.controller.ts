@@ -59,38 +59,7 @@ const payloadSchema = z.object({
 
 const createDocumentController = protectedController(
   async (rawPayload, { uid }) => {
-    const [payload, bucket] = await Promise.all([
-      parse(payloadSchema, rawPayload),
-      getDefaultBucket(),
-    ]);
-
-    const { id, location, url } = generateMetadata({
-      uid,
-      bucketName: bucket.name,
-    });
-    const { contentType, extension, buffer } = payload.image;
-    const file = bucket.file(location);
-
-    await Promise.all([
-      file.save(buffer, { contentType }),
-      saveImageMetadata({
-        uid,
-        model: {
-          [id]: {
-            url,
-            contentType,
-            extension,
-          },
-        },
-      }),
-    ]);
-
-    return {
-      extension,
-      contentType,
-      url,
-      id,
-    };
+    const payload = await parse(payloadSchema, rawPayload);
   },
 );
 
