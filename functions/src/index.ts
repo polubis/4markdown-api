@@ -1,16 +1,9 @@
 import { https } from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import { v4 as uuid } from 'uuid';
-import type { CreateDocPayload, GetDocPayload } from './payloads/docs.payload';
-import type { DocEntity, DocEntityField } from './entities/doc.entity';
-import type {
-  CreateDocDto,
-  GetDocDto,
-  GetDocsDto,
-  GetDocsDtoItem,
-} from './dtos/docs.dto';
+import type { GetDocPayload } from './payloads/docs.payload';
+import type { DocEntityField } from './entities/doc.entity';
+import type { GetDocDto, GetDocsDto, GetDocsDtoItem } from './dtos/docs.dto';
 import { errors } from './core/errors';
-import { Doc } from './core/doc';
 import { DocsService } from './services/docs.service';
 import { AuthService } from './services/auth.service';
 import { UsersProfilesService } from './services/users-profiles.service';
@@ -27,66 +20,12 @@ import { updateDocumentCodeController } from './v2/application/modules/update-do
 import { updateDocumentNameController } from './v2/application/modules/update-document-name/update-document-name.controller';
 import { deleteDocumentController } from './v2/application/modules/delete-document/delete-document.controller';
 import { uploadImageController } from './v2/application/modules/upload-image/upload-image.controller';
+import { createDocumentController } from './v2/application/modules/create-document/create-document.controller';
 
 const app = admin.initializeApp();
 const projectId = ProjectId(app.options.projectId);
 
-const { onCall, HttpsError } = https;
-
-export const createDoc = onCall(async (payload: CreateDocPayload, context) => {
-  if (!context.auth) {
-    throw new HttpsError(`unauthenticated`, `Unauthorized`);
-  }
-
-  const { code } = payload;
-  const id = uuid();
-  const cdate = new Date().toISOString();
-
-  const field: DocEntityField = {
-    name: Doc.createName(payload.name, `private`),
-    code,
-    cdate,
-    mdate: cdate,
-    visibility: `private`,
-  };
-
-  const docsCollection = admin
-    .firestore()
-    .collection(`docs`)
-    .doc(context.auth.uid);
-  const docs = await docsCollection.get();
-
-  const dto: CreateDocDto = {
-    ...field,
-    id,
-  };
-
-  if (!docs.exists) {
-    await docsCollection.set(<DocEntity>{
-      [id]: field,
-    });
-    return dto;
-  }
-
-  const fields = docs.data() as DocEntity;
-  const alreadyExist = Object.values(fields).some((f) => f.name === field.name);
-
-  if (alreadyExist) {
-    throw new HttpsError(
-      `already-exists`,
-      `Document with provided name already exist`,
-    );
-  }
-
-  const docEntity: DocEntity = {
-    ...fields,
-    [id]: field,
-  };
-
-  await docsCollection.set(docEntity);
-
-  return dto;
-});
+const { onCall } = https;
 
 export const updateDoc = onCall(async (payload, context) => {
   const user = AuthService.authorize(context);
@@ -261,3 +200,4 @@ export const updateDocumentCode = updateDocumentCodeController;
 export const updateDocumentName = updateDocumentNameController;
 export const deleteDocument = deleteDocumentController;
 export const uploadImage = uploadImageController;
+export const createDocument = createDocumentController;
