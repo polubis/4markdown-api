@@ -6,6 +6,7 @@ import { collections } from '../../database/collections';
 import { errors } from '../../../libs/framework/errors';
 import { DocumentsModel } from '../../../domain/models/document';
 import * as admin from 'firebase-admin';
+import { DocumentData, DocumentReference } from 'firebase-admin/firestore';
 
 const payloadSchema = z.object({
   id: validators.id,
@@ -13,8 +14,8 @@ const payloadSchema = z.object({
 
 type Payload = z.infer<typeof payloadSchema>;
 
-const getUserDocuments = async (uid: string) => {
-  const snapshot = await collections.documents().doc(uid).get();
+const getUserDocuments = async (ref: DocumentReference<DocumentData>) => {
+  const snapshot = await ref.get();
 
   if (!snapshot.exists) throw errors.notFound(`Documents collection not found`);
 
@@ -28,19 +29,23 @@ const getUserDocuments = async (uid: string) => {
 const deleteUserDocument = async (
   documents: DocumentsModel,
   payload: Payload,
-  uid: string,
+  ref: DocumentReference<DocumentData>,
 ) => {
   (documents as admin.firestore.DocumentData)[payload.id] =
     admin.firestore.FieldValue.delete();
 
-  await collections.documents().doc(uid).update(documents);
+  await ref.update(documents);
 };
 
 const deleteDocumentController = protectedController(
   async (rawPayload, { uid }) => {
-    const payload = await parse(payloadSchema, rawPayload);
-    const documents = await getUserDocuments(uid);
-    await deleteUserDocument(documents, payload, uid);
+    const ref = collections.documents().doc(uid);
+    const [payload, documents] = await Promise.all([
+      parse(payloadSchema, rawPayload),
+      getUserDocuments(ref),
+    ]);
+
+    await deleteUserDocument(documents, payload, ref);
   },
 );
 
