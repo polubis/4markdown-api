@@ -5,6 +5,7 @@ import { validators } from '../../utils/validators';
 import { parse } from '../../../libs/framework/parse';
 import { collections } from '../../database/collections';
 import { DocumentModel, DocumentsModel } from '../../../domain/models/document';
+import { nowISO } from '../../../libs/helpers/stamps';
 
 const payloadSchema = z.object({
   id: validators.id,
@@ -41,6 +42,7 @@ const updateDocumentCodeController = protectedController(
       [payload.id]: {
         ...document,
         code: payload.code,
+        mdate: nowISO(),
       },
     });
   },
