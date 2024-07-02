@@ -37,14 +37,12 @@ const updateDocumentCodeController = protectedController(
       throw errors.outOfDate(`The document has been already changed`);
     }
 
-    const updatedDocuments: DocumentsModel = {
+    await ref.update(<DocumentsModel>{
       [payload.id]: {
         ...document,
         code: payload.code,
       },
-    };
-
-    await ref.update(updatedDocuments);
+    });
   },
 );
 
