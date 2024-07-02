@@ -38,13 +38,17 @@ const updateDocumentCodeController = protectedController(
       throw errors.outOfDate(`The document has been already changed`);
     }
 
+    const mdate = nowISO();
+
     await ref.update(<DocumentsModel>{
       [payload.id]: {
         ...document,
         code: payload.code,
-        mdate: nowISO(),
+        mdate,
       },
     });
+
+    return { mdate };
   },
 );
 
