@@ -8,6 +8,7 @@ import {
   DOCUMENT_RATING_CATEGORIES,
   DocumentRateModel,
 } from '../../../domain/models/document-rate';
+import { firestore } from 'firebase-admin';
 
 const payloadSchema = z.object({
   id: validators.id,
@@ -21,49 +22,48 @@ const rateDocumentController = protectedController(
     const ref = collections
       .documentsRates()
       .doc((rawPayload as PayloadSchema).id);
-    const [payload, snap] = await Promise.all([
-      parse(payloadSchema, rawPayload),
-      ref.get(),
-    ]);
-    const rate = snap.data() as DocumentRateModel | undefined;
 
-    if (!rate) {
+    await firestore().runTransaction(async (transaction) => {
+      const [snap, payload] = await Promise.all([
+        transaction.get(ref),
+        parse(payloadSchema, rawPayload),
+      ]);
+      const rate = snap.data() as DocumentRateModel | undefined;
       const now = nowISO();
-      const model: DocumentRateModel = {
-        id: uuid(),
-        rating: {
-          ugly: 0,
-          bad: 0,
-          decent: 0,
-          good: 0,
-          perfect: 0,
-          [payload.category]: 1,
-        },
-        voters: { [uid]: true },
-        cdate: now,
-        mdate: now,
-      };
 
-      await ref.set(model);
+      if (!rate) {
+        const model: DocumentRateModel = {
+          id: uuid(),
+          rating: {
+            ugly: 0,
+            bad: 0,
+            decent: 0,
+            good: 0,
+            perfect: 0,
+            [payload.category]: 1,
+          },
+          voters: { [uid]: true },
+          cdate: now,
+          mdate: now,
+        };
 
-      return {};
-    }
+        transaction.set(ref, model);
+      } else {
+        const model: Pick<DocumentRateModel, 'mdate' | 'voters' | 'rating'> = {
+          mdate: now,
+          voters: {
+            ...rate.voters,
+            [uid]: true,
+          },
+          rating: {
+            ...rate.rating,
+            [payload.category]: rate.rating[payload.category] + 1,
+          },
+        };
 
-    const model: Pick<DocumentRateModel, 'mdate' | 'voters' | 'rating'> = {
-      mdate: nowISO(),
-      voters: {
-        ...rate.voters,
-        [uid]: true,
-      },
-      rating: {
-        ...rate.rating,
-        [payload.category]: rate.rating[payload.category] + 1,
-      },
-    };
-
-    await ref.update(model);
-
-    return {};
+        transaction.update(ref, model);
+      }
+    });
   },
 );
 
