@@ -1,9 +1,9 @@
-import * as admin from 'firebase-admin';
+import { firestore } from 'firebase-admin';
 
 const collections = {
-  documents: () => admin.firestore().collection(`docs`),
-  images: () => admin.firestore().collection(`images`),
-  documentsRates: () => admin.firestore().collection(`documents-rates`),
+  documents: () => firestore().collection(`docs`),
+  images: () => firestore().collection(`images`),
+  documentsRates: () => firestore().collection(`documents-rates`),
 };
 
 export { collections };
