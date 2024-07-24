@@ -1,23 +1,11 @@
-import {
-  DocumentReference,
-  DocumentData,
-  DocumentSnapshot,
-} from 'firebase-admin/firestore';
 import { collections } from '../../database/collections';
 import { DocumentRateModel } from '../../../domain/models/document-rate';
+import { Service } from '../../../libs/framework/service';
 
-const getDocumentRate = async ({
-  documentId,
-  action,
-}: {
-  documentId: string;
-  action?: (
-    ref: DocumentReference<DocumentData>,
-  ) => Promise<DocumentSnapshot<DocumentData>>;
-}): Promise<{
-  data: DocumentRateModel | undefined;
-  ref: DocumentReference<DocumentData>;
-}> => {
+const getDocumentRate: Service<
+  { documentId: string },
+  DocumentRateModel
+> = async ({ documentId, action }) => {
   const ref = collections.documentsRates().doc(documentId);
   const snap = await (action ? action(ref) : ref.get());
 
