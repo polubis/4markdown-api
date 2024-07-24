@@ -9,7 +9,6 @@ const DOCUMENT_RATING_CATEGORIES = [
 type DocumentRateCategory = (typeof DOCUMENT_RATING_CATEGORIES)[number];
 
 type DocumentRateModel = {
-  id: string;
   rating: Record<DocumentRateCategory, number>;
   voters: Record<string, boolean>;
   cdate: string;

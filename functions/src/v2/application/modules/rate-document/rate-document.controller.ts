@@ -2,7 +2,7 @@ import { protectedController } from '../../../libs/framework/controller';
 import { z } from 'zod';
 import { validators } from '../../utils/validators';
 import { parse } from '../../../libs/framework/parse';
-import { nowISO, uuid } from '../../../libs/helpers/stamps';
+import { nowISO } from '../../../libs/helpers/stamps';
 import {
   DOCUMENT_RATING_CATEGORIES,
   DocumentRateModel,
@@ -28,13 +28,15 @@ const rateDocumentController = protectedController(
         getUserDocument({ uid, documentId, action: transaction.get }),
       ]);
 
-      if (!document) throw errors.notFound(`Documents not found`);
+      if (!document.data) throw errors.notFound(`Document not found`);
+
+      if (document.data.visibility === `private`)
+        throw errors.badRequest(`Cannot add rate for private document`);
 
       const now = nowISO();
 
       if (!documentRate.data) {
         const model: DocumentRateModel = {
-          id: uuid(),
           rating: {
             ugly: 0,
             bad: 0,
