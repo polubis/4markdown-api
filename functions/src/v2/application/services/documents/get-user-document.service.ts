@@ -1,29 +1,21 @@
 import { DocumentModel } from '../../../domain/models/document';
+import { Service } from '../../../libs/framework/service';
 import { getUserDocuments } from './get-user-documents.service';
-import {
-  DocumentReference,
-  DocumentData,
-  DocumentSnapshot,
-} from 'firebase-admin/firestore';
 
-const getUserDocument = async ({
-  uid,
-  documentId,
-  action,
-}: {
-  uid: string;
-  documentId: string;
-  action?: (
-    ref: DocumentReference<DocumentData>,
-  ) => Promise<DocumentSnapshot<DocumentData>>;
-}): Promise<DocumentModel | undefined> => {
+const getUserDocument: Service<
+  { uid: string; documentId: string },
+  DocumentModel
+> = async ({ uid, documentId, action }) => {
   const documents = await getUserDocuments({ uid, action });
 
-  if (!documents) return;
+  if (!documents.data) return { ref: documents.ref, data: undefined };
 
-  const document = documents[documentId] as DocumentModel | undefined;
+  const data = documents.data[documentId] as DocumentModel | undefined;
 
-  return document;
+  return {
+    ref: documents.ref,
+    data,
+  };
 };
 
 export { getUserDocument };

@@ -20,16 +20,16 @@ const updateDocumentCodeController = protectedController(
     const payload = await parse(payloadSchema, rawPayload);
     const document = await getUserDocument({ uid, documentId: payload.id });
 
-    if (!document) throw errors.notFound(`Document not found`);
+    if (!document.data) throw errors.notFound(`Document not found`);
 
-    if (payload.mdate !== document.mdate)
+    if (payload.mdate !== document.data.mdate)
       throw errors.outOfDate(`The document has been already changed`);
 
     const mdate = nowISO();
 
     await ref.update(<DocumentsModel>{
       [payload.id]: {
-        ...document,
+        ...document.data,
         code: payload.code,
         mdate,
       },
