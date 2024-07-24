@@ -11,15 +11,81 @@ import {
 import { firestore } from 'firebase-admin';
 import { errors } from '../../../libs/framework/errors';
 import { DocumentModel, DocumentsModel } from '../../../domain/models/document';
+import { getDocumentRate } from '../../services/documents-rates/get-document-rate.service';
+import { getUserDocument } from '../../services/documents/get-user-document.service';
 
 const payloadSchema = z.object({
-  id: validators.id,
+  documentId: validators.id,
   category: z.enum(DOCUMENT_RATING_CATEGORIES),
 });
 
 const rateDocumentController = protectedController(
   async (rawPayload, { uid }) => {
-    const payload = await parse(payloadSchema, rawPayload);
+    const { documentId, category } = await parse(payloadSchema, rawPayload);
+    const { runTransaction } = firestore();
+
+    await runTransaction(async (transaction) => {
+      const [documentRate, document] = await Promise.all([
+        getDocumentRate({ documentId, action: transaction.get }),
+        getUserDocument({ uid, documentId, action: transaction.get }),
+      ]);
+
+      if (!document) throw errors.notFound(`Documents not found`);
+
+      const now = nowISO();
+
+      if (!documentRate) {
+        const model: DocumentRateModel = {
+          id: uuid(),
+          rating: {
+            ugly: 0,
+            bad: 0,
+            decent: 0,
+            good: 0,
+            perfect: 0,
+            [category]: 1,
+          },
+          voters: { [uid]: true },
+          cdate: now,
+          mdate: now,
+        };
+
+        transaction.set(documentRatesRef, model);
+      }
+
+      // if (!documentRateData) {
+      //   const model: DocumentRateModel = {
+      //     id: uuid(),
+      //     rating: {
+      //       ugly: 0,
+      //       bad: 0,
+      //       decent: 0,
+      //       good: 0,
+      //       perfect: 0,
+      //       [payload.category]: 1,
+      //     },
+      //     voters: { [uid]: true },
+      //     cdate: now,
+      //     mdate: now,
+      //   };
+
+      //   transaction.set(documentRatesRef, model);
+      // } else {
+      //   const model: Pick<DocumentRateModel, 'mdate' | 'voters' | 'rating'> = {
+      //     mdate: now,
+      //     voters: {
+      //       ...documentRateData.voters,
+      //       [uid]: true,
+      //     },
+      //     rating: {
+      //       ...documentRateData.rating,
+      //       [payload.category]: documentRateData.rating[payload.category] + 1,
+      //     },
+      //   };
+
+      //   transaction.update(documentRatesRef, model);
+      // }
+    });
   },
 );
 
@@ -53,36 +119,36 @@ export { rateDocumentController };
 //     | undefined;
 //   const now = nowISO();
 
-//   if (!documentRateData) {
-//     const model: DocumentRateModel = {
-//       id: uuid(),
-//       rating: {
-//         ugly: 0,
-//         bad: 0,
-//         decent: 0,
-//         good: 0,
-//         perfect: 0,
-//         [payload.category]: 1,
-//       },
-//       voters: { [uid]: true },
-//       cdate: now,
-//       mdate: now,
-//     };
+// if (!documentRateData) {
+//   const model: DocumentRateModel = {
+//     id: uuid(),
+//     rating: {
+//       ugly: 0,
+//       bad: 0,
+//       decent: 0,
+//       good: 0,
+//       perfect: 0,
+//       [payload.category]: 1,
+//     },
+//     voters: { [uid]: true },
+//     cdate: now,
+//     mdate: now,
+//   };
 
-//     transaction.set(documentRatesRef, model);
-//   } else {
-//     const model: Pick<DocumentRateModel, 'mdate' | 'voters' | 'rating'> = {
-//       mdate: now,
-//       voters: {
-//         ...documentRateData.voters,
-//         [uid]: true,
-//       },
-//       rating: {
-//         ...documentRateData.rating,
-//         [payload.category]: documentRateData.rating[payload.category] + 1,
-//       },
-//     };
+//   transaction.set(documentRatesRef, model);
+// } else {
+//   const model: Pick<DocumentRateModel, 'mdate' | 'voters' | 'rating'> = {
+//     mdate: now,
+//     voters: {
+//       ...documentRateData.voters,
+//       [uid]: true,
+//     },
+//     rating: {
+//       ...documentRateData.rating,
+//       [payload.category]: documentRateData.rating[payload.category] + 1,
+//     },
+//   };
 
-//     transaction.update(documentRatesRef, model);
-//   }
+//   transaction.update(documentRatesRef, model);
+// }
 // });

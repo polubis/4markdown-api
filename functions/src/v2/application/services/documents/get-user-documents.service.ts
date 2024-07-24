@@ -16,7 +16,6 @@ const getUserDocuments = async ({
   ) => Promise<DocumentSnapshot<DocumentData>>;
 }): Promise<DocumentsModel | undefined> => {
   const ref = collections.documents().doc(uid);
-
   const snap = await (action ? action(ref) : ref.get());
 
   if (!snap.exists) return;
