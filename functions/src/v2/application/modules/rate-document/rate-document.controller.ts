@@ -48,12 +48,13 @@ const rateDocumentController = protectedController(
             decent: 0,
             good: 0,
             perfect: 0,
-            [category]: 1,
           },
           voters: { [uid]: category },
           cdate: now,
           mdate: now,
         };
+
+        model.rating[category] = 1;
 
         transaction.set(documentRate.ref, model);
 
