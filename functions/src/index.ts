@@ -1,5 +1,5 @@
 import { https } from 'firebase-functions';
-import { firestore, auth, initializeApp } from 'firebase-admin';
+import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
 import type {
   CreateDocPayload,
@@ -33,7 +33,7 @@ import { isDev } from './core/env-checks';
 import { updateDocumentCodeController } from './v2/application/modules/update-document-code/update-document-code.controller';
 import { rateDocumentController } from './v2/application/modules/rate-document/rate-document.controller';
 
-const app = initializeApp();
+const app = admin.initializeApp();
 const projectId = ProjectId(app.options.projectId);
 
 const { onCall, HttpsError } = https;
@@ -55,7 +55,10 @@ export const createDoc = onCall(async (payload: CreateDocPayload, context) => {
     visibility: `private`,
   };
 
-  const docsCollection = firestore().collection(`docs`).doc(context.auth.uid);
+  const docsCollection = admin
+    .firestore()
+    .collection(`docs`)
+    .doc(context.auth.uid);
   const docs = await docsCollection.get();
 
   const dto: CreateDocDto = {
@@ -100,7 +103,8 @@ export const getDocs = onCall(async (_, context) => {
     throw errors.notAuthorized();
   }
 
-  const docsCollection = await firestore()
+  const docsCollection = await admin
+    .firestore()
     .collection(`docs`)
     .doc(context.auth.uid)
     .get();
@@ -165,7 +169,10 @@ export const deleteDoc = onCall(async (payload: DeleteDocPayload, context) => {
     throw errors.notAuthorized();
   }
 
-  const docsCollection = firestore().collection(`docs`).doc(context.auth.uid);
+  const docsCollection = admin
+    .firestore()
+    .collection(`docs`)
+    .doc(context.auth.uid);
 
   const result = (await docsCollection.get()).data();
 
@@ -173,7 +180,7 @@ export const deleteDoc = onCall(async (payload: DeleteDocPayload, context) => {
     throw errors.notFound();
   }
 
-  result[payload.id] = firestore.FieldValue.delete();
+  result[payload.id] = admin.firestore.FieldValue.delete();
 
   await docsCollection.update(result);
 
@@ -187,13 +194,13 @@ export const deleteAccount = onCall(async (_, context) => {
     throw errors.notAuthorized();
   }
 
-  await auth().deleteUser(context.auth.uid);
-  await firestore().collection(`docs`).doc(context.auth.uid).delete();
+  await admin.auth().deleteUser(context.auth.uid);
+  await admin.firestore().collection(`docs`).doc(context.auth.uid).delete();
   return null;
 });
 
 export const getPublicDoc = onCall(async (payload: GetDocPayload) => {
-  const docsCollection = await firestore().collection(`docs`).get();
+  const docsCollection = await admin.firestore().collection(`docs`).get();
 
   let docDto: GetDocDto | undefined;
 
