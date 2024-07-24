@@ -2,7 +2,6 @@ import { protectedController } from '../../../libs/framework/controller';
 import { z } from 'zod';
 import { validators } from '../../utils/validators';
 import { parse } from '../../../libs/framework/parse';
-import { collections } from '../../database/collections';
 import { nowISO, uuid } from '../../../libs/helpers/stamps';
 import {
   DOCUMENT_RATING_CATEGORIES,
@@ -10,7 +9,6 @@ import {
 } from '../../../domain/models/document-rate';
 import { firestore } from 'firebase-admin';
 import { errors } from '../../../libs/framework/errors';
-import { DocumentModel, DocumentsModel } from '../../../domain/models/document';
 import { getDocumentRate } from '../../services/documents-rates/get-document-rate.service';
 import { getUserDocument } from '../../services/documents/get-user-document.service';
 
@@ -34,7 +32,7 @@ const rateDocumentController = protectedController(
 
       const now = nowISO();
 
-      if (!documentRate) {
+      if (!documentRate.data) {
         const model: DocumentRateModel = {
           id: uuid(),
           rating: {
@@ -50,41 +48,24 @@ const rateDocumentController = protectedController(
           mdate: now,
         };
 
-        transaction.set(documentRatesRef, model);
+        transaction.set(documentRate.ref, model);
+
+        return;
       }
 
-      // if (!documentRateData) {
-      //   const model: DocumentRateModel = {
-      //     id: uuid(),
-      //     rating: {
-      //       ugly: 0,
-      //       bad: 0,
-      //       decent: 0,
-      //       good: 0,
-      //       perfect: 0,
-      //       [payload.category]: 1,
-      //     },
-      //     voters: { [uid]: true },
-      //     cdate: now,
-      //     mdate: now,
-      //   };
+      const model: Pick<DocumentRateModel, 'mdate' | 'voters' | 'rating'> = {
+        mdate: now,
+        voters: {
+          ...documentRate.data.voters,
+          [uid]: true,
+        },
+        rating: {
+          ...documentRate.data.rating,
+          [category]: documentRate.data.rating[category] + 1,
+        },
+      };
 
-      //   transaction.set(documentRatesRef, model);
-      // } else {
-      //   const model: Pick<DocumentRateModel, 'mdate' | 'voters' | 'rating'> = {
-      //     mdate: now,
-      //     voters: {
-      //       ...documentRateData.voters,
-      //       [uid]: true,
-      //     },
-      //     rating: {
-      //       ...documentRateData.rating,
-      //       [payload.category]: documentRateData.rating[payload.category] + 1,
-      //     },
-      //   };
-
-      //   transaction.update(documentRatesRef, model);
-      // }
+      transaction.update(documentRate.ref, model);
     });
   },
 );
