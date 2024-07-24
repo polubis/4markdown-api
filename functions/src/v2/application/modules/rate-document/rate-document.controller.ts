@@ -58,7 +58,7 @@ const rateDocumentController = protectedController(
 
         transaction.set(documentRate.ref, model);
 
-        return;
+        return model.rating;
       }
 
       const currentCategory = documentRate.data.voters[uid];
@@ -87,6 +87,8 @@ const rateDocumentController = protectedController(
       };
 
       transaction.update(documentRate.ref, model);
+
+      return model.rating;
     });
   },
 );
