@@ -18,7 +18,9 @@ const payloadSchema = z.object({
 });
 
 const rateDocumentController = protectedController(
-  async (rawPayload, { uid }) => {},
+  async (rawPayload, { uid }) => {
+    const payload = await parse(payloadSchema, rawPayload);
+  },
 );
 
 export { rateDocumentController };
