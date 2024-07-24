@@ -30,7 +30,10 @@ const rateDocumentController = protectedController(
 
       if (!document.data) throw errors.notFound(`Document not found`);
 
-      if (document.data.visibility === `private`)
+      if (
+        document.data.visibility !== `public` &&
+        document.data.visibility !== `permanent`
+      )
         throw errors.badRequest(`Cannot add rate for private document`);
 
       const now = nowISO();
