@@ -55,10 +55,21 @@ const rateDocumentController = protectedController(
         return;
       }
 
-      if (documentRate.data.voters[uid] === category)
+      const currentCategory = documentRate.data.voters[uid];
+
+      if (currentCategory === category)
         throw errors.badRequest(
-          `Already voted for category ${category}. Select another one if you want to change your opinion`,
+          `Already voted for category ${currentCategory}. Select another one if you want to change your opinion`,
         );
+
+      const rating: DocumentRateModel['rating'] = {
+        ...documentRate.data.rating,
+        [category]: documentRate.data.rating[category] + 1,
+      };
+
+      if (currentCategory && rating[currentCategory] > 0) {
+        rating[currentCategory] = rating[currentCategory] - 1;
+      }
 
       const model: Pick<DocumentRateModel, 'mdate' | 'voters' | 'rating'> = {
         mdate: now,
@@ -66,10 +77,7 @@ const rateDocumentController = protectedController(
           ...documentRate.data.voters,
           [uid]: category,
         },
-        rating: {
-          ...documentRate.data.rating,
-          [category]: documentRate.data.rating[category] + 1,
-        },
+        rating,
       };
 
       transaction.update(documentRate.ref, model);
