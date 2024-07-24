@@ -34,7 +34,9 @@ const rateDocumentController = protectedController(
         document.data.visibility !== `public` &&
         document.data.visibility !== `permanent`
       )
-        throw errors.badRequest(`Cannot add rate for private document`);
+        throw errors.badRequest(
+          `Rating is possible only for public and permanent documents`,
+        );
 
       const now = nowISO();
 
