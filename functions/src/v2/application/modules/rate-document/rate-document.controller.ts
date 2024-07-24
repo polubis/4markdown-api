@@ -45,7 +45,7 @@ const rateDocumentController = protectedController(
             perfect: 0,
             [category]: 1,
           },
-          voters: { [uid]: true },
+          voters: { [uid]: category },
           cdate: now,
           mdate: now,
         };
@@ -55,11 +55,16 @@ const rateDocumentController = protectedController(
         return;
       }
 
+      if (documentRate.data.voters[uid] === category)
+        throw errors.badRequest(
+          `Already voted for category ${category}. Select another one if you want to change your opinion`,
+        );
+
       const model: Pick<DocumentRateModel, 'mdate' | 'voters' | 'rating'> = {
         mdate: now,
         voters: {
           ...documentRate.data.voters,
-          [uid]: true,
+          [uid]: category,
         },
         rating: {
           ...documentRate.data.rating,

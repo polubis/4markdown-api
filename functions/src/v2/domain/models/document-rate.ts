@@ -10,7 +10,7 @@ type DocumentRateCategory = (typeof DOCUMENT_RATING_CATEGORIES)[number];
 
 type DocumentRateModel = {
   rating: Record<DocumentRateCategory, number>;
-  voters: Record<string, boolean>;
+  voters: Record<string, DocumentRateCategory>;
   cdate: string;
   mdate: string;
 };
