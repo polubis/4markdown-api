@@ -18,7 +18,7 @@ const rateDocumentController = protectedController(
     const { documentId, category } = await parse(payloadSchema, rawPayload);
     const documentRateRef = db.collection(`documents-rates`).doc(documentId);
 
-    await db.runTransaction(async (transaction) => {
+    return await db.runTransaction(async (transaction) => {
       const documentRateSnap = await transaction.get(documentRateRef);
       const now = nowISO();
 
