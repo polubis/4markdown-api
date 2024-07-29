@@ -7,10 +7,9 @@ import {
   DOCUMENT_RATING_CATEGORIES,
   DocumentRateModel,
 } from '../../../domain/models/document-rate';
-import { firestore } from 'firebase-admin';
 import { errors } from '../../../libs/framework/errors';
 import { DocumentModel, DocumentsModel } from '../../../domain/models/document';
-import { Db } from '../../database/database';
+import type { Firestore } from 'firebase-admin/firestore';
 
 const payloadSchema = z.object({
   documentId: validators.id,
@@ -19,15 +18,13 @@ const payloadSchema = z.object({
 
 const throwDocumentsNotFound = () => errors.notFound(`Document not found`);
 
-const rateDocumentController = protectedController(
-  async (rawPayload, { uid }) => {
+const rateDocumentController = (db: Firestore) =>
+  protectedController(async (rawPayload, { uid }) => {
     const { documentId, category } = await parse(payloadSchema, rawPayload);
-    const db = Db();
-    const { runTransaction } = firestore();
     const documentRateRef = db.collection(`documents-rates`).doc(documentId);
     const documentsRef = db.collection(`docs`).doc(uid);
 
-    await runTransaction(async (transaction) => {
+    await db.runTransaction(async (transaction) => {
       const [documentRateSnap, documentsSnap] = await transaction.getAll(
         documentRateRef,
         documentsRef,
@@ -99,7 +96,6 @@ const rateDocumentController = protectedController(
 
       return model.rating;
     });
-  },
-);
+  });
 
 export { rateDocumentController };

@@ -35,6 +35,7 @@ import { rateDocumentController } from './v2/application/modules/rate-document/r
 
 const app = admin.initializeApp();
 const projectId = ProjectId(app.options.projectId);
+const db = app.firestore();
 
 const { onCall, HttpsError } = https;
 
@@ -303,4 +304,4 @@ export const autoCreateBackup = Job(`every sunday 23:59`, async () => {
 });
 
 export const updateDocumentCode = updateDocumentCodeController;
-export const rateDocument = rateDocumentController;
+export const rateDocument = rateDocumentController(db);
