@@ -16,8 +16,6 @@ const payloadSchema = z.object({
   category: z.enum(DOCUMENT_RATING_CATEGORIES),
 });
 
-const throwDocumentsNotFound = () => errors.notFound(`Document not found`);
-
 const rateDocumentController = (db: Firestore) =>
   protectedController(async (rawPayload, { uid }) => {
     const { documentId, category } = await parse(payloadSchema, rawPayload);
@@ -32,13 +30,13 @@ const rateDocumentController = (db: Firestore) =>
 
       const documentsData = documentsSnap.data() as DocumentsModel | undefined;
 
-      if (!documentsData) throw throwDocumentsNotFound();
+      if (!documentsData) throw errors.notFound(`Cannot find documents`);
 
       const documentData = documentsData[documentId] as
         | DocumentModel
         | undefined;
 
-      if (!documentData) throw throwDocumentsNotFound();
+      if (!documentData) throw errors.notFound(`Cannot find document`);
 
       if (documentData.visibility === `private`)
         throw errors.badRequest(`Private documents cannot be rated`);
