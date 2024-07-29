@@ -1,5 +1,5 @@
 import { errors } from '../../../libs/framework/errors';
-import { protectedController } from '../../../libs/framework/controller';
+import { protectedController } from '../../utils/controller';
 import { z } from 'zod';
 import { validators } from '../../utils/validators';
 import { parse } from '../../../libs/framework/parse';
