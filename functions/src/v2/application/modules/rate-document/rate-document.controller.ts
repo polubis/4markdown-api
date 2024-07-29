@@ -63,7 +63,7 @@ const rateDocumentController = (db: Firestore) =>
 
         model.rating[category] = 1;
 
-        await transaction.set(documentRateRef, model);
+        transaction.set(documentRateRef, model);
 
         return model.rating;
       }
@@ -90,7 +90,7 @@ const rateDocumentController = (db: Firestore) =>
         rating,
       };
 
-      await transaction.update(documentRateRef, model);
+      transaction.update(documentRateRef, model);
 
       return model.rating;
     });
