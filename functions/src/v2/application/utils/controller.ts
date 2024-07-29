@@ -22,12 +22,10 @@ const protectedController =
   (firestore: Firestore): HttpsFunction & Runnable<unknown> => {
     const db = Db(firestore);
 
-    return https.onCall(async (rawPayload, context) => {
+    return https.onCall(async (rawPayload: unknown, context) => {
       const { auth } = context;
 
-      if (!auth) {
-        throw errors.unauthenticated();
-      }
+      if (!auth) throw errors.unauthenticated();
 
       const { uid } = auth;
 
