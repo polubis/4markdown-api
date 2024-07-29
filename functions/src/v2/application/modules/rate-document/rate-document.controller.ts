@@ -7,8 +7,6 @@ import {
   DOCUMENT_RATING_CATEGORIES,
   DocumentRateModel,
 } from '../../../domain/models/document-rate';
-import { errors } from '../../../libs/framework/errors';
-import { DocumentModel, DocumentsModel } from '../../../domain/models/document';
 
 const payloadSchema = z.object({
   documentId: validators.id,
@@ -19,27 +17,9 @@ const rateDocumentController = protectedController(
   async (rawPayload, { uid, db }) => {
     const { documentId, category } = await parse(payloadSchema, rawPayload);
     const documentRateRef = db.collection(`documents-rates`).doc(documentId);
-    const documentsRef = db.collection(`docs`).doc(uid);
 
     await db.runTransaction(async (transaction) => {
-      const [documentRateSnap, documentsSnap] = await transaction.getAll(
-        documentRateRef,
-        documentsRef,
-      );
-
-      const documentsData = documentsSnap.data() as DocumentsModel | undefined;
-
-      if (!documentsData) throw errors.notFound(`Cannot find documents`);
-
-      const documentData = documentsData[documentId] as
-        | DocumentModel
-        | undefined;
-
-      if (!documentData) throw errors.notFound(`Cannot find document`);
-
-      if (documentData.visibility === `private`)
-        throw errors.badRequest(`Private documents cannot be rated`);
-
+      const documentRateSnap = await transaction.get(documentRateRef);
       const now = nowISO();
 
       const documentRateData = documentRateSnap.data() as
