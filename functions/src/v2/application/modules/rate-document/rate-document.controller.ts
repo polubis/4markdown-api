@@ -9,14 +9,14 @@ import {
 } from '../../../domain/models/document-rate';
 import { errors } from '../../../libs/framework/errors';
 import { DocumentModel, DocumentsModel } from '../../../domain/models/document';
-import type { Firestore } from 'firebase-admin/firestore';
+import type { DBInstance } from '../../database/database';
 
 const payloadSchema = z.object({
   documentId: validators.id,
   category: z.enum(DOCUMENT_RATING_CATEGORIES),
 });
 
-const rateDocumentController = (db: Firestore) =>
+const rateDocumentController = (db: DBInstance) =>
   protectedController(async (rawPayload, { uid }) => {
     const { documentId, category } = await parse(payloadSchema, rawPayload);
     const documentRateRef = db.collection(`documents-rates`).doc(documentId);
