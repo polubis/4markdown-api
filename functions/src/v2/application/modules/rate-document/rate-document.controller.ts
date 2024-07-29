@@ -24,8 +24,12 @@ const rateDocumentController = protectedController(
 
     await runTransaction(async (transaction) => {
       const [documentRate, document] = await Promise.all([
-        getDocumentRate({ documentId, action: transaction.get }),
-        getUserDocument({ uid, documentId, action: transaction.get }),
+        getDocumentRate({ documentId, action: (ref) => transaction.get(ref) }),
+        getUserDocument({
+          uid,
+          documentId,
+          action: (ref) => transaction.get(ref),
+        }),
       ]);
 
       if (!document.data) throw errors.notFound(`Document not found`);
