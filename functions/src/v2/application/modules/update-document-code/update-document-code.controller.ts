@@ -1,8 +1,8 @@
-import { errors } from '../../../libs/framework/errors';
+import { errors } from '../../utils/errors';
 import { protectedController } from '../../utils/controller';
 import { z } from 'zod';
 import { validators } from '../../utils/validators';
-import { parse } from '../../../libs/framework/parse';
+import { parse } from '../../utils/parse';
 import { DocumentModel, DocumentsModel } from '../../../domain/models/document';
 import { nowISO } from '../../../libs/helpers/stamps';
 

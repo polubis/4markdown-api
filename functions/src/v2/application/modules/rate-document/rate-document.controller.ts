@@ -1,7 +1,7 @@
 import { protectedController } from '../../utils/controller';
 import { z } from 'zod';
 import { validators } from '../../utils/validators';
-import { parse } from '../../../libs/framework/parse';
+import { parse } from '../../utils/parse';
 import { nowISO } from '../../../libs/helpers/stamps';
 import {
   DOCUMENT_RATING_CATEGORIES,
