@@ -7,6 +7,7 @@ import {
   DOCUMENT_RATING_CATEGORIES,
   DocumentRateModel,
 } from '../../../domain/models/document-rate';
+import { logger } from 'firebase-functions/v1';
 
 const payloadSchema = z.object({
   documentId: validators.id,
@@ -25,6 +26,8 @@ const rateDocumentController = protectedController(
       const documentRateData = documentRateSnap.data() as
         | DocumentRateModel
         | undefined;
+
+      logger.info(documentRateData, uid);
 
       if (!documentRateData) {
         const model: DocumentRateModel = {

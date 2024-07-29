@@ -1,6 +1,6 @@
 import { https, HttpsFunction, Runnable } from 'firebase-functions';
 import { errors } from './errors';
-import { Db, type DBInstance } from '../database/database';
+import { type DBInstance } from '../database/database';
 import { type Firestore } from 'firebase-admin/firestore';
 
 type ControllerHandler<TResponse = unknown> = (
@@ -29,7 +29,7 @@ const protectedController =
 
       const { uid } = auth;
 
-      return await handler(rawPayload, { uid, db: Db(db) });
+      return await handler(rawPayload, { uid, db });
     });
 
 export { controller, protectedController };
