@@ -9,42 +9,49 @@ import {
 } from '../../../domain/models/document-rate';
 import { firestore } from 'firebase-admin';
 import { errors } from '../../../libs/framework/errors';
-import { getDocumentRate } from '../../services/documents-rates/get-document-rate.service';
-import { getUserDocument } from '../../services/documents/get-user-document.service';
+import { collections } from '../../database/collections';
+import { DocumentModel, DocumentsModel } from '../../../domain/models/document';
 
 const payloadSchema = z.object({
   documentId: validators.id,
   category: z.enum(DOCUMENT_RATING_CATEGORIES),
 });
 
+const throwDocumentsNotFound = () => errors.notFound(`Document not found`);
+
 const rateDocumentController = protectedController(
   async (rawPayload, { uid }) => {
     const { documentId, category } = await parse(payloadSchema, rawPayload);
     const { runTransaction } = firestore();
+    const documentRateRef = collections.documentsRates().doc(documentId);
+    const documentsRef = collections.documents().doc(uid);
 
     await runTransaction(async (transaction) => {
-      const [documentRate, document] = await Promise.all([
-        getDocumentRate({ documentId, action: (ref) => transaction.get(ref) }),
-        getUserDocument({
-          uid,
-          documentId,
-          action: (ref) => transaction.get(ref),
-        }),
-      ]);
+      const [documentRateSnap, documentsSnap] = await transaction.getAll(
+        documentRateRef,
+        documentsRef,
+      );
 
-      if (!document.data) throw errors.notFound(`Document not found`);
+      const documentsData = documentsSnap.data() as DocumentsModel | undefined;
 
-      if (
-        document.data.visibility !== `public` &&
-        document.data.visibility !== `permanent`
-      )
-        throw errors.badRequest(
-          `Rating is possible only for public and permanent documents`,
-        );
+      if (!documentsData) throw throwDocumentsNotFound();
+
+      const documentData = documentsData[documentId] as
+        | DocumentModel
+        | undefined;
+
+      if (!documentData) throw throwDocumentsNotFound();
+
+      if (documentData.visibility === `private`)
+        throw errors.badRequest(`Private documents cannot be rated`);
 
       const now = nowISO();
 
-      if (!documentRate.data) {
+      const documentRateData = documentRateSnap.data() as
+        | DocumentRateModel
+        | undefined;
+
+      if (!documentRateData) {
         const model: DocumentRateModel = {
           rating: {
             ugly: 0,
@@ -60,21 +67,18 @@ const rateDocumentController = protectedController(
 
         model.rating[category] = 1;
 
-        transaction.set(documentRate.ref, model);
+        transaction.set(documentRateRef, model);
 
         return model.rating;
       }
 
-      const currentCategory = documentRate.data.voters[uid];
+      const currentCategory = documentRateData.voters[uid];
 
-      if (currentCategory === category)
-        throw errors.badRequest(
-          `Already voted for category ${currentCategory}. Select another one if you want to change your opinion`,
-        );
+      if (currentCategory === category) return documentRateData.rating;
 
       const rating: DocumentRateModel['rating'] = {
-        ...documentRate.data.rating,
-        [category]: documentRate.data.rating[category] + 1,
+        ...documentRateData.rating,
+        [category]: documentRateData.rating[category] + 1,
       };
 
       if (currentCategory && rating[currentCategory] > 0) {
@@ -84,13 +88,13 @@ const rateDocumentController = protectedController(
       const model: Pick<DocumentRateModel, 'mdate' | 'voters' | 'rating'> = {
         mdate: now,
         voters: {
-          ...documentRate.data.voters,
+          ...documentRateData.voters,
           [uid]: category,
         },
         rating,
       };
 
-      transaction.update(documentRate.ref, model);
+      transaction.update(documentRateRef, model);
 
       return model.rating;
     });
