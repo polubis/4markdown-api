@@ -9,15 +9,14 @@ import {
 } from '../../../domain/models/document-rate';
 import { errors } from '../../../libs/framework/errors';
 import { DocumentModel, DocumentsModel } from '../../../domain/models/document';
-import type { DBInstance } from '../../database/database';
 
 const payloadSchema = z.object({
   documentId: validators.id,
   category: z.enum(DOCUMENT_RATING_CATEGORIES),
 });
 
-const rateDocumentController = (db: DBInstance) =>
-  protectedController(async (rawPayload, { uid }) => {
+const rateDocumentController = protectedController(
+  async (rawPayload, { uid, db }) => {
     const { documentId, category } = await parse(payloadSchema, rawPayload);
     const documentRateRef = db.collection(`documents-rates`).doc(documentId);
     const documentsRef = db.collection(`docs`).doc(uid);
@@ -94,6 +93,7 @@ const rateDocumentController = (db: DBInstance) =>
 
       return model.rating;
     });
-  });
+  },
+);
 
 export { rateDocumentController };

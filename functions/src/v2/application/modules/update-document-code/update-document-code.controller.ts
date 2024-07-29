@@ -5,7 +5,6 @@ import { validators } from '../../utils/validators';
 import { parse } from '../../../libs/framework/parse';
 import { DocumentModel, DocumentsModel } from '../../../domain/models/document';
 import { nowISO } from '../../../libs/helpers/stamps';
-import { DBInstance } from '../../database/database';
 
 const payloadSchema = z.object({
   id: validators.id,
@@ -13,8 +12,8 @@ const payloadSchema = z.object({
   code: validators.document.code,
 });
 
-const updateDocumentCodeController = (db: DBInstance) =>
-  protectedController(async (rawPayload, { uid }) => {
+const updateDocumentCodeController = protectedController(
+  async (rawPayload, { uid, db }) => {
     const ref = db.collection(`docs`).doc(uid);
 
     const [payload, snap] = await Promise.all([
@@ -49,6 +48,7 @@ const updateDocumentCodeController = (db: DBInstance) =>
     });
 
     return { mdate };
-  });
+  },
+);
 
 export { updateDocumentCodeController };

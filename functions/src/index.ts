@@ -303,5 +303,5 @@ export const autoCreateBackup = Job(`every sunday 23:59`, async () => {
   );
 });
 
-export const updateDocumentCode = updateDocumentCodeController;
+export const updateDocumentCode = updateDocumentCodeController(db);
 export const rateDocument = rateDocumentController(db);
