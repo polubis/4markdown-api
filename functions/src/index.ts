@@ -170,24 +170,33 @@ export const deleteDoc = onCall(async (payload: DeleteDocPayload, context) => {
     throw errors.notAuthorized();
   }
 
-  const docsCollection = admin
-    .firestore()
-    .collection(`docs`)
-    .doc(context.auth.uid);
+  const documentRef = db.collection(`docs`).doc(context.auth.uid);
+  const documentRateRef = db.collection(`documents-rates`).doc(payload.id);
 
-  const result = (await docsCollection.get()).data();
+  return await db.runTransaction(async (transaction) => {
+    const [documentSnap, documentRateSnap] = await transaction.getAll(
+      documentRef,
+      documentRateRef,
+    );
 
-  if (result === undefined) {
-    throw errors.notFound();
-  }
+    const documentData = documentSnap.data();
 
-  result[payload.id] = admin.firestore.FieldValue.delete();
+    if (!documentData) {
+      throw errors.notFound();
+    }
 
-  await docsCollection.update(result);
+    documentData[payload.id] = admin.firestore.FieldValue.delete();
 
-  const dto: DeleteDocDto = { id: payload.id };
+    transaction.update(documentRef, documentData);
 
-  return dto;
+    if (documentRateSnap) {
+      transaction.delete(documentRateRef);
+    }
+
+    const dto: DeleteDocDto = { id: payload.id };
+
+    return dto;
+  });
 });
 
 export const deleteAccount = onCall(async (_, context) => {
