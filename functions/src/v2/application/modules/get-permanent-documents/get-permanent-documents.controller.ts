@@ -1,12 +1,17 @@
+import {
+  DocumentModel,
+  DocumentModelId,
+  PermanentDocumentModel,
+} from '../../../domain/models/document';
 import { controller } from '../../utils/controller';
 
 type Dto = {};
 
 // try {
-//   const [docsCollection, usersProfiles] = await Promise.all([
-//     admin.firestore().collection(`docs`).get(),
-//     UsersProfilesService.getAll(),
-//   ]);
+// const [docsCollection, usersProfiles] = await Promise.all([
+//   admin.firestore().collection(`docs`).get(),
+//   UsersProfilesService.getAll(),
+// ]);
 //   const docs = docsCollection.docs;
 
 //   return docs
@@ -41,8 +46,47 @@ type Dto = {};
 //   throw errors.internal(`Server error`);
 // }
 
-const getPermanentDocumentsController = controller(
-  async (_, { uid, db }) => {},
-);
+// const usersProfilesCollection = await admin
+// .firestore()
+// .collection(`users-profiles`)
+// .get();
+
+// const usersProfiles =
+// usersProfilesCollection.docs.reduce<UsersProfilesLookup>(
+//   (acc, profile) => {
+//     acc[profile.id] = profile.data() as IUserProfileEntity;
+//     return acc;
+//   },
+//   {} as UsersProfilesLookup,
+// );
+
+// return usersProfiles;
+
+const getPermanentDocumentsController = controller(async (_, { db }) => {
+  const [documentsSnap, usersProfilesSnap] = await Promise.all([
+    db.collection(`docs`).get(),
+    db.collection(`users-profiles`).get(),
+    // UsersProfilesService.getAll(),
+  ]);
+
+  const permanentDocuments: (PermanentDocumentModel & {
+    id: DocumentModelId;
+  })[] = [];
+
+  documentsSnap.forEach((documentsListSnap) => {
+    const documentsListData = Object.entries(documentsListSnap.data());
+
+    documentsListData.forEach(
+      ([id, document]: [DocumentModelId, DocumentModel]) => {
+        if (document.visibility === `permanent`) {
+          permanentDocuments.push({
+            ...document,
+            id,
+          });
+        }
+      },
+    );
+  });
+});
 
 export { getPermanentDocumentsController };
