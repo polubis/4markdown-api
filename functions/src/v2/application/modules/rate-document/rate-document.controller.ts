@@ -13,7 +13,9 @@ const payloadSchema = z.object({
   category: z.enum(DOCUMENT_RATING_CATEGORIES),
 });
 
-const rateDocumentController = protectedController(
+type Dto = DocumentRateModel['rating'];
+
+const rateDocumentController = protectedController<Dto>(
   async (rawPayload, { uid, db }) => {
     const { documentId, category } = await parse(payloadSchema, rawPayload);
     const documentRateRef = db.collection(`documents-rates`).doc(documentId);

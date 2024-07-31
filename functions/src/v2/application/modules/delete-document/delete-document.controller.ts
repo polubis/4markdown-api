@@ -9,7 +9,9 @@ const payloadSchema = z.object({
   id: validators.id,
 });
 
-const deleteDocumentController = protectedController(
+type Dto = void;
+
+const deleteDocumentController = protectedController<Dto>(
   async (rawPayload, { uid, db }) => {
     const { id: documentId } = await parse(payloadSchema, rawPayload);
     const documentRef = db.collection(`docs`).doc(uid);

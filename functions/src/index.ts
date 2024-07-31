@@ -28,6 +28,7 @@ import { isDev } from './core/env-checks';
 import { updateDocumentCodeController } from './v2/application/modules/update-document-code/update-document-code.controller';
 import { rateDocumentController } from './v2/application/modules/rate-document/rate-document.controller';
 import { deleteDocumentController } from './v2/application/modules/delete-document/delete-document.controller';
+import { getPermanentDocumentsController } from './v2/application/modules/get-permanent-documents/get-permanent-documents.controller';
 
 const app = admin.initializeApp();
 const projectId = ProjectId(app.options.projectId);
@@ -278,3 +279,4 @@ export const autoCreateBackup = Job(`every sunday 23:59`, async () => {
 export const updateDocumentCode = updateDocumentCodeController(db);
 export const rateDocument = rateDocumentController(db);
 export const deleteDocument = deleteDocumentController(db);
+export const getPermanentDocuments = getPermanentDocumentsController(db);

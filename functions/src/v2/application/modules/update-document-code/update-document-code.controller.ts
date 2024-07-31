@@ -12,7 +12,11 @@ const payloadSchema = z.object({
   code: validators.document.code,
 });
 
-const updateDocumentCodeController = protectedController(
+type Dto = {
+  mdate: DocumentsModel[string]['mdate'];
+};
+
+const updateDocumentCodeController = protectedController<Dto>(
   async (rawPayload, { uid, db }) => {
     const ref = db.collection(`docs`).doc(uid);
 
