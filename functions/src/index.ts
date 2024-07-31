@@ -237,10 +237,6 @@ export const getPublicDoc = onCall(async (payload: GetDocPayload) => {
   return docDto;
 });
 
-export const getPermanentDocs = onCall(async () => {
-  return await DocsService.getAllPermanent();
-});
-
 export const uploadImage = onCall(
   async (payload: UploadImagePayload, context) => {
     return await UsersService.uploadImage(payload, context);
