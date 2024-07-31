@@ -28,8 +28,6 @@ const updateDocumentCodeController = protectedController<Dto>(
       ref.get(),
     ]);
 
-    if (!snap.exists) throw errors.notFound(`Documents collection not found`);
-
     const documents = snap.data() as DocumentsModel | undefined;
 
     if (!documents) throw errors.notFound(`Document data not found`);
