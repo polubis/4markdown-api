@@ -37,6 +37,14 @@ const getPermanentDocumentsController = controller<Dto>(async (_, { db }) => {
 
   const permanentDocuments: Dto = [];
 
+  const defaultRate: DocumentRateModel['rating'] = {
+    ugly: 0,
+    bad: 0,
+    decent: 0,
+    good: 0,
+    perfect: 0,
+  };
+
   documentsSnap.docs.forEach((documentsListSnap) => {
     const userId = documentsListSnap.id;
     const documentsListData = Object.entries(documentsListSnap.data());
@@ -47,13 +55,7 @@ const getPermanentDocumentsController = controller<Dto>(async (_, { db }) => {
           ...document,
           id: documentId,
           author: usersProfiles[userId] ?? null,
-          rating: documentsRates[documentId] ?? {
-            ugly: 0,
-            bad: 0,
-            decent: 0,
-            good: 0,
-            perfect: 0,
-          },
+          rating: documentsRates[documentId] ?? defaultRate,
         });
       }
     });
