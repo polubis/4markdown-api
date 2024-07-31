@@ -30,8 +30,9 @@ const getPermanentDocumentsController = controller<Dto>(async (_, { db }) => {
   const documentsRates: Record<Id, DocumentRateModel['rating']> = {};
 
   documentsRatesSnap.forEach((documentRateSnap) => {
-    documentsRates[documentRateSnap.id] =
-      documentRateSnap.data() as DocumentRateModel['rating'];
+    documentsRates[documentRateSnap.id] = (
+      documentRateSnap.data() as DocumentRateModel
+    ).rating;
   });
 
   const permanentDocuments: Dto = [];
