@@ -32,6 +32,7 @@ import { deleteDocumentController } from './v2/application/modules/delete-docume
 const app = admin.initializeApp();
 const projectId = ProjectId(app.options.projectId);
 const db = app.firestore();
+// @TODO: Use admin.auth() once and inject it to controllers.
 
 const { onCall, HttpsError } = https;
 
