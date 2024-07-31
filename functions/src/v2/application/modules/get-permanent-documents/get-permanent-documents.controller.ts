@@ -23,13 +23,13 @@ const getPermanentDocumentsController = controller<Dto>(async (_, { db }) => {
 
   const usersProfiles: Record<Id, UserProfileModel> = {};
 
-  usersProfilesSnap.forEach((userSnap) => {
+  usersProfilesSnap.docs.forEach((userSnap) => {
     usersProfiles[userSnap.id] = userSnap.data() as UserProfileModel;
   });
 
   const documentsRates: Record<Id, DocumentRateModel['rating']> = {};
 
-  documentsRatesSnap.forEach((documentRateSnap) => {
+  documentsRatesSnap.docs.forEach((documentRateSnap) => {
     documentsRates[documentRateSnap.id] = (
       documentRateSnap.data() as DocumentRateModel
     ).rating;
@@ -38,6 +38,7 @@ const getPermanentDocumentsController = controller<Dto>(async (_, { db }) => {
   const permanentDocuments: Dto = [];
 
   documentsSnap.docs.forEach((documentsListSnap) => {
+    const userId = documentsListSnap.id;
     const documentsListData = Object.entries(documentsListSnap.data());
 
     documentsListData.forEach(([documentId, document]: [Id, DocumentModel]) => {
@@ -45,7 +46,7 @@ const getPermanentDocumentsController = controller<Dto>(async (_, { db }) => {
         permanentDocuments.push({
           ...document,
           id: documentId,
-          author: usersProfiles[documentId] ?? null,
+          author: usersProfiles[userId] ?? null,
           rating: documentsRates[documentId] ?? {
             ugly: 0,
             bad: 0,
