@@ -1,15 +1,10 @@
 import { https } from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
-import type {
-  CreateDocPayload,
-  DeleteDocPayload,
-  GetDocPayload,
-} from './payloads/docs.payload';
+import type { CreateDocPayload, GetDocPayload } from './payloads/docs.payload';
 import type { DocEntity, DocEntityField } from './entities/doc.entity';
 import type {
   CreateDocDto,
-  DeleteDocDto,
   GetDocDto,
   GetDocsDto,
   GetDocsDtoItem,
@@ -32,6 +27,7 @@ import { Job } from './libs/framework/job';
 import { isDev } from './core/env-checks';
 import { updateDocumentCodeController } from './v2/application/modules/update-document-code/update-document-code.controller';
 import { rateDocumentController } from './v2/application/modules/rate-document/rate-document.controller';
+import { deleteDocumentController } from './v2/application/modules/delete-document/delete-document.controller';
 
 const app = admin.initializeApp();
 const projectId = ProjectId(app.options.projectId);
@@ -165,40 +161,6 @@ export const getDocs = onCall(async (_, context) => {
   return docs;
 });
 
-export const deleteDoc = onCall(async (payload: DeleteDocPayload, context) => {
-  if (!context.auth) {
-    throw errors.notAuthorized();
-  }
-
-  const documentRef = db.collection(`docs`).doc(context.auth.uid);
-  const documentRateRef = db.collection(`documents-rates`).doc(payload.id);
-
-  return await db.runTransaction(async (transaction) => {
-    const [documentSnap, documentRateSnap] = await transaction.getAll(
-      documentRef,
-      documentRateRef,
-    );
-
-    const documentData = documentSnap.data();
-
-    if (!documentData) {
-      throw errors.notFound();
-    }
-
-    documentData[payload.id] = admin.firestore.FieldValue.delete();
-
-    transaction.update(documentRef, documentData);
-
-    if (documentRateSnap) {
-      transaction.delete(documentRateRef);
-    }
-
-    const dto: DeleteDocDto = { id: payload.id };
-
-    return dto;
-  });
-});
-
 export const deleteAccount = onCall(async (_, context) => {
   if (!context.auth) {
     throw errors.notAuthorized();
@@ -314,3 +276,4 @@ export const autoCreateBackup = Job(`every sunday 23:59`, async () => {
 
 export const updateDocumentCode = updateDocumentCodeController(db);
 export const rateDocument = rateDocumentController(db);
+export const deleteDocument = deleteDocumentController(db);
