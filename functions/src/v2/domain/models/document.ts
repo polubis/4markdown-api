@@ -1,11 +1,10 @@
-import { z } from 'zod';
-import { validators } from '../../application/utils/validators';
+import type { Id, Date } from '../../application/utils/validators';
 
 type DocumentModelBase = {
   code: string;
   name: string;
-  cdate: string;
-  mdate: string;
+  cdate: Date;
+  mdate: Date;
 };
 
 type PrivateDocumentModel = DocumentModelBase & {
@@ -28,9 +27,7 @@ type DocumentModel =
   | PublicDocumentModel
   | PermanentDocumentModel;
 
-// { [id: string]: DocumentObject }
-type DocumentModelId = z.infer<typeof validators.id>;
-type DocumentsModel = Record<DocumentModelId, DocumentModel>;
+type DocumentsModel = Record<Id, DocumentModel>;
 
 export type {
   DocumentsModel,
@@ -38,5 +35,4 @@ export type {
   PrivateDocumentModel,
   PublicDocumentModel,
   PermanentDocumentModel,
-  DocumentModelId,
 };

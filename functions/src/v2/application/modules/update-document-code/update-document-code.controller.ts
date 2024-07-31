@@ -1,9 +1,12 @@
 import { errors } from '../../utils/errors';
 import { protectedController } from '../../utils/controller';
 import { z } from 'zod';
-import { validators } from '../../utils/validators';
+import { type Date, validators } from '../../utils/validators';
 import { parse } from '../../utils/parse';
-import { DocumentModel, DocumentsModel } from '../../../domain/models/document';
+import type {
+  DocumentModel,
+  DocumentsModel,
+} from '../../../domain/models/document';
 import { nowISO } from '../../../libs/helpers/stamps';
 
 const payloadSchema = z.object({
@@ -13,7 +16,7 @@ const payloadSchema = z.object({
 });
 
 type Dto = {
-  mdate: DocumentsModel[string]['mdate'];
+  mdate: Date;
 };
 
 const updateDocumentCodeController = protectedController<Dto>(

@@ -1,9 +1,9 @@
-import {
+import type {
   DocumentModel,
-  DocumentModelId,
   PermanentDocumentModel,
 } from '../../../domain/models/document';
 import { controller } from '../../utils/controller';
+import type { Id } from '../../utils/validators';
 
 type Dto = {};
 
@@ -70,22 +70,20 @@ const getPermanentDocumentsController = controller(async (_, { db }) => {
   ]);
 
   const permanentDocuments: (PermanentDocumentModel & {
-    id: DocumentModelId;
+    id: Id;
   })[] = [];
 
   documentsSnap.forEach((documentsListSnap) => {
     const documentsListData = Object.entries(documentsListSnap.data());
 
-    documentsListData.forEach(
-      ([id, document]: [DocumentModelId, DocumentModel]) => {
-        if (document.visibility === `permanent`) {
-          permanentDocuments.push({
-            ...document,
-            id,
-          });
-        }
-      },
-    );
+    documentsListData.forEach(([id, document]: [Id, DocumentModel]) => {
+      if (document.visibility === `permanent`) {
+        permanentDocuments.push({
+          ...document,
+          id,
+        });
+      }
+    });
   });
 });
 
