@@ -1,14 +1,9 @@
 import { https } from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
-import type { CreateDocPayload, GetDocPayload } from './payloads/docs.payload';
+import type { CreateDocPayload } from './payloads/docs.payload';
 import type { DocEntity, DocEntityField } from './entities/doc.entity';
-import type {
-  CreateDocDto,
-  GetDocDto,
-  GetDocsDto,
-  GetDocsDtoItem,
-} from './dtos/docs.dto';
+import type { CreateDocDto, GetDocsDto, GetDocsDtoItem } from './dtos/docs.dto';
 import { errors } from './core/errors';
 import { Doc } from './core/doc';
 import { DocsService } from './services/docs.service';
@@ -29,6 +24,7 @@ import { updateDocumentCodeController } from './v2/application/modules/update-do
 import { rateDocumentController } from './v2/application/modules/rate-document/rate-document.controller';
 import { deleteDocumentController } from './v2/application/modules/delete-document/delete-document.controller';
 import { getPermanentDocumentsController } from './v2/application/modules/get-permanent-documents/get-permanent-documents.controller';
+import { getAccessibleDocumentController } from './v2/application/modules/get-accessible-document/get-accessible-document.controller';
 
 const app = admin.initializeApp();
 const projectId = ProjectId(app.options.projectId);
@@ -173,70 +169,6 @@ export const deleteAccount = onCall(async (_, context) => {
   return null;
 });
 
-export const getPublicDoc = onCall(async (payload: GetDocPayload) => {
-  const docsCollection = await admin.firestore().collection(`docs`).get();
-
-  let docDto: GetDocDto | undefined;
-
-  for (let i = 0; i < docsCollection.docs.length; i++) {
-    const doc = docsCollection.docs[i].data();
-    const userId = docsCollection.docs[i].id;
-    const field: DocEntityField = doc[payload.id];
-
-    if (field) {
-      if (field.visibility === `permanent`) {
-        const profile = await UsersProfilesService.getProfile(userId);
-
-        docDto = {
-          id: payload.id,
-          name: field.name,
-          cdate: field.cdate,
-          mdate: field.mdate,
-          code: field.code,
-          visibility: field.visibility,
-          description: field.description,
-          path: field.path,
-          tags: field.tags ?? [],
-          author: profile,
-        };
-      }
-
-      if (field.visibility === `public`) {
-        const profile = await UsersProfilesService.getProfile(userId);
-
-        docDto = {
-          id: payload.id,
-          name: field.name,
-          cdate: field.cdate,
-          mdate: field.mdate,
-          code: field.code,
-          visibility: field.visibility,
-          author: profile,
-        };
-      }
-
-      if (field.visibility === `private`) {
-        docDto = {
-          id: payload.id,
-          name: field.name,
-          cdate: field.cdate,
-          mdate: field.mdate,
-          code: field.code,
-          visibility: field.visibility,
-        };
-      }
-
-      break;
-    }
-  }
-
-  if (docDto?.visibility !== `public` && docDto?.visibility !== `permanent`) {
-    throw errors.notFound();
-  }
-
-  return docDto;
-});
-
 export const uploadImage = onCall(
   async (payload: UploadImagePayload, context) => {
     return await UsersService.uploadImage(payload, context);
@@ -276,3 +208,4 @@ export const updateDocumentCode = updateDocumentCodeController(db);
 export const rateDocument = rateDocumentController(db);
 export const deleteDocument = deleteDocumentController(db);
 export const getPermanentDocuments = getPermanentDocumentsController(db);
+export const getAccessibleDocument = getAccessibleDocumentController(db);
