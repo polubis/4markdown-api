@@ -1,6 +1,6 @@
 import { controller } from '../../utils/controller';
 import { z } from 'zod';
-import { Id, validators } from '../../utils/validators';
+import { type Id, validators } from '../../utils/validators';
 import { parse } from '../../utils/parse';
 import type {
   DocumentModel,
@@ -8,17 +8,21 @@ import type {
   PublicDocumentModel,
 } from '../../../domain/models/document';
 import { errors } from '../../utils/errors';
-import { UserProfileModel } from '../../../domain/models/user-profile';
+import type { UserProfileModel } from '../../../domain/models/user-profile';
+import type { DocumentRateModel } from '../../../domain/models/document-rate';
 
 const payloadSchema = z.object({
   id: validators.id,
 });
 
-type DtoAuthorPart = { author: UserProfileModel | null };
+type SharedDtoPart = {
+  author: UserProfileModel | null;
+  rating: DocumentRateModel['rating'];
+};
 
 type Dto =
-  | (PublicDocumentModel & DtoAuthorPart)
-  | (Required<PermanentDocumentModel> & DtoAuthorPart);
+  | (PublicDocumentModel & SharedDtoPart)
+  | (Required<PermanentDocumentModel> & SharedDtoPart);
 
 const getAccessibleDocumentController = controller<Dto>(
   async (rawPayload, { db }) => {
@@ -53,21 +57,36 @@ const getAccessibleDocumentController = controller<Dto>(
 
     if (!foundDocumentEntry) throw errors.notFound(`Cannot find document`);
 
-    const userProfile = (
-      await db
-        .collection(`users-profiles`)
-        .doc(foundDocumentEntry.authorId)
-        .get()
-    ).data() as UserProfileModel | undefined;
+    const [usersProfilesSnap, documentRateSnap] = await Promise.all([
+      db.collection(`users-profiles`).doc(foundDocumentEntry.authorId).get(),
+      db.collection(`documents-rates`).doc(documentId).get(),
+    ]);
+
+    const userProfile = usersProfilesSnap.data() as
+      | UserProfileModel
+      | undefined;
+    const documentRate = documentRateSnap.data() as
+      | DocumentRateModel
+      | undefined;
 
     const foundDocument = foundDocumentEntry.document;
     const author = userProfile ?? null;
+    const defaultRating: DocumentRateModel['rating'] = {
+      ugly: 0,
+      bad: 0,
+      decent: 0,
+      good: 0,
+      perfect: 0,
+    };
+    const rating: DocumentRateModel['rating'] =
+      documentRate?.rating ?? defaultRating;
 
     if (foundDocument.visibility === `permanent`) {
       const dto: Extract<Dto, { visibility: 'permanent' }> = {
         ...foundDocument,
         author,
         tags: foundDocument.tags ?? [],
+        rating,
       };
 
       return dto;
@@ -76,6 +95,7 @@ const getAccessibleDocumentController = controller<Dto>(
     const dto: Extract<Dto, { visibility: 'public' }> = {
       ...foundDocument,
       author,
+      rating,
     };
 
     return dto;
