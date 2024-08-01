@@ -57,7 +57,7 @@ const rateDocumentController = protectedController<Dto>(
       }
 
       const currentCategory = userDocumentsVotesData
-        ? userDocumentsVotesData[uid]
+        ? userDocumentsVotesData[documentId]
         : undefined;
 
       if (currentCategory === category) return documentRateData.rating;
