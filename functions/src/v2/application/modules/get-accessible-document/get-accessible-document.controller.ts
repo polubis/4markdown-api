@@ -10,6 +10,7 @@ import type {
 import { errors } from '../../utils/errors';
 import type { UserProfileModel } from '../../../domain/models/user-profile';
 import type { DocumentRateModel } from '../../../domain/models/document-rate';
+import { createDocumentRating } from '../../utils/create-document-rating';
 
 const payloadSchema = z.object({
   id: validators.id,
@@ -71,13 +72,7 @@ const getAccessibleDocumentController = controller<Dto>(
 
     const foundDocument = foundDocumentEntry.document;
     const author = userProfile ?? null;
-    const defaultRating: DocumentRateModel['rating'] = {
-      ugly: 0,
-      bad: 0,
-      decent: 0,
-      good: 0,
-      perfect: 0,
-    };
+    const defaultRating = createDocumentRating();
     const rating: DocumentRateModel['rating'] =
       documentRate?.rating ?? defaultRating;
 

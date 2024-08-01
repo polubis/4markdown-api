@@ -6,6 +6,7 @@ const COLLECTIONS_KEYS = [
   `images`,
   `documents-rates`,
   `users-profiles`,
+  `users-documents-votes`,
 ] as const;
 type DBCollectionKey = (typeof COLLECTIONS_KEYS)[number];
 

@@ -5,6 +5,7 @@ import type {
 import { DocumentRateModel } from '../../../domain/models/document-rate';
 import type { UserProfileModel } from '../../../domain/models/user-profile';
 import { controller } from '../../utils/controller';
+import { createDocumentRating } from '../../utils/create-document-rating';
 import type { Id } from '../../utils/validators';
 
 type Dto = (PermanentDocumentModel & {
@@ -37,13 +38,7 @@ const getPermanentDocumentsController = controller<Dto>(async (_, { db }) => {
 
   const permanentDocuments: Dto = [];
 
-  const defaultRate: DocumentRateModel['rating'] = {
-    ugly: 0,
-    bad: 0,
-    decent: 0,
-    good: 0,
-    perfect: 0,
-  };
+  const defaultRate = createDocumentRating();
 
   documentsSnap.docs.forEach((documentsListSnap) => {
     const userId = documentsListSnap.id;
