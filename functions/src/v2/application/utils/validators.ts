@@ -15,4 +15,8 @@ const validators = {
   },
 };
 
+type Id = z.infer<typeof validators.id>;
+type Date = z.infer<typeof validators.date>;
+
+export type { Id, Date };
 export { validators };
