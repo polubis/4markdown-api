@@ -1,92 +1,82 @@
-import { protectedController } from '../../../libs/framework/controller';
+import { protectedController } from '../../utils/controller';
 import { z } from 'zod';
 import { validators } from '../../utils/validators';
-import { parse } from '../../../libs/framework/parse';
+import { parse } from '../../utils/parse';
 import { nowISO } from '../../../libs/helpers/stamps';
 import {
   DOCUMENT_RATING_CATEGORIES,
   DocumentRateModel,
 } from '../../../domain/models/document-rate';
-import { firestore } from 'firebase-admin';
-import { errors } from '../../../libs/framework/errors';
-import { getDocumentRate } from '../../services/documents-rates/get-document-rate.service';
-import { getUserDocument } from '../../services/documents/get-user-document.service';
+import { UserDocumentsVotesModel } from '../../../domain/models/user-documents-votes';
+import { createDocumentRating } from '../../utils/create-document-rating';
 
 const payloadSchema = z.object({
   documentId: validators.id,
   category: z.enum(DOCUMENT_RATING_CATEGORIES),
 });
 
-const rateDocumentController = protectedController(
-  async (rawPayload, { uid }) => {
+type Dto = DocumentRateModel['rating'];
+
+const rateDocumentController = protectedController<Dto>(
+  async (rawPayload, { uid, db }) => {
     const { documentId, category } = await parse(payloadSchema, rawPayload);
-    const { runTransaction } = firestore();
+    const now = nowISO();
+    const documentRateRef = db.collection(`documents-rates`).doc(documentId);
+    const userDocumentsVotesRef = db
+      .collection(`users-documents-votes`)
+      .doc(uid);
 
-    await runTransaction(async (transaction) => {
-      const [documentRate, document] = await Promise.all([
-        getDocumentRate({ documentId, action: transaction.get }),
-        getUserDocument({ uid, documentId, action: transaction.get }),
-      ]);
+    return await db.runTransaction(async (transaction) => {
+      const [documentRateSnap, userDocumentsVotesSnap] =
+        await transaction.getAll(documentRateRef, userDocumentsVotesRef);
 
-      if (!document.data) throw errors.notFound(`Document not found`);
+      const userDocumentsVotesData = userDocumentsVotesSnap.data() as
+        | UserDocumentsVotesModel
+        | undefined;
 
-      if (
-        document.data.visibility !== `public` &&
-        document.data.visibility !== `permanent`
-      )
-        throw errors.badRequest(
-          `Rating is possible only for public and permanent documents`,
-        );
+      if (userDocumentsVotesData) {
+        transaction.update(userDocumentsVotesRef, { [documentId]: category });
+      } else {
+        transaction.set(userDocumentsVotesRef, { [documentId]: category });
+      }
 
-      const now = nowISO();
+      const documentRateData = documentRateSnap.data() as
+        | DocumentRateModel
+        | undefined;
 
-      if (!documentRate.data) {
+      if (!documentRateData) {
         const model: DocumentRateModel = {
-          rating: {
-            ugly: 0,
-            bad: 0,
-            decent: 0,
-            good: 0,
-            perfect: 0,
-          },
-          voters: { [uid]: category },
+          rating: createDocumentRating({ [category]: 1 }),
           cdate: now,
           mdate: now,
         };
 
-        model.rating[category] = 1;
-
-        transaction.set(documentRate.ref, model);
+        transaction.set(documentRateRef, model);
 
         return model.rating;
       }
 
-      const currentCategory = documentRate.data.voters[uid];
+      const currentCategory = userDocumentsVotesData
+        ? userDocumentsVotesData[documentId]
+        : undefined;
 
-      if (currentCategory === category)
-        throw errors.badRequest(
-          `Already voted for category ${currentCategory}. Select another one if you want to change your opinion`,
-        );
+      if (currentCategory === category) return documentRateData.rating;
 
       const rating: DocumentRateModel['rating'] = {
-        ...documentRate.data.rating,
-        [category]: documentRate.data.rating[category] + 1,
+        ...documentRateData.rating,
+        [category]: documentRateData.rating[category] + 1,
       };
 
       if (currentCategory && rating[currentCategory] > 0) {
         rating[currentCategory] = rating[currentCategory] - 1;
       }
 
-      const model: Pick<DocumentRateModel, 'mdate' | 'voters' | 'rating'> = {
+      const model: Pick<DocumentRateModel, 'mdate' | 'rating'> = {
         mdate: now,
-        voters: {
-          ...documentRate.data.voters,
-          [uid]: category,
-        },
         rating,
       };
 
-      transaction.update(documentRate.ref, model);
+      transaction.update(documentRateRef, model);
 
       return model.rating;
     });

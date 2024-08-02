@@ -1,10 +1,12 @@
-import { errors } from '../../../libs/framework/errors';
-import { protectedController } from '../../../libs/framework/controller';
+import { errors } from '../../utils/errors';
+import { protectedController } from '../../utils/controller';
 import { z } from 'zod';
-import { validators } from '../../utils/validators';
-import { parse } from '../../../libs/framework/parse';
-import { collections } from '../../database/collections';
-import { DocumentModel, DocumentsModel } from '../../../domain/models/document';
+import { type Date, validators } from '../../utils/validators';
+import { parse } from '../../utils/parse';
+import type {
+  DocumentModel,
+  DocumentsModel,
+} from '../../../domain/models/document';
 import { nowISO } from '../../../libs/helpers/stamps';
 
 const payloadSchema = z.object({
@@ -13,16 +15,18 @@ const payloadSchema = z.object({
   code: validators.document.code,
 });
 
-const updateDocumentCodeController = protectedController(
-  async (rawPayload, { uid }) => {
-    const ref = collections.documents().doc(uid);
+type Dto = {
+  mdate: Date;
+};
+
+const updateDocumentCodeController = protectedController<Dto>(
+  async (rawPayload, { uid, db }) => {
+    const ref = db.collection(`docs`).doc(uid);
 
     const [payload, snap] = await Promise.all([
       parse(payloadSchema, rawPayload),
       ref.get(),
     ]);
-
-    if (!snap.exists) throw errors.notFound(`Documents collection not found`);
 
     const documents = snap.data() as DocumentsModel | undefined;
 

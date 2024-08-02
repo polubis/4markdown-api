@@ -1,3 +1,5 @@
+import type { Date } from '../../application/utils/validators';
+
 const DOCUMENT_RATING_CATEGORIES = [
   `ugly`,
   `bad`,
@@ -10,9 +12,8 @@ type DocumentRateCategory = (typeof DOCUMENT_RATING_CATEGORIES)[number];
 
 type DocumentRateModel = {
   rating: Record<DocumentRateCategory, number>;
-  voters: Record<string, DocumentRateCategory | undefined>;
-  cdate: string;
-  mdate: string;
+  cdate: Date;
+  mdate: Date;
 };
 
 export { DOCUMENT_RATING_CATEGORIES };

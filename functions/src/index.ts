@@ -1,19 +1,9 @@
 import { https } from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
-import type {
-  CreateDocPayload,
-  DeleteDocPayload,
-  GetDocPayload,
-} from './payloads/docs.payload';
+import type { CreateDocPayload } from './payloads/docs.payload';
 import type { DocEntity, DocEntityField } from './entities/doc.entity';
-import type {
-  CreateDocDto,
-  DeleteDocDto,
-  GetDocDto,
-  GetDocsDto,
-  GetDocsDtoItem,
-} from './dtos/docs.dto';
+import type { CreateDocDto, GetDocsDto, GetDocsDtoItem } from './dtos/docs.dto';
 import { errors } from './core/errors';
 import { Doc } from './core/doc';
 import { DocsService } from './services/docs.service';
@@ -32,9 +22,15 @@ import { Job } from './libs/framework/job';
 import { isDev } from './core/env-checks';
 import { updateDocumentCodeController } from './v2/application/modules/update-document-code/update-document-code.controller';
 import { rateDocumentController } from './v2/application/modules/rate-document/rate-document.controller';
+import { deleteDocumentController } from './v2/application/modules/delete-document/delete-document.controller';
+import { getPermanentDocumentsController } from './v2/application/modules/get-permanent-documents/get-permanent-documents.controller';
+import { getAccessibleDocumentController } from './v2/application/modules/get-accessible-document/get-accessible-document.controller';
+import { getYourInfoController } from './v2/application/modules/get-your-info/get-your-info';
 
 const app = admin.initializeApp();
 const projectId = ProjectId(app.options.projectId);
+const db = app.firestore();
+// @TODO: Use admin.auth() once and inject it to controllers.
 
 const { onCall, HttpsError } = https;
 
@@ -164,31 +160,6 @@ export const getDocs = onCall(async (_, context) => {
   return docs;
 });
 
-export const deleteDoc = onCall(async (payload: DeleteDocPayload, context) => {
-  if (!context.auth) {
-    throw errors.notAuthorized();
-  }
-
-  const docsCollection = admin
-    .firestore()
-    .collection(`docs`)
-    .doc(context.auth.uid);
-
-  const result = (await docsCollection.get()).data();
-
-  if (result === undefined) {
-    throw errors.notFound();
-  }
-
-  result[payload.id] = admin.firestore.FieldValue.delete();
-
-  await docsCollection.update(result);
-
-  const dto: DeleteDocDto = { id: payload.id };
-
-  return dto;
-});
-
 export const deleteAccount = onCall(async (_, context) => {
   if (!context.auth) {
     throw errors.notAuthorized();
@@ -197,74 +168,6 @@ export const deleteAccount = onCall(async (_, context) => {
   await admin.auth().deleteUser(context.auth.uid);
   await admin.firestore().collection(`docs`).doc(context.auth.uid).delete();
   return null;
-});
-
-export const getPublicDoc = onCall(async (payload: GetDocPayload) => {
-  const docsCollection = await admin.firestore().collection(`docs`).get();
-
-  let docDto: GetDocDto | undefined;
-
-  for (let i = 0; i < docsCollection.docs.length; i++) {
-    const doc = docsCollection.docs[i].data();
-    const userId = docsCollection.docs[i].id;
-    const field: DocEntityField = doc[payload.id];
-
-    if (field) {
-      if (field.visibility === `permanent`) {
-        const profile = await UsersProfilesService.getProfile(userId);
-
-        docDto = {
-          id: payload.id,
-          name: field.name,
-          cdate: field.cdate,
-          mdate: field.mdate,
-          code: field.code,
-          visibility: field.visibility,
-          description: field.description,
-          path: field.path,
-          tags: field.tags ?? [],
-          author: profile,
-        };
-      }
-
-      if (field.visibility === `public`) {
-        const profile = await UsersProfilesService.getProfile(userId);
-
-        docDto = {
-          id: payload.id,
-          name: field.name,
-          cdate: field.cdate,
-          mdate: field.mdate,
-          code: field.code,
-          visibility: field.visibility,
-          author: profile,
-        };
-      }
-
-      if (field.visibility === `private`) {
-        docDto = {
-          id: payload.id,
-          name: field.name,
-          cdate: field.cdate,
-          mdate: field.mdate,
-          code: field.code,
-          visibility: field.visibility,
-        };
-      }
-
-      break;
-    }
-  }
-
-  if (docDto?.visibility !== `public` && docDto?.visibility !== `permanent`) {
-    throw errors.notFound();
-  }
-
-  return docDto;
-});
-
-export const getPermanentDocs = onCall(async () => {
-  return await DocsService.getAllPermanent();
 });
 
 export const uploadImage = onCall(
@@ -302,5 +205,9 @@ export const autoCreateBackup = Job(`every sunday 23:59`, async () => {
   );
 });
 
-export const updateDocumentCode = updateDocumentCodeController;
-export const rateDocument = rateDocumentController;
+export const updateDocumentCode = updateDocumentCodeController(db);
+export const rateDocument = rateDocumentController(db);
+export const deleteDocument = deleteDocumentController(db);
+export const getPermanentDocuments = getPermanentDocumentsController(db);
+export const getAccessibleDocument = getAccessibleDocumentController(db);
+export const getYourInfo = getYourInfoController(db);
