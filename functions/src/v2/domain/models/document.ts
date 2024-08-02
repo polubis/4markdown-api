@@ -1,8 +1,10 @@
+import type { Id, Date } from '../../application/utils/validators';
+
 type DocumentModelBase = {
   code: string;
   name: string;
-  cdate: string;
-  mdate: string;
+  cdate: Date;
+  mdate: Date;
 };
 
 type PrivateDocumentModel = DocumentModelBase & {
@@ -25,8 +27,7 @@ type DocumentModel =
   | PublicDocumentModel
   | PermanentDocumentModel;
 
-// { [id: string]: DocumentObject }
-type DocumentsModel = Record<string, DocumentModel>;
+type DocumentsModel = Record<Id, DocumentModel>;
 
 export type {
   DocumentsModel,
