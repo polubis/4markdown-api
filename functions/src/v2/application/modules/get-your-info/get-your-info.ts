@@ -17,13 +17,12 @@ const getYourInfoController = protectedController<Dto>(
       db.collection(`users-documents-votes`).doc(uid).get(),
     ]);
 
-    const documentsData =
-      (documentsSnap.data() as DocumentsModel | undefined) ?? {};
-
     const profile =
       (profileSnap.data() as UserProfileModel | undefined) ?? null;
     const documentsVotes =
       (documentsVotesSnap.data() as UserDocumentsVotesModel | undefined) ?? {};
+    const documentsData =
+      (documentsSnap.data() as DocumentsModel | undefined) ?? {};
 
     const documents = Object.values(documentsData).map((document) =>
       document.visibility === `permanent`
