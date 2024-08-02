@@ -8,7 +8,7 @@ import { controller } from '../../utils/controller';
 import { createDocumentRating } from '../../utils/create-document-rating';
 import type { Id } from '../../utils/validators';
 
-type Dto = (PermanentDocumentModel & {
+type Dto = (Required<PermanentDocumentModel> & {
   id: Id;
   author: UserProfileModel | null;
   rating: DocumentRateModel['rating'];
@@ -51,6 +51,7 @@ const getPermanentDocumentsController = controller<Dto>(async (_, { db }) => {
           id: documentId,
           author: usersProfiles[userId] ?? null,
           rating: documentsRates[documentId] ?? defaultRate,
+          tags: document.tags ?? [],
         });
       }
     });

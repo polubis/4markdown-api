@@ -25,6 +25,7 @@ import { rateDocumentController } from './v2/application/modules/rate-document/r
 import { deleteDocumentController } from './v2/application/modules/delete-document/delete-document.controller';
 import { getPermanentDocumentsController } from './v2/application/modules/get-permanent-documents/get-permanent-documents.controller';
 import { getAccessibleDocumentController } from './v2/application/modules/get-accessible-document/get-accessible-document.controller';
+import { getYourInfoController } from './v2/application/modules/get-your-info/get-your-info';
 
 const app = admin.initializeApp();
 const projectId = ProjectId(app.options.projectId);
@@ -209,3 +210,4 @@ export const rateDocument = rateDocumentController(db);
 export const deleteDocument = deleteDocumentController(db);
 export const getPermanentDocuments = getPermanentDocumentsController(db);
 export const getAccessibleDocument = getAccessibleDocumentController(db);
+export const getYourInfo = getYourInfoController(db);
