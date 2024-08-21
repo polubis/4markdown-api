@@ -16,7 +16,6 @@ import { ImageEntity } from '../entities/img.entity';
 import * as sharp from 'sharp';
 import { IUserProfileDto } from '../dtos/users-profiles.dto';
 import { Id } from '../entities/general';
-import { DocAuthorDto } from '../dtos/docs.dto';
 
 const sizes = [
   {
@@ -42,15 +41,18 @@ const sizes = [
 ] as const;
 
 const createProfileDtoShape = (e: IUserProfileEntity): IUserProfileDto => ({
-  id: e.id,
-  avatar: e.avatar,
-  displayName: e.displayName,
-  bio: e.bio,
-  blogUrl: e.blogUrl,
-  fbUrl: e.fbUrl,
-  githubUrl: e.githubUrl,
-  twitterUrl: e.twitterUrl,
-  linkedInUrl: e.linkedInUrl,
+  profile: {
+    id: e.id,
+    avatar: e.avatar,
+    displayName: e.displayName,
+    bio: e.bio,
+    blogUrl: e.blogUrl,
+    fbUrl: e.fbUrl,
+    githubUrl: e.githubUrl,
+    twitterUrl: e.twitterUrl,
+    linkedInUrl: e.linkedInUrl,
+  },
+  mdate: e.mdate,
 });
 
 const getBucket = async () => {
@@ -144,40 +146,7 @@ const checkIfDisplayNameIsTaken = async (
   });
 };
 
-type UsersProfilesLookup = Record<string, IUserProfileEntity>;
-
 const UsersProfilesService = {
-  getProfile: async (userId: Id): Promise<DocAuthorDto> => {
-    const profile = await admin
-      .firestore()
-      .collection(`users-profiles`)
-      .doc(userId)
-      .get();
-
-    if (!profile.exists) return null;
-    const data = profile.data();
-
-    if (!data) return null;
-
-    return data as IUserProfileEntity;
-  },
-  getAll: async (): Promise<UsersProfilesLookup> => {
-    const usersProfilesCollection = await admin
-      .firestore()
-      .collection(`users-profiles`)
-      .get();
-
-    const usersProfiles =
-      usersProfilesCollection.docs.reduce<UsersProfilesLookup>(
-        (acc, profile) => {
-          acc[profile.id] = profile.data() as IUserProfileEntity;
-          return acc;
-        },
-        {} as UsersProfilesLookup,
-      );
-
-    return usersProfiles;
-  },
   getYour: async (
     context: https.CallableContext,
   ): Promise<IUserProfileDto | null> => {
@@ -202,6 +171,7 @@ const UsersProfilesService = {
   ): Promise<IUserProfileDto> => {
     const auth = AuthService.authorize(context);
     const userProfilePayload = UserProfilePayload(payload);
+
     const userProfilesCollection = admin
       .firestore()
       .collection(`users-profiles`);
@@ -247,6 +217,12 @@ const UsersProfilesService = {
 
     if (!UserProfileEntity.is(currentUserProfileEntity)) {
       throw errors.invalidSchema(UserProfileEntity.name);
+    }
+
+    if (userProfilePayload.mdate !== currentUserProfileEntity.mdate) {
+      throw errors.outOfDateEntry(
+        `You cannot edit profile. You've changed it on another device.`,
+      );
     }
 
     if (userProfilePayload.avatar.type === `remove`) {
