@@ -41,15 +41,17 @@ const sizes = [
 ] as const;
 
 const createProfileDtoShape = (e: IUserProfileEntity): IUserProfileDto => ({
-  id: e.id,
-  avatar: e.avatar,
-  displayName: e.displayName,
-  bio: e.bio,
-  blogUrl: e.blogUrl,
-  fbUrl: e.fbUrl,
-  githubUrl: e.githubUrl,
-  twitterUrl: e.twitterUrl,
-  linkedInUrl: e.linkedInUrl,
+  profile: {
+    id: e.id,
+    avatar: e.avatar,
+    displayName: e.displayName,
+    bio: e.bio,
+    blogUrl: e.blogUrl,
+    fbUrl: e.fbUrl,
+    githubUrl: e.githubUrl,
+    twitterUrl: e.twitterUrl,
+    linkedInUrl: e.linkedInUrl,
+  },
   mdate: e.mdate,
 });
 
