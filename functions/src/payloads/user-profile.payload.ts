@@ -12,6 +12,7 @@ const schema = UserProfileEntity.schema
     linkedInUrl: true,
     fbUrl: true,
     twitterUrl: true,
+    mdate: true,
   })
   .merge(
     z.object({
