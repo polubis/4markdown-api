@@ -6,8 +6,6 @@ import {
 import type { Id, Tags } from '../entities/general';
 import { IUserProfileDto } from './users-profiles.dto';
 
-type CreateDocDto = PrivateDocEntityField & { id: Id };
-
 type DocAuthorDto = IUserProfileDto | null;
 
 type UpdateDocPublicDto = PublicDocEntityField & { id: Id };
@@ -38,7 +36,6 @@ type GetDocsDto = GetDocsDtoItem[];
 type DeleteDocDto = { id: Id };
 
 export type {
-  CreateDocDto,
   UpdateDocDto,
   UpdateDocPublicDto,
   UpdateDocPrivateDto,
