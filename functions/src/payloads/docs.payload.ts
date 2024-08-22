@@ -1,12 +1,9 @@
 import type {
-  DocEntityField,
   PrivateDocEntityField,
   PublicDocEntityField,
   PermanentDocEntityField,
 } from '../entities/doc.entity';
 import type { Id, Tags } from '../entities/general';
-
-interface CreateDocPayload extends Pick<DocEntityField, 'name' | 'code'> {}
 
 type UpdateDocPrivatePayload = Pick<
   PrivateDocEntityField,
@@ -32,9 +29,4 @@ type DeleteDocPayload = { id: Id };
 
 type GetDocPayload = { id: Id };
 
-export type {
-  CreateDocPayload,
-  UpdateDocPayload,
-  DeleteDocPayload,
-  GetDocPayload,
-};
+export type { UpdateDocPayload, DeleteDocPayload, GetDocPayload };
