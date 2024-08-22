@@ -29,10 +29,6 @@ type GetDocDto =
       author: DocAuthorDto;
     });
 
-type GetDocsDtoItem = GetDocDto;
-
-type GetDocsDto = GetDocsDtoItem[];
-
 type DeleteDocDto = { id: Id };
 
 export type {
@@ -40,8 +36,6 @@ export type {
   UpdateDocPublicDto,
   UpdateDocPrivateDto,
   UpdateDocPermanentDto,
-  GetDocsDto,
-  GetDocsDtoItem,
   DocAuthorDto,
   GetDocDto,
   DeleteDocDto,
