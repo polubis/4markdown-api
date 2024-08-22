@@ -1,7 +1,5 @@
 import { https } from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import type { DocEntityField } from './entities/doc.entity';
-import type { GetDocsDto, GetDocsDtoItem } from './dtos/docs.dto';
 import { errors } from './core/errors';
 import { DocsService } from './services/docs.service';
 import { AuthService } from './services/auth.service';
@@ -24,6 +22,7 @@ import { getPermanentDocumentsController } from './v2/application/modules/get-pe
 import { getAccessibleDocumentController } from './v2/application/modules/get-accessible-document/get-accessible-document.controller';
 import { getYourInfoController } from './v2/application/modules/get-your-info/get-your-info';
 import { createDocumentController } from './v2/application/modules/create-document/create-document.controller';
+import { getYourDocumentsController } from './v2/application/modules/get-your-documents/get-your-documents.controller';
 
 const app = admin.initializeApp();
 const projectId = ProjectId(app.options.projectId);
@@ -35,72 +34,6 @@ const { onCall } = https;
 export const updateDoc = onCall(async (payload, context) => {
   const user = AuthService.authorize(context);
   return DocsService.update(user.uid, payload);
-});
-
-export const getDocs = onCall(async (_, context) => {
-  if (!context.auth) {
-    throw errors.notAuthorized();
-  }
-
-  const docsCollection = await admin
-    .firestore()
-    .collection(`docs`)
-    .doc(context.auth.uid)
-    .get();
-
-  const result = docsCollection.data();
-
-  if (result === undefined) return [];
-
-  const docs: GetDocsDto = Object.entries(result)
-    .map(([id, field]: [string, DocEntityField]): GetDocsDtoItem => {
-      if (field.visibility === `permanent`) {
-        return {
-          id,
-          name: field.name,
-          code: field.code,
-          cdate: field.cdate,
-          mdate: field.mdate,
-          visibility: field.visibility,
-          description: field.description,
-          path: field.path,
-          author: null,
-          tags: field.tags ?? [],
-        };
-      }
-
-      if (field.visibility === `public`) {
-        return {
-          id,
-          name: field.name,
-          code: field.code,
-          cdate: field.cdate,
-          mdate: field.mdate,
-          visibility: field.visibility,
-          author: null,
-        };
-      }
-
-      if (field.visibility === `private`) {
-        return {
-          id,
-          name: field.name,
-          code: field.code,
-          cdate: field.cdate,
-          mdate: field.mdate,
-          visibility: field.visibility,
-        };
-      }
-
-      throw errors.internal(`Invalid document visibility`);
-    })
-    .sort((prev, curr) => {
-      if (prev.mdate > curr.mdate) return -1;
-      if (prev.mdate === curr.mdate) return 0;
-      return 1;
-    });
-
-  return docs;
 });
 
 export const deleteAccount = onCall(async (_, context) => {
@@ -155,3 +88,4 @@ export const getPermanentDocuments = getPermanentDocumentsController(db);
 export const getAccessibleDocument = getAccessibleDocumentController(db);
 export const getYourInfo = getYourInfoController(db);
 export const createDocument = createDocumentController(db);
+export const getYourDocuments = getYourDocumentsController(db);
