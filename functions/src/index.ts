@@ -1,6 +1,5 @@
 import { https } from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import { errors } from './core/errors';
 import { DocsService } from './services/docs.service';
 import { AuthService } from './services/auth.service';
 import { UsersService } from './services/users.service';
@@ -34,16 +33,6 @@ const { onCall } = https;
 export const updateDoc = onCall(async (payload, context) => {
   const user = AuthService.authorize(context);
   return DocsService.update(user.uid, payload);
-});
-
-export const deleteAccount = onCall(async (_, context) => {
-  if (!context.auth) {
-    throw errors.notAuthorized();
-  }
-
-  await admin.auth().deleteUser(context.auth.uid);
-  await admin.firestore().collection(`docs`).doc(context.auth.uid).delete();
-  return null;
 });
 
 export const uploadImage = onCall(
