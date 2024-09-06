@@ -12,7 +12,6 @@ const schema = UserProfileEntity.schema
     linkedInUrl: true,
     fbUrl: true,
     twitterUrl: true,
-    mdate: true,
   })
   .merge(
     z.object({
@@ -29,7 +28,11 @@ const schema = UserProfileEntity.schema
         }),
       ]),
     }),
-  );
+  )
+  .extend({
+    mdate: UserProfileEntity.schema.shape.mdate.nullable(),
+  });
+
 type IUserProfilePayload = z.infer<typeof schema>;
 
 const UserProfilePayload = createSchema(schema, `UserProfilePayload`);
