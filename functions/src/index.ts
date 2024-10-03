@@ -19,7 +19,6 @@ import { rateDocumentController } from './v2/application/modules/rate-document/r
 import { deleteDocumentController } from './v2/application/modules/delete-document/delete-document.controller';
 import { getPermanentDocumentsController } from './v2/application/modules/get-permanent-documents/get-permanent-documents.controller';
 import { getAccessibleDocumentController } from './v2/application/modules/get-accessible-document/get-accessible-document.controller';
-import { getYourInfoController } from './v2/application/modules/get-your-info/get-your-info';
 import { createDocumentController } from './v2/application/modules/create-document/create-document.controller';
 import { getYourDocumentsController } from './v2/application/modules/get-your-documents/get-your-documents.controller';
 
@@ -75,6 +74,5 @@ export const rateDocument = rateDocumentController(db);
 export const deleteDocument = deleteDocumentController(db);
 export const getPermanentDocuments = getPermanentDocumentsController(db);
 export const getAccessibleDocument = getAccessibleDocumentController(db);
-export const getYourInfo = getYourInfoController(db);
 export const createDocument = createDocumentController(db);
 export const getYourDocuments = getYourDocumentsController(db);
