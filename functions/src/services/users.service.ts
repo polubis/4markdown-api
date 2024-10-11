@@ -1,5 +1,4 @@
 import { https } from 'firebase-functions';
-import { errors } from '../core/errors';
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
 import { UploadImagePayload } from '../payloads/images.payload';
@@ -7,6 +6,7 @@ import { Image } from '../core/image';
 import { UploadImageDto } from '../dtos/image.dto';
 import { AuthService } from './auth.service';
 import { ImagesRepository } from '../repositories/images.repository';
+import { errors } from '../v2/application/utils/errors';
 
 const UsersService = {
   uploadImage: async (

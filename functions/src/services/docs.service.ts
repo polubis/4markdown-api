@@ -1,5 +1,4 @@
 import { UpdateDocPayload } from '../payloads/docs.payload';
-import { errors } from '../core/errors';
 import { DocEntity } from '../entities/doc.entity';
 import {
   UpdateDocPermanentDto,
@@ -9,6 +8,7 @@ import {
 import { Doc, getAllDocs } from '../core/doc';
 import { Id } from '../entities/general';
 import { DocsRepository } from '../repositories/docs.repository';
+import { errors } from '../v2/application/utils/errors';
 
 export const DocsService = {
   update: async (uid: Id, payload: UpdateDocPayload) => {
@@ -30,7 +30,7 @@ export const DocsService = {
     }
 
     if (doc.mdate !== payload.mdate) {
-      throw errors.outOfDateEntry(
+      throw errors.outOfDate(
         `You cannot edit this document. You've changed it on another device.`,
       );
     }
@@ -120,7 +120,7 @@ export const DocsService = {
         return dto;
       }
       default: {
-        throw errors.invalidArg(`Wrong visiblity value`);
+        throw errors.badRequest(`Wrong visiblity value`);
       }
     }
   },
