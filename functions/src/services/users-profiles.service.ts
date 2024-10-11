@@ -1,5 +1,4 @@
 import { https } from 'firebase-functions';
-import { errors } from '../core/errors';
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
 import { AuthService } from './auth.service';
@@ -16,6 +15,7 @@ import { ImageEntity } from '../entities/img.entity';
 import * as sharp from 'sharp';
 import { IUserProfileDto } from '../dtos/users-profiles.dto';
 import { Id } from '../entities/general';
+import { errors } from '../v2/application/utils/errors';
 
 const sizes = [
   {
@@ -71,11 +71,11 @@ const rescaleAndUploadAvatars = async (uid: string, data: string) => {
   const avatar = ImageEntity(data);
 
   if (avatar.extension === `gif`) {
-    throw errors.invalidArg(`Invalid extension of avatar`);
+    throw errors.badRequest(`Invalid extension of avatar`);
   }
 
   if (avatar.size > 4) {
-    throw errors.invalidArg(`Invalid avatar size`);
+    throw errors.badRequest(`Invalid avatar size`);
   }
 
   const bucket = await getBucket();
@@ -216,11 +216,11 @@ const UsersProfilesService = {
     const currentUserProfileEntity = userProfile.data();
 
     if (!UserProfileEntity.is(currentUserProfileEntity)) {
-      throw errors.invalidSchema(UserProfileEntity.name);
+      throw errors.badRequest(`The schema is not typeof UserProfileEntity`);
     }
 
     if (userProfilePayload.mdate !== currentUserProfileEntity.mdate) {
-      throw errors.outOfDateEntry(
+      throw errors.outOfDate(
         `You cannot edit profile. You've changed it on another device.`,
       );
     }
