@@ -3,11 +3,11 @@ import {
   ICreateBackupPayload,
   IUseBackupPayload,
 } from '../payloads/backup.payload';
-import { errors } from '../core/errors';
 import { firestore, storage } from 'firebase-admin';
 import { CopyResponse } from '@google-cloud/storage';
 import { IProjectId } from '../models/project-id';
 import { z } from 'zod';
+import { errors } from '../v2/application/utils/errors';
 
 type Bucket = ReturnType<ReturnType<typeof storage>['bucket']>;
 type BucketsPair = {
@@ -67,7 +67,7 @@ const getSourceBucket = async (): Promise<Bucket> => {
   const [exists] = await bucket.exists();
 
   if (!exists) {
-    throw errors.invalidArg(`There is no bucket for backups`);
+    throw errors.badRequest(`There is no bucket for backups`);
   }
 
   return bucket;
@@ -79,7 +79,7 @@ const getBackupBucket = async (projectId: string): Promise<Bucket> => {
   const [exists] = await bucket.exists();
 
   if (!exists) {
-    throw errors.invalidArg(`There is no bucket for backups`);
+    throw errors.badRequest(`There is no bucket for backups`);
   }
 
   return bucket;
@@ -120,11 +120,11 @@ const verifySetup = (token: string): void | never => {
   const backupSetup = { token: process.env.BACKUP_TOKEN };
 
   if (!CreateBackupPayload.is(backupSetup)) {
-    throw errors.invalidArg(`Lack of token on server process`);
+    throw errors.badRequest(`Lack of token on server process`);
   }
 
   if (token !== backupSetup.token) {
-    throw errors.invalidArg(`Wrong token`);
+    throw errors.badRequest(`Wrong token`);
   }
 };
 
@@ -152,10 +152,10 @@ const getDatabaseBackupFile = async (
   });
 
   if (files.length === 0)
-    throw errors.invalidArg(`Cannot find database backup`);
+    throw errors.badRequest(`Cannot find database backup`);
 
   if (files.length !== 1)
-    throw errors.invalidArg(`Multiple database backups found`);
+    throw errors.badRequest(`Multiple database backups found`);
 
   const [dbBackupFile] = await files[0].download();
   const databaseData = JSON.parse(

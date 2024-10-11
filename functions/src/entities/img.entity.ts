@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { errors } from '../core/errors';
+import { errors } from '../v2/application/utils/errors';
 
 const EXTENSIONS = [`jpg`, `jpeg`, `gif`, `png`, `webp`] as const;
 const CONTENT_TYPES = [
@@ -39,7 +39,7 @@ const ImageEntity = (image: unknown) => {
     const base64 = z.string().parse(image);
     return decode(base64);
   } catch (err) {
-    throw errors.invalidSchema(`ImageEntity`);
+    throw errors.badRequest(`Schema is not typeof ImageEntity`);
   }
 };
 

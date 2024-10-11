@@ -1,6 +1,5 @@
 import { AnyZodObject, z } from 'zod';
-import { errors } from '../core/errors';
-import { logger } from 'firebase-functions/v1';
+import { errors } from '../v2/application/utils/errors';
 
 const createSchema = <Schema extends AnyZodObject>(
   schema: Schema,
@@ -11,9 +10,7 @@ const createSchema = <Schema extends AnyZodObject>(
       const values = schema.strict().parse(payload);
       return values;
     } catch (err) {
-      logger.error(`Error occured in ${name}`);
-      logger.error(err);
-      throw errors.invalidSchema(name);
+      throw errors.badRequest(`Schema is not typeof ${name}`);
     }
   };
 

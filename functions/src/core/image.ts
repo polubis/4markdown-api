@@ -4,8 +4,8 @@ import {
   ImageContentType,
   ImageExtension,
 } from '../entities/image.entity';
+import { errors } from '../v2/application/utils/errors';
 import { imageValidators } from '../validation/image';
-import { errors } from './errors';
 
 const Image = () => {};
 
@@ -33,13 +33,13 @@ Image.create = (
   buffer: Buffer;
 } => {
   if (!imageValidators.format(image)) {
-    throw errors.invalidArg(`Wrong image data type`);
+    throw errors.badRequest(`Wrong image data type`);
   }
 
   const { blob, contentType, extension } = Image.decode(image);
 
   if (!imageValidators.extension(extension)) {
-    throw errors.invalidArg(
+    throw errors.badRequest(
       `Unsupported image format, use supported one: ${IMAGE_EXTENSIONS.join(
         `, `,
       )}`,
@@ -49,7 +49,7 @@ Image.create = (
   const buffer = Buffer.from(blob, `base64`);
 
   if (!imageValidators.size(buffer)) {
-    throw errors.invalidArg(
+    throw errors.badRequest(
       `Max image size is ${imageValidators.limitInMegabytes} megabytes (MB)`,
     );
   }
