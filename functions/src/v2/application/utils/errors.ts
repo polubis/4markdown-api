@@ -4,13 +4,14 @@ import { z } from 'zod';
 const error = (
   code: https.FunctionsErrorCode,
   symbol: string,
-  content: unknown,
+  content: string | { message: string; key: string }[],
 ): https.HttpsError =>
   new https.HttpsError(
     code,
     JSON.stringify({
       symbol,
       content,
+      message: Array.isArray(content) ? content[0].message : content,
     }),
   );
 
@@ -26,7 +27,7 @@ const errors = {
       return error(
         `invalid-argument`,
         `invalid-schema`,
-        e.errors.map(({ message, path }) => ({ message, key: path[0] })),
+        e.errors.map(({ message, path }) => ({ message, key: path.join(`/`) })),
       );
     }
 
