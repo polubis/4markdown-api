@@ -67,15 +67,15 @@ const updateDocumentNameController = protectedController<Dto>(
       throw errors.outOfDate(`The document has been already changed`);
     }
 
-    let hasDuplicate = Object.entries(userDocuments).some(
+    const hasDuplicateInOwnDocuments = Object.entries(userDocuments).some(
       ([id, document]) => id !== payload.id && document.name === payload.name,
     );
 
-    if (userDocument.visibility === `permanent`) {
-      hasDuplicate = await containsDuplicateInAccessibleDocuments(payload, db);
-    }
-
-    if (hasDuplicate) {
+    if (
+      hasDuplicateInOwnDocuments ||
+      (userDocument.visibility === `permanent` &&
+        (await containsDuplicateInAccessibleDocuments(payload, db)))
+    ) {
       throw errors.exists(
         `Document with provided name already exists, please change name`,
       );
