@@ -29,11 +29,7 @@ const containsDuplicateInAccessibleDocuments = async (
   const allDocumentsSnap = (await db.collection(`docs`).get()).docs;
 
   for (const userDocumentsSnap of allDocumentsSnap) {
-    const userDocuments = userDocumentsSnap.data() as
-      | DocumentsModel
-      | undefined;
-
-    if (!userDocuments) continue;
+    const userDocuments = userDocumentsSnap.data() as DocumentsModel;
 
     const hasDuplicate = Object.entries(userDocuments).some(
       ([documentId, document]) =>
@@ -71,23 +67,13 @@ const updateDocumentNameController = protectedController<Dto>(
       throw errors.outOfDate(`The document has been already changed`);
     }
 
-    if (
-      userDocument.visibility === `private` ||
-      userDocument.visibility === `public`
-    ) {
-      const alreadyExists = Object.entries(userDocuments).some(
-        ([id, document]) => id !== payload.id && document.name === payload.name,
-      );
-
-      if (alreadyExists) {
-        throw errors.exists(`Document with provided name already exist`);
-      }
-    }
-
-    const hasDuplicate = await containsDuplicateInAccessibleDocuments(
-      payload,
-      db,
-    );
+    const hasDuplicate =
+      userDocument.visibility === `permanent`
+        ? await containsDuplicateInAccessibleDocuments(payload, db)
+        : Object.entries(userDocuments).some(
+            ([id, document]) =>
+              id !== payload.id && document.name === payload.name,
+          );
 
     if (hasDuplicate) {
       throw errors.exists(
