@@ -100,7 +100,7 @@ const updateDocumentNameController = protectedController<Dto>(
     await userDocumentsRef.update(<DocumentsModel>{
       [payload.id]: {
         ...userDocument,
-        code: payload.name,
+        name: payload.name,
         mdate,
       },
     });
