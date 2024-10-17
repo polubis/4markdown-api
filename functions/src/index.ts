@@ -21,6 +21,7 @@ import { getPermanentDocumentsController } from './v2/application/modules/get-pe
 import { getAccessibleDocumentController } from './v2/application/modules/get-accessible-document/get-accessible-document.controller';
 import { createDocumentController } from './v2/application/modules/create-document/create-document.controller';
 import { getYourDocumentsController } from './v2/application/modules/get-your-documents/get-your-documents.controller';
+import { updateDocumentNameController } from './v2/application/modules/update-document-name/update-document-name.controller';
 
 const app = admin.initializeApp();
 const projectId = ProjectId(app.options.projectId);
@@ -76,3 +77,4 @@ export const getPermanentDocuments = getPermanentDocumentsController(db);
 export const getAccessibleDocument = getAccessibleDocumentController(db);
 export const createDocument = createDocumentController(db);
 export const getYourDocuments = getYourDocumentsController(db);
+export const updateDocumentName = updateDocumentNameController(db);
