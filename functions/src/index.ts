@@ -22,6 +22,9 @@ import { getAccessibleDocumentController } from './v2/application/modules/get-ac
 import { createDocumentController } from './v2/application/modules/create-document/create-document.controller';
 import { getYourDocumentsController } from './v2/application/modules/get-your-documents/get-your-documents.controller';
 import { updateDocumentNameController } from './v2/application/modules/update-document-name/update-document-name.controller';
+import { sendNewsletterController } from './v2/application/modules/send-newsletter/send-newsletter.controller';
+import { subscribeNewsletterController } from './v2/application/modules/subscribe-newsletter/subscribe-newsletter.controller';
+import { unsubscribeNewsletterController } from './v2/application/modules/unsubscribe-newsletter/unsubscribe-newsletter.controller';
 
 const app = admin.initializeApp();
 const projectId = ProjectId(app.options.projectId);
@@ -78,3 +81,6 @@ export const getAccessibleDocument = getAccessibleDocumentController(db);
 export const createDocument = createDocumentController(db);
 export const getYourDocuments = getYourDocumentsController(db);
 export const updateDocumentName = updateDocumentNameController(db);
+export const sendNewsletter = sendNewsletterController(db);
+export const subscribeNewsletter = subscribeNewsletterController(db);
+export const unsubscribeNewsletter = unsubscribeNewsletterController(db);
