@@ -1,15 +1,29 @@
 import { protectedController } from '../../utils/controller';
-import { z } from 'zod';
+import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend';
+import { errors } from '../../utils/errors';
 
-const payloadSchema = z.object({});
+type Dto = void;
 
-type Dto = {};
+const sendNewsletterController = protectedController<Dto>(async () => {
+  const apiKey = process.env.EMAILS_TOKEN;
 
-const sendNewsletterController = protectedController<Dto>(
-  async (rawPayload, { uid, db }) => {
-    const ref = db.collection(`newsletter-subscribers`).doc();
-    await ref.create({});
-  },
-);
+  if (!apiKey) throw errors.internal(`Problem with mailing setup`);
+
+  const mailersend = new MailerSend({
+    apiKey,
+  });
+
+  const recipients = [
+    new Recipient(`adrian.polubinski.work@gmail.com`, `Test`),
+  ];
+
+  const emailParams = new EmailParams()
+    .setFrom(new Sender(`4markdown@gmail.com`, `4markdown`))
+    .setTo(recipients)
+    .setSubject(`Subject`)
+    .setTemplateId(`yzkq340wj6kgd796`);
+
+  await mailersend.email.send(emailParams);
+});
 
 export { sendNewsletterController };
