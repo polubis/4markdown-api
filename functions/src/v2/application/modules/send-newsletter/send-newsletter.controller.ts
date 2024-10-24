@@ -7,7 +7,8 @@ type Dto = {};
 
 const sendNewsletterController = protectedController<Dto>(
   async (rawPayload, { uid, db }) => {
-    const ref = db.collection(`newsletter-subscribers`);
+    const ref = db.collection(`newsletter-subscribers`).doc();
+    await ref.create({});
   },
 );
 

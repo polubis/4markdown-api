@@ -1,21 +1,30 @@
-import { protectedController } from '../../utils/controller';
+import { controller } from '../../utils/controller';
 import { z } from 'zod';
-import { email } from '../../utils/validators';
+import { type Date, email } from '../../utils/validators';
 import { parse } from '../../utils/parse';
+import { nowISO } from '../../../libs/helpers/stamps';
 
 const payloadSchema = z.object({
   email,
 });
 
-type Dto = {};
+type Dto = {
+  cdate: Date;
+};
 
-const subscribeNewsletterController = protectedController<Dto>(
-  async (rawPayload, { uid, db }) => {
+const subscribeNewsletterController = controller<Dto>(
+  async (rawPayload, { db }) => {
     const payload = await parse(payloadSchema, rawPayload);
 
-    const ref = db.collection(`newsletter-subscribers`);
+    const newsletterSubscribersRef = db
+      .collection(`newsletter-subscribers`)
+      .doc(payload.email);
 
-    return {};
+    const cdate = nowISO();
+
+    await newsletterSubscribersRef.set({ cdate });
+
+    return { cdate };
   },
 );
 

@@ -7,7 +7,7 @@ type ControllerHandler<TResponse = unknown> = (
   rawPayload: unknown,
   context: { db: DBInstance },
 ) => Promise<TResponse>;
-
+// @TODO[PRIO=2]: [Add and test parent try catch].
 const controller =
   <TResponse = unknown>(handler: ControllerHandler<TResponse>) =>
   (firestore: Firestore): HttpsFunction & Runnable<unknown> => {
