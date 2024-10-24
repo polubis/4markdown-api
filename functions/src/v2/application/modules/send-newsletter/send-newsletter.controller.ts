@@ -5,7 +5,7 @@ import { errors } from '../../utils/errors';
 type Dto = void;
 
 const sendNewsletterController = protectedController<Dto>(async () => {
-  const apiKey = process.env.EMAILS_TOKEN;
+  const apiKey = process.env.EMAILS_PROPAGATION_API_KEY;
 
   if (!apiKey) throw errors.internal(`Problem with mailing setup`);
 
