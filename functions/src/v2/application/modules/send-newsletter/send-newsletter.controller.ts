@@ -4,21 +4,21 @@ import { errors } from '../../utils/errors';
 
 type Dto = void;
 
-const sendNewsletterController = protectedController<Dto>(async () => {
+const sendNewsletterController = protectedController<Dto>(async (_, { db }) => {
   const apiKey = process.env.EMAILS_PROPAGATION_API_KEY;
 
   if (!apiKey) throw errors.internal(`Problem with mailing setup`);
+
+  const recipients = (
+    await db.collection(`newsletter-subscribers`).listDocuments()
+  ).map(({ id: email }) => new Recipient(email));
 
   const mailersend = new MailerSend({
     apiKey,
   });
 
-  const recipients = [
-    new Recipient(`adrian.polubinski.work@gmail.com`, `Test`),
-  ];
-
   const emailParams = new EmailParams()
-    .setFrom(new Sender(`4markdown@gmail.com`, `4markdown`))
+    .setFrom(new Sender(`@TODO`, `4markdown`))
     .setTo(recipients)
     .setSubject(`Subject`)
     .setTemplateId(`yzkq340wj6kgd796`);

@@ -7,7 +7,7 @@ const payloadSchema = z.object({
   email,
 });
 
-type Dto = {};
+type Dto = void;
 
 const unsubscribeNewsletterController = controller<Dto>(
   async (rawPayload, { db }) => {
@@ -18,8 +18,6 @@ const unsubscribeNewsletterController = controller<Dto>(
       .doc(payload.email);
 
     await newsletterSubscribersRef.delete();
-
-    return {};
   },
 );
 
