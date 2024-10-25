@@ -16,6 +16,7 @@ import * as sharp from 'sharp';
 import { IUserProfileDto } from '../dtos/users-profiles.dto';
 import { Id } from '../entities/general';
 import { errors } from '../v2/application/utils/errors';
+import { CallableRequest } from 'firebase-functions/https';
 
 const sizes = [
   {
@@ -165,10 +166,13 @@ const UsersProfilesService = {
 
     return createProfileDtoShape(userProfileEntity);
   },
-  updateYour: async (
-    payload: unknown,
-    context: https.CallableContext,
-  ): Promise<IUserProfileDto> => {
+  updateYour: async ({
+    payload,
+    context,
+  }: {
+    payload: unknown;
+    context: Pick<CallableRequest<unknown>, 'auth'>;
+  }): Promise<IUserProfileDto> => {
     const auth = AuthService.authorize(context);
     const userProfilePayload = UserProfilePayload(payload);
 

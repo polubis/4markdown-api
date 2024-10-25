@@ -39,11 +39,14 @@ export const uploadImage = onCall(async (payload, context) => {
   return await UsersService.uploadImage(payload, context);
 });
 
-export const updateYourUserProfile = onCall<UploadImagePayload>(
-  async ({ data }) => {
-    return await UsersProfilesService.updateYour(data, context);
-  },
-);
+export const updateYourUserProfile = onCall<unknown>(async (request) => {
+  return await UsersProfilesService.updateYour({
+    payload: request.data,
+    context: {
+      auth: request.auth,
+    },
+  });
+});
 
 export const getYourUserProfile = onCall(async (_, context) => {
   return await UsersProfilesService.getYour(context);
