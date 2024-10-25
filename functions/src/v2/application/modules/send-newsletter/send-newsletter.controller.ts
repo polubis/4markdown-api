@@ -5,7 +5,7 @@ import { errors } from '../../utils/errors';
 type Dto = void;
 
 const sendNewsletterController = protectedController<Dto>(async (_, { db }) => {
-  const apiKey = process.env.EMAILS_PROPAGATION_API_KEY;
+  const apiKey = process.env.DEV_EMAILS_PROPAGATION_API_KEY;
 
   if (!apiKey) throw errors.internal(`Problem with mailing setup`);
 
@@ -18,7 +18,7 @@ const sendNewsletterController = protectedController<Dto>(async (_, { db }) => {
   });
 
   const emailParams = new EmailParams()
-    .setFrom(new Sender(`@TODO`, `4markdown`))
+    .setFrom(new Sender(`newsletter@4markdown.com`, `4markdown`))
     .setTo(recipients)
     .setSubject(`Subject`)
     .setTemplateId(`yzkq340wj6kgd796`);
