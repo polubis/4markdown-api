@@ -6,8 +6,10 @@ type Dto = void;
 
 const sendNewsletterController = protectedController<Dto>(async (_, { db }) => {
   const apiKey = process.env.DEV_EMAILS_PROPAGATION_API_KEY;
+  const templateId = process.env.NEWSLETTER_TEMPLATE_ID;
 
-  if (!apiKey) throw errors.internal(`Problem with mailing setup`);
+  if (!apiKey || !templateId)
+    throw errors.internal(`Problem with mailing setup`);
 
   const recipients = (
     await db.collection(`newsletter-subscribers`).listDocuments()
@@ -21,7 +23,7 @@ const sendNewsletterController = protectedController<Dto>(async (_, { db }) => {
     .setFrom(new Sender(`newsletter@4markdown.com`, `4markdown`))
     .setTo(recipients)
     .setSubject(`Subject`)
-    .setTemplateId(`yzkq340wj6kgd796`);
+    .setTemplateId(templateId);
 
   await mailersend.email.send(emailParams);
 });
