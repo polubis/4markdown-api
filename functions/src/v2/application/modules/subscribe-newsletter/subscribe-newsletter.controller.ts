@@ -2,7 +2,7 @@ import { controller } from '../../utils/controller';
 import { z } from 'zod';
 import { email } from '../../utils/validators';
 import { parse } from '../../utils/parse';
-import { nowISO } from '../../../libs/helpers/stamps';
+import { nowISO, uuid } from '../../../libs/helpers/stamps';
 import { NewsletterSubscriberModel } from '../../../domain/models/newsletter-subscriber';
 
 const payloadSchema = z.object({
@@ -21,7 +21,7 @@ const subscribeNewsletterController = controller<Dto>(
 
     const cdate = nowISO();
 
-    const model: NewsletterSubscriberModel = { cdate };
+    const model: NewsletterSubscriberModel = { cdate, id: uuid() };
 
     await newsletterSubscribersRef.set(model);
   },
