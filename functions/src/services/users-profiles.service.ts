@@ -1,4 +1,3 @@
-import { https } from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
 import { AuthService } from './auth.service';
@@ -148,9 +147,11 @@ const checkIfDisplayNameIsTaken = async (
 };
 
 const UsersProfilesService = {
-  getYour: async (
-    context: https.CallableContext,
-  ): Promise<IUserProfileDto | null> => {
+  getYour: async ({
+    context,
+  }: {
+    context: Pick<CallableRequest<unknown>, 'auth'>;
+  }): Promise<IUserProfileDto | null> => {
     const auth = AuthService.authorize(context);
     const userProfilesCollection = admin
       .firestore()
