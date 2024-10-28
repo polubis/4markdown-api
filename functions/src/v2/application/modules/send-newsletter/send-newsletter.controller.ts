@@ -8,6 +8,7 @@ type Dto = void;
 // 2. URL na FE dla Unsub.
 // 3. Lepsza protekcja do uzywania tego endpointa - only admin.
 // 4. URL variables dla proda?
+// 5. Fix personalization
 
 const sendNewsletterController = protectedController<Dto>(async (_, { db }) => {
   const apiKey = process.env.DEV_EMAILS_PROPAGATION_API_KEY;
