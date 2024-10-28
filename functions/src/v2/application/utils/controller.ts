@@ -3,6 +3,7 @@ import { Db, type DBInstance } from '../database/database';
 import { type Firestore } from 'firebase-admin/firestore';
 import { onCall, type CallableFunction } from 'firebase-functions/https';
 
+// @TODO[PRIO=1]: [Make it better typed].
 type ControllerHandler<TResponse = unknown> = (
   rawPayload: unknown,
   context: { db: DBInstance },
@@ -13,7 +14,7 @@ const controller =
   (firestore: Firestore): CallableFunction<unknown, unknown> => {
     const db = Db(firestore);
 
-    return onCall({ maxInstances: 2 }, async (request) => {
+    return onCall<unknown>({ maxInstances: 2 }, async (request) => {
       return await handler(request.data, { db });
     });
   };
