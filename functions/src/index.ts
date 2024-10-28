@@ -22,14 +22,13 @@ import { onCall } from 'firebase-functions/https';
 
 const app = admin.initializeApp();
 const db = app.firestore();
-// @TODO: Use admin.auth() once and inject it to controllers.
 
-export const updateDoc = onCall(async (request) => {
+export const updateDoc = onCall({ maxInstances: 2 }, async (request) => {
   const user = AuthService.authorize({ auth: request.auth });
   return DocsService.update(user.uid, request.data);
 });
 
-export const uploadImage = onCall(async (request) => {
+export const uploadImage = onCall({ maxInstances: 2 }, async (request) => {
   return await UsersService.uploadImage({
     payload: request.data,
     context: {
@@ -38,34 +37,43 @@ export const uploadImage = onCall(async (request) => {
   });
 });
 
-export const updateYourUserProfile = onCall<unknown>(async (request) => {
-  return await UsersProfilesService.updateYour({
-    payload: request.data,
-    context: {
-      auth: request.auth,
-    },
-  });
-});
+export const updateYourUserProfile = onCall<unknown>(
+  { maxInstances: 2 },
+  async (request) => {
+    return await UsersProfilesService.updateYour({
+      payload: request.data,
+      context: {
+        auth: request.auth,
+      },
+    });
+  },
+);
 
-export const getYourUserProfile = onCall<unknown>(async (request) => {
-  return await UsersProfilesService.getYour({
-    context: {
-      auth: request.auth,
-    },
-  });
-});
+export const getYourUserProfile = onCall<unknown>(
+  { maxInstances: 2 },
+  async (request) => {
+    return await UsersProfilesService.getYour({
+      context: {
+        auth: request.auth,
+      },
+    });
+  },
+);
 
-export const useBackup = onCall<void>(async (payload) => {
+export const useBackup = onCall<void>({ maxInstances: 2 }, async (payload) => {
   const projectId = ProjectId(app.options.projectId);
 
   await BackupsService.use(projectId, UseBackupPayload(payload));
 });
 
-export const createBackup = onCall<unknown>(async (payload) => {
-  const projectId = ProjectId(app.options.projectId);
+export const createBackup = onCall<unknown>(
+  { maxInstances: 2 },
+  async (payload) => {
+    const projectId = ProjectId(app.options.projectId);
 
-  await BackupsService.create(projectId, CreateBackupPayload(payload));
-});
+    await BackupsService.create(projectId, CreateBackupPayload(payload));
+  },
+);
 
 export const autoCreateBackup = onSchedule(`59 23 * * 0`, async () => {
   // every sunday 23:59
