@@ -76,7 +76,7 @@ export const createBackup = onCall<unknown>(
 );
 
 export const autoCreateBackup = onSchedule(
-  { schedule: `59 23 * * 0`, maxInstances: 2 },
+  { schedule: `59 23 * * 0`, maxInstances: 1 },
   async () => {
     // every sunday 23:59
     const projectId = ProjectId(app.options.projectId);
