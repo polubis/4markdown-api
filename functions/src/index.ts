@@ -1,5 +1,3 @@
-import { https } from 'firebase-functions';
-import * as admin from 'firebase-admin';
 import { DocsService } from './services/docs.service';
 import { AuthService } from './services/auth.service';
 import { UsersService } from './services/users.service';
@@ -12,12 +10,18 @@ import { getAccessibleDocumentController } from './v2/application/modules/get-ac
 import { createDocumentController } from './v2/application/modules/create-document/create-document.controller';
 import { getYourDocumentsController } from './v2/application/modules/get-your-documents/get-your-documents.controller';
 import { updateDocumentNameController } from './v2/application/modules/update-document-name/update-document-name.controller';
+import {
+  CreateBackupPayload,
+  UseBackupPayload,
+} from './payloads/backup.payload';
+import { isDev, ProjectId } from './core/env-checks';
+import { BackupsService } from './services/backup.service';
+import { onSchedule } from 'firebase-functions/scheduler';
+import { onCall } from 'firebase-functions/https';
+import { initializeApp } from 'firebase-admin';
 
-const app = admin.initializeApp();
+const app = initializeApp();
 const db = app.firestore();
-// @TODO: Use admin.auth() once and inject it to controllers.
-
-const { onCall } = https;
 
 export const updateDoc = onCall(async (request) => {
   const user = AuthService.authorize({ auth: request.auth });
@@ -48,6 +52,32 @@ export const getYourUserProfile = onCall<unknown>(async (request) => {
       auth: request.auth,
     },
   });
+});
+
+export const useBackup = onCall<void>(async (payload) => {
+  const projectId = ProjectId(app.options.projectId);
+
+  await BackupsService.use(projectId, UseBackupPayload(payload));
+});
+
+export const createBackup = onCall<unknown>(async (payload) => {
+  const projectId = ProjectId(app.options.projectId);
+
+  await BackupsService.create(projectId, CreateBackupPayload(payload));
+});
+
+export const autoCreateBackup = onSchedule(`59 23 * * 0`, async () => {
+  // every sunday 23:59
+  const projectId = ProjectId(app.options.projectId);
+
+  if (isDev(projectId)) return;
+
+  await BackupsService.create(
+    ProjectId(app.options.projectId),
+    CreateBackupPayload({
+      token: process.env.BACKUP_TOKEN,
+    }),
+  );
 });
 
 export const updateDocumentCode = updateDocumentCodeController(db);

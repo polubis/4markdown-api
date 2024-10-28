@@ -15,15 +15,12 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
 
-      - name: Change Directory
-        run: cd functions
-
       - name: Install
         run: npm i -g npm-check-updates
 
       - name: Check
         run: |
-          OUTDATED_DEPS=$(ncu)
+          OUTDATED_DEPS=$(cd functions && ncu)
 
           if [ -z "$OUTDATED_DEPS" ]; then
             echo "No outdated dependencies found."
