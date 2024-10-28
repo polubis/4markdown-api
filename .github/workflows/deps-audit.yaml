@@ -15,6 +15,9 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
 
+      - name: Change Directory
+        run: cd functions
+
       - name: Audit
         run: npm audit
         continue-on-error: true
