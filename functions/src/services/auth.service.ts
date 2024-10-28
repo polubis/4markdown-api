@@ -1,9 +1,10 @@
-import { CallableContext } from 'firebase-functions/v1/https';
-import { AuthData } from 'firebase-functions/lib/common/providers/https';
+import { CallableRequest } from 'firebase-functions/https';
 import { errors } from '../v2/application/utils/errors';
 
 export const AuthService = {
-  authorize: (context: CallableContext): AuthData => {
+  authorize: (
+    context: Pick<CallableRequest<unknown>, 'auth'>,
+  ): Required<Pick<CallableRequest<unknown>, 'auth'>>['auth'] => {
     if (!context.auth) {
       throw errors.unauthenticated();
     }

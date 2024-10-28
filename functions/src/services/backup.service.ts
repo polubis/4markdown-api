@@ -5,9 +5,9 @@ import {
 } from '../payloads/backup.payload';
 import { firestore, storage } from 'firebase-admin';
 import { CopyResponse } from '@google-cloud/storage';
-import { IProjectId } from '../models/project-id';
 import { z } from 'zod';
 import { errors } from '../v2/application/utils/errors';
+import { IProjectId } from '../core/env-checks';
 
 type Bucket = ReturnType<ReturnType<typeof storage>['bucket']>;
 type BucketsPair = {

@@ -1,4 +1,3 @@
-import { https } from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
 import { UploadImagePayload } from '../payloads/images.payload';
@@ -7,12 +6,16 @@ import { UploadImageDto } from '../dtos/image.dto';
 import { AuthService } from './auth.service';
 import { ImagesRepository } from '../repositories/images.repository';
 import { errors } from '../v2/application/utils/errors';
+import { type CallableRequest } from 'firebase-functions/https';
 
 const UsersService = {
-  uploadImage: async (
-    payload: UploadImagePayload,
-    context: https.CallableContext,
-  ): Promise<UploadImageDto> => {
+  uploadImage: async ({
+    payload,
+    context,
+  }: {
+    payload: UploadImagePayload;
+    context: Pick<CallableRequest<UploadImagePayload>, 'auth'>;
+  }): Promise<UploadImageDto> => {
     const auth = AuthService.authorize(context);
 
     const { extension, contentType, buffer } = Image.create(payload.image);
