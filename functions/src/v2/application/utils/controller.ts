@@ -39,4 +39,5 @@ const protectedController =
       return await handler(request.data, { uid, db });
     });
   };
+
 export { controller, protectedController };

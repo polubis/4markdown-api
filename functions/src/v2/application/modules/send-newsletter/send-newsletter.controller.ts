@@ -4,6 +4,11 @@ import { errors } from '../../utils/errors';
 
 type Dto = void;
 
+// 1. Szyfrowanie maili.
+// 2. URL na FE dla Unsub.
+// 3. Lepsza protekcja do uzywania tego endpointa - only admin.
+// 4. URL variables dla proda?
+
 const sendNewsletterController = protectedController<Dto>(async (_, { db }) => {
   const apiKey = process.env.DEV_EMAILS_PROPAGATION_API_KEY;
   const templateId = process.env.NEWSLETTER_TEMPLATE_ID;
@@ -22,7 +27,7 @@ const sendNewsletterController = protectedController<Dto>(async (_, { db }) => {
   const emailParams = new EmailParams()
     .setFrom(new Sender(`newsletter@4markdown.com`, `4markdown`))
     .setTo(recipients)
-    .setSubject(`Subject`)
+    .setSubject(`Our Weekly Roundup`)
     .setTemplateId(templateId);
 
   await mailersend.email.send(emailParams);
