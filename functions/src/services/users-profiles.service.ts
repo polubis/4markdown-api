@@ -1,4 +1,3 @@
-import { https } from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
 import { AuthService } from './auth.service';
@@ -16,6 +15,7 @@ import * as sharp from 'sharp';
 import { IUserProfileDto } from '../dtos/users-profiles.dto';
 import { Id } from '../entities/general';
 import { errors } from '../v2/application/utils/errors';
+import { CallableRequest } from 'firebase-functions/https';
 
 const sizes = [
   {
@@ -147,9 +147,11 @@ const checkIfDisplayNameIsTaken = async (
 };
 
 const UsersProfilesService = {
-  getYour: async (
-    context: https.CallableContext,
-  ): Promise<IUserProfileDto | null> => {
+  getYour: async ({
+    context,
+  }: {
+    context: Pick<CallableRequest<unknown>, 'auth'>;
+  }): Promise<IUserProfileDto | null> => {
     const auth = AuthService.authorize(context);
     const userProfilesCollection = admin
       .firestore()
@@ -165,10 +167,13 @@ const UsersProfilesService = {
 
     return createProfileDtoShape(userProfileEntity);
   },
-  updateYour: async (
-    payload: unknown,
-    context: https.CallableContext,
-  ): Promise<IUserProfileDto> => {
+  updateYour: async ({
+    payload,
+    context,
+  }: {
+    payload: unknown;
+    context: Pick<CallableRequest<unknown>, 'auth'>;
+  }): Promise<IUserProfileDto> => {
     const auth = AuthService.authorize(context);
     const userProfilePayload = UserProfilePayload(payload);
 
