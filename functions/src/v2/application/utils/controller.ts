@@ -13,8 +13,8 @@ const controller =
   (firestore: Firestore): CallableFunction<unknown, unknown> => {
     const db = Db(firestore);
 
-    return onCall({ maxInstances: 2 }, async (rawPayload: unknown) => {
-      return await handler(rawPayload, { db });
+    return onCall({ maxInstances: 2 }, async (request) => {
+      return await handler(request.data, { db });
     });
   };
 
