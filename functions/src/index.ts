@@ -75,19 +75,22 @@ export const createBackup = onCall<unknown>(
   },
 );
 
-export const autoCreateBackup = onSchedule(`59 23 * * 0`, async () => {
-  // every sunday 23:59
-  const projectId = ProjectId(app.options.projectId);
+export const autoCreateBackup = onSchedule(
+  { schedule: `59 23 * * 0`, maxInstances: 2 },
+  async () => {
+    // every sunday 23:59
+    const projectId = ProjectId(app.options.projectId);
 
-  if (isDev(projectId)) return;
+    if (isDev(projectId)) return;
 
-  await BackupsService.create(
-    ProjectId(app.options.projectId),
-    CreateBackupPayload({
-      token: process.env.BACKUP_TOKEN,
-    }),
-  );
-});
+    await BackupsService.create(
+      ProjectId(app.options.projectId),
+      CreateBackupPayload({
+        token: process.env.BACKUP_TOKEN,
+      }),
+    );
+  },
+);
 
 export const updateDocumentCode = updateDocumentCodeController(db);
 export const rateDocument = rateDocumentController(db);
