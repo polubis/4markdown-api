@@ -60,18 +60,23 @@ export const getYourUserProfile = onCall<unknown>(
   },
 );
 
-export const useBackup = onCall<void>({ maxInstances: 2 }, async (payload) => {
-  const projectId = ProjectId(app.options.projectId);
-
-  await BackupsService.use(projectId, UseBackupPayload(payload));
-});
+export const useBackup = onCall<unknown>(
+  { maxInstances: 2 },
+  async (request) => {
+    await BackupsService.use(
+      ProjectId(app.options.projectId),
+      UseBackupPayload(request.data),
+    );
+  },
+);
 
 export const createBackup = onCall<unknown>(
   { maxInstances: 2 },
-  async (payload) => {
-    const projectId = ProjectId(app.options.projectId);
-
-    await BackupsService.create(projectId, CreateBackupPayload(payload));
+  async (request) => {
+    await BackupsService.create(
+      ProjectId(app.options.projectId),
+      CreateBackupPayload(request.data),
+    );
   },
 );
 
@@ -84,7 +89,7 @@ export const autoCreateBackup = onSchedule(
     if (isDev(projectId)) return;
 
     await BackupsService.create(
-      ProjectId(app.options.projectId),
+      projectId,
       CreateBackupPayload({
         token: process.env.BACKUP_TOKEN,
       }),
