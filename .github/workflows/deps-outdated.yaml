@@ -33,7 +33,7 @@ jobs:
             echo "Total:"
             echo "$OUTDATED_COUNT"
 
-            if [ "$OUTDATED_COUNT" -ge 10 ]; then
+            if [ "$OUTDATED_COUNT" -ge 2 ]; then
               echo "Error: There are $OUTDATED_COUNT outdated dependencies, which is too many. Raise a separate PR to fix it."
               exit 1
             fi
