@@ -1,3 +1,4 @@
+import * as admin from 'firebase-admin';
 import { DocsService } from './services/docs.service';
 import { AuthService } from './services/auth.service';
 import { UsersService } from './services/users.service';
@@ -18,10 +19,10 @@ import { isDev, ProjectId } from './core/env-checks';
 import { BackupsService } from './services/backup.service';
 import { onSchedule } from 'firebase-functions/scheduler';
 import { onCall } from 'firebase-functions/https';
-import { initializeApp } from 'firebase-admin';
 
-const app = initializeApp();
+const app = admin.initializeApp();
 const db = app.firestore();
+// @TODO: Use admin.auth() once and inject it to controllers.
 
 export const updateDoc = onCall(async (request) => {
   const user = AuthService.authorize({ auth: request.auth });
