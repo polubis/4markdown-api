@@ -3,7 +3,7 @@ import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend';
 import { getEmailsApiKey } from '../../utils/get-emails-api.key';
 import { getNewsletterTemplateId } from '../../utils/get-newsletter-template-id';
 import { errors } from '../../utils/errors';
-import type { Id } from '../../utils/validators';
+import type { Date, Id, Url } from '../../utils/validators';
 import type { UserProfileModel } from '../../../domain/models/user-profile';
 import type { DocumentModel } from '../../../domain/models/document';
 
@@ -12,12 +12,12 @@ type Dto = void;
 // 2. URL na FE dla Unsub.
 
 type EmailArticle = {
-  url: string;
+  url: Url;
   title: string;
-  image: string;
+  image: Url;
   author: string;
   description: string;
-  cdate: string;
+  cdate: Date;
 };
 
 const sendNewsletterController = protectedController<Dto>(
