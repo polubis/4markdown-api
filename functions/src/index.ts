@@ -107,7 +107,9 @@ export const getAccessibleDocument = getAccessibleDocumentController(
 export const createDocument = createDocumentController(db, projectId);
 export const getYourDocuments = getYourDocumentsController(db, projectId);
 export const updateDocumentName = updateDocumentNameController(db, projectId);
-export const sendNewsletter = sendNewsletterController(db, projectId);
+export const sendNewsletter = sendNewsletterController(db, projectId, [
+  `EMAILS_API_KEY`,
+]);
 export const subscribeNewsletter = subscribeNewsletterController(db, projectId);
 export const unsubscribeNewsletter = unsubscribeNewsletterController(
   db,

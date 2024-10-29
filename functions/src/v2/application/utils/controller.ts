@@ -3,6 +3,9 @@ import { Db, type DBInstance } from '../database/database';
 import { type Firestore } from 'firebase-admin/firestore';
 import { onCall, type CallableFunction } from 'firebase-functions/https';
 
+type Secret = 'EMAILS_API_KEY';
+type Secrets = Secret[];
+
 // @TODO[PRIO=1]: [Make it better typed].
 type ControllerHandler<TResponse = unknown> = (
   rawPayload: unknown,
@@ -16,17 +19,22 @@ const controller =
   (
     firestore: Firestore,
     projectId: string,
+    secrets?: Secrets,
   ): CallableFunction<unknown, unknown> => {
     const db = Db(firestore);
 
-    return onCall<unknown>({ maxInstances: 2 }, async (request) => {
+    return onCall<unknown>({ maxInstances: 2, secrets }, async (request) => {
       return await handler(request.data, { db, projectId });
     });
   };
 
 type ProtectedControllerHandler<TResponse = unknown> = (
   rawPayload: unknown,
-  context: { uid: string; db: DBInstance; projectId: string },
+  context: {
+    uid: string;
+    db: DBInstance;
+    projectId: string;
+  },
 ) => Promise<TResponse>;
 
 const protectedController =
@@ -34,10 +42,11 @@ const protectedController =
   (
     firestore: Firestore,
     projectId: string,
+    secrets?: Secrets,
   ): CallableFunction<unknown, unknown> => {
     const db = Db(firestore);
 
-    return onCall<unknown>({ maxInstances: 2 }, async (request) => {
+    return onCall<unknown>({ maxInstances: 2, secrets }, async (request) => {
       const { auth } = request;
 
       if (!auth) throw errors.unauthenticated();
