@@ -24,11 +24,29 @@ const sendNewsletterController = protectedController<Dto>(
       apiKey,
     });
 
+    const articles = [
+      {
+        url: ``,
+        image: ``,
+        title: `XD`,
+        description: `XD`,
+        author: `XD`,
+      },
+    ];
+
     const emailParams = new EmailParams()
       .setFrom(new Sender(`newsletter@4markdown.com`, `4markdown`))
       .setTo(recipients)
       .setSubject(`Our Weekly Roundup`)
-      .setTemplateId(templateId);
+      .setTemplateId(templateId)
+      .setPersonalization(
+        recipients.map(({ email }) => ({
+          email,
+          data: {
+            articles,
+          },
+        })),
+      );
 
     await mailersend.email.send(emailParams);
   },
