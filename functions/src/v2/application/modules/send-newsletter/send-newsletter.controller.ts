@@ -7,7 +7,6 @@ import { errors } from '../../utils/errors';
 type Dto = void;
 
 // 2. URL na FE dla Unsub.
-// 3. Lepsza protekcja do uzywania tego endpointa - only admin.
 // 5. Fix personalization
 
 const sendNewsletterController = protectedController<Dto>(
