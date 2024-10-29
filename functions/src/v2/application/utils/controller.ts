@@ -23,7 +23,7 @@ const controller =
   ): CallableFunction<unknown, unknown> => {
     const db = Db(firestore);
 
-    return onCall<unknown>({ maxInstances: 2, secrets }, async (request) => {
+    return onCall<unknown>({ maxInstances: 2 }, async (request) => {
       return await handler(request.data, { db });
     });
   };
@@ -47,7 +47,7 @@ const protectedController =
   ): CallableFunction<unknown, unknown> => {
     const db = Db(firestore);
 
-    return onCall<unknown>({ maxInstances: 2, secrets }, async (request) => {
+    return onCall<unknown>({ maxInstances: 2 }, async (request) => {
       const { auth } = request;
 
       if (!auth) throw errors.unauthenticated();
