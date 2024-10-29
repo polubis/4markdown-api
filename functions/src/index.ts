@@ -77,7 +77,7 @@ export const createBackup = onCall<unknown>(
     await BackupsService.create(projectId, CreateBackupPayload(request.data));
   },
 );
-
+// @TODO[PRIO=1]: [Migrate to secrets instead of environments check].
 export const autoCreateBackup = onSchedule(
   { schedule: `59 23 * * 0`, maxInstances: 1 },
   async () => {
