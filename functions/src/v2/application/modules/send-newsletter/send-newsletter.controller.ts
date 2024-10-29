@@ -11,7 +11,7 @@ type Dto = void;
 
 const sendNewsletterController = protectedController<Dto>(
   async (_, { db, isAdmin }) => {
-    if (!isAdmin) throw errors.unauthenticated();
+    if (!isAdmin) throw errors.unauthorized();
 
     const apiKey = getEmailsApiKey();
     const templateId = getNewsletterTemplateId();
