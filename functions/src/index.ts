@@ -25,6 +25,7 @@ import { unsubscribeNewsletterController } from './v2/application/modules/unsubs
 
 const app = admin.initializeApp();
 const db = app.firestore();
+const projectId = ProjectId(app.options.projectId);
 
 export const updateDoc = onCall({ maxInstances: 2 }, async (request) => {
   const user = AuthService.authorize({ auth: request.auth });
@@ -66,20 +67,14 @@ export const getYourUserProfile = onCall<unknown>(
 export const useBackup = onCall<unknown>(
   { maxInstances: 2 },
   async (request) => {
-    await BackupsService.use(
-      ProjectId(app.options.projectId),
-      UseBackupPayload(request.data),
-    );
+    await BackupsService.use(projectId, UseBackupPayload(request.data));
   },
 );
 
 export const createBackup = onCall<unknown>(
   { maxInstances: 2 },
   async (request) => {
-    await BackupsService.create(
-      ProjectId(app.options.projectId),
-      CreateBackupPayload(request.data),
-    );
+    await BackupsService.create(projectId, CreateBackupPayload(request.data));
   },
 );
 
@@ -87,8 +82,6 @@ export const autoCreateBackup = onSchedule(
   { schedule: `59 23 * * 0`, maxInstances: 1 },
   async () => {
     // every sunday 23:59
-    const projectId = ProjectId(app.options.projectId);
-
     if (isDev(projectId)) return;
 
     await BackupsService.create(
@@ -100,14 +93,23 @@ export const autoCreateBackup = onSchedule(
   },
 );
 
-export const updateDocumentCode = updateDocumentCodeController(db);
-export const rateDocument = rateDocumentController(db);
-export const deleteDocument = deleteDocumentController(db);
-export const getPermanentDocuments = getPermanentDocumentsController(db);
-export const getAccessibleDocument = getAccessibleDocumentController(db);
-export const createDocument = createDocumentController(db);
-export const getYourDocuments = getYourDocumentsController(db);
-export const updateDocumentName = updateDocumentNameController(db);
-export const sendNewsletter = sendNewsletterController(db);
-export const subscribeNewsletter = subscribeNewsletterController(db);
-export const unsubscribeNewsletter = unsubscribeNewsletterController(db);
+export const updateDocumentCode = updateDocumentCodeController(db, projectId);
+export const rateDocument = rateDocumentController(db, projectId);
+export const deleteDocument = deleteDocumentController(db, projectId);
+export const getPermanentDocuments = getPermanentDocumentsController(
+  db,
+  projectId,
+);
+export const getAccessibleDocument = getAccessibleDocumentController(
+  db,
+  projectId,
+);
+export const createDocument = createDocumentController(db, projectId);
+export const getYourDocuments = getYourDocumentsController(db, projectId);
+export const updateDocumentName = updateDocumentNameController(db, projectId);
+export const sendNewsletter = sendNewsletterController(db, projectId);
+export const subscribeNewsletter = subscribeNewsletterController(db, projectId);
+export const unsubscribeNewsletter = unsubscribeNewsletterController(
+  db,
+  projectId,
+);

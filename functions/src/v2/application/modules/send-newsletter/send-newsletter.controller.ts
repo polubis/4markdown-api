@@ -1,37 +1,37 @@
 import { protectedController } from '../../utils/controller';
 import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend';
 import { errors } from '../../utils/errors';
+import { getEmailAPIKey } from '../../utils/get-email-api-key';
 
 type Dto = void;
 
-// 1. Szyfrowanie maili.
 // 2. URL na FE dla Unsub.
 // 3. Lepsza protekcja do uzywania tego endpointa - only admin.
-// 4. URL variables dla proda?
 // 5. Fix personalization
 
-const sendNewsletterController = protectedController<Dto>(async (_, { db }) => {
-  const apiKey = process.env.DEV_EMAILS_PROPAGATION_API_KEY;
-  const templateId = process.env.NEWSLETTER_TEMPLATE_ID;
+const sendNewsletterController = protectedController<Dto>(
+  async (_, { db, projectId }) => {
+    const apiKey = getEmailAPIKey(projectId);
+    const templateId = process.env.NEWSLETTER_TEMPLATE_ID;
 
-  if (!apiKey || !templateId)
-    throw errors.internal(`Problem with mailing setup`);
+    if (!templateId) throw errors.internal(`Problem with mailing setup`);
 
-  const recipients = (
-    await db.collection(`newsletter-subscribers`).listDocuments()
-  ).map(({ id: email }) => new Recipient(email));
+    const recipients = (
+      await db.collection(`newsletter-subscribers`).listDocuments()
+    ).map(({ id: email }) => new Recipient(email));
 
-  const mailersend = new MailerSend({
-    apiKey,
-  });
+    const mailersend = new MailerSend({
+      apiKey,
+    });
 
-  const emailParams = new EmailParams()
-    .setFrom(new Sender(`newsletter@4markdown.com`, `4markdown`))
-    .setTo(recipients)
-    .setSubject(`Our Weekly Roundup`)
-    .setTemplateId(templateId);
+    const emailParams = new EmailParams()
+      .setFrom(new Sender(`newsletter@4markdown.com`, `4markdown`))
+      .setTo(recipients)
+      .setSubject(`Our Weekly Roundup`)
+      .setTemplateId(templateId);
 
-  await mailersend.email.send(emailParams);
-});
+    await mailersend.email.send(emailParams);
+  },
+);
 
 export { sendNewsletterController };

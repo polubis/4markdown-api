@@ -6,27 +6,35 @@ import { onCall, type CallableFunction } from 'firebase-functions/https';
 // @TODO[PRIO=1]: [Make it better typed].
 type ControllerHandler<TResponse = unknown> = (
   rawPayload: unknown,
-  context: { db: DBInstance },
+  context: { db: DBInstance; projectId: string },
 ) => Promise<TResponse>;
 // @TODO[PRIO=2]: [Add and test parent try catch].
+// @TODO[PRIO=2]: [Pass config objects instead of arguments].
+// @TODO[PRIO=3]: [Share project id type here instead of "string"].
 const controller =
   <TResponse = unknown>(handler: ControllerHandler<TResponse>) =>
-  (firestore: Firestore): CallableFunction<unknown, unknown> => {
+  (
+    firestore: Firestore,
+    projectId: string,
+  ): CallableFunction<unknown, unknown> => {
     const db = Db(firestore);
 
     return onCall<unknown>({ maxInstances: 2 }, async (request) => {
-      return await handler(request.data, { db });
+      return await handler(request.data, { db, projectId });
     });
   };
 
 type ProtectedControllerHandler<TResponse = unknown> = (
   rawPayload: unknown,
-  context: { uid: string; db: DBInstance },
+  context: { uid: string; db: DBInstance; projectId: string },
 ) => Promise<TResponse>;
 
 const protectedController =
   <TResponse = unknown>(handler: ProtectedControllerHandler<TResponse>) =>
-  (firestore: Firestore): CallableFunction<unknown, unknown> => {
+  (
+    firestore: Firestore,
+    projectId: string,
+  ): CallableFunction<unknown, unknown> => {
     const db = Db(firestore);
 
     return onCall<unknown>({ maxInstances: 2 }, async (request) => {
@@ -36,7 +44,7 @@ const protectedController =
 
       const { uid } = auth;
 
-      return await handler(request.data, { uid, db });
+      return await handler(request.data, { uid, db, projectId });
     });
   };
 
