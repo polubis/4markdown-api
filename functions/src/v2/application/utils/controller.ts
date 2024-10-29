@@ -2,6 +2,7 @@ import { errors } from './errors';
 import { Db, type DBInstance } from '../database/database';
 import { type Firestore } from 'firebase-admin/firestore';
 import { onCall, type CallableFunction } from 'firebase-functions/https';
+import { isAdmin } from './is-admin';
 
 type Secret = 'EMAILS_API_KEY';
 type Secrets = Secret[];
@@ -34,6 +35,7 @@ type ProtectedControllerHandler<TResponse = unknown> = (
     uid: string;
     db: DBInstance;
     projectId: string;
+    isAdmin: boolean;
   },
 ) => Promise<TResponse>;
 
@@ -53,7 +55,12 @@ const protectedController =
 
       const { uid } = auth;
 
-      return await handler(request.data, { uid, db, projectId });
+      return await handler(request.data, {
+        uid,
+        db,
+        projectId,
+        isAdmin: isAdmin(auth.token.email),
+      });
     });
   };
 
