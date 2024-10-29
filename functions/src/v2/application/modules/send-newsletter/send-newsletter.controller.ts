@@ -79,7 +79,7 @@ const sendNewsletterController = protectedController<Dto>(
     const emailParams = new EmailParams()
       .setFrom(new Sender(`newsletter@4markdown.com`, `4markdown`))
       .setTo(recipients)
-      .setSubject(`Our Weekly Roundup From 4markdown`)
+      .setSubject(`Our Weekly Roundup`)
       .setTemplateId(templateId)
       .setPersonalization(
         recipients.map(({ email }) => ({
