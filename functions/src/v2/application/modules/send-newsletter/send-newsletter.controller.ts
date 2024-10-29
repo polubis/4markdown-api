@@ -6,6 +6,7 @@ import { errors } from '../../utils/errors';
 import type { Date, Id, Url } from '../../utils/validators';
 import type { UserProfileModel } from '../../../domain/models/user-profile';
 import type { DocumentModel } from '../../../domain/models/document';
+import { getDomainUrl } from '../../utils/get-domain-url';
 
 type Dto = void;
 
@@ -21,11 +22,12 @@ type EmailArticle = {
 };
 
 const sendNewsletterController = protectedController<Dto>(
-  async (_, { db, isAdmin }) => {
+  async (_, { db, isAdmin, projectId }) => {
     if (!isAdmin) throw errors.unauthorized();
 
     const apiKey = getEmailsApiKey();
     const templateId = getNewsletterTemplateId();
+    const domainUrl = getDomainUrl(projectId);
 
     const mailersend = new MailerSend({
       apiKey,
@@ -57,10 +59,10 @@ const sendNewsletterController = protectedController<Dto>(
       documentsListData.forEach(([, document]: [Id, DocumentModel]) => {
         if (document.visibility === `permanent`) {
           articles.push({
-            url: `https://4markdown.com${document.path}`,
+            url: `${domainUrl}${document.path}`,
             title: document.name,
             description: document.description,
-            image: `some static image`,
+            image: `${domainUrl}/icons/icon-144x144.png`,
             author: usersProfiles[userId].displayName ?? `Gaal (Anonymous)`,
             cdate: document.cdate,
           });
