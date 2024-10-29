@@ -13,4 +13,16 @@ const parse = async <TSchema extends AnyZodObject>(
   }
 };
 
-export { parse };
+const parseSync = <TSchema extends AnyZodObject>(
+  schema: TSchema,
+  payload: unknown,
+): z.infer<TSchema> => {
+  try {
+    const result = schema.strict().parse(payload);
+    return result;
+  } catch (e: unknown) {
+    throw errors.schema(e);
+  }
+};
+
+export { parse, parseSync };

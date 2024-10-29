@@ -13,7 +13,7 @@ type Dto = void;
 
 type EmailArticle = {
   url: string;
-  name: string;
+  title: string;
   image: string;
   author: string;
   description: string;
@@ -58,10 +58,10 @@ const sendNewsletterController = protectedController<Dto>(
         if (document.visibility === `permanent`) {
           articles.push({
             url: `https://4markdown.com${document.path}`,
-            name: document.name,
+            title: document.name,
             description: document.description,
-            image: document.visibility,
-            author: usersProfiles[userId].displayName ?? `Anonymous`,
+            image: `some static image`,
+            author: usersProfiles[userId].displayName ?? `Gaal (Anonymous)`,
             cdate: document.cdate,
           });
         }
@@ -79,7 +79,7 @@ const sendNewsletterController = protectedController<Dto>(
     const emailParams = new EmailParams()
       .setFrom(new Sender(`newsletter@4markdown.com`, `4markdown`))
       .setTo(recipients)
-      .setSubject(`Our Weekly Roundup`)
+      .setSubject(`Our Weekly Roundup From 4markdown`)
       .setTemplateId(templateId)
       .setPersonalization(
         recipients.map(({ email }) => ({
