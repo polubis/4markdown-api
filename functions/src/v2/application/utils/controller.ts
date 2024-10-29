@@ -2,7 +2,7 @@ import { errors } from './errors';
 import { Db, type DBInstance } from '../database/database';
 import { type Firestore } from 'firebase-admin/firestore';
 import { onCall, type CallableFunction } from 'firebase-functions/https';
-import { isAdmin } from './is-admin';
+import type { Email } from './validators';
 
 type Secret = 'EMAILS_API_KEY';
 type Secrets = Secret[];
@@ -38,6 +38,8 @@ type ProtectedControllerHandler<TResponse = unknown> = (
     isAdmin: boolean;
   },
 ) => Promise<TResponse>;
+
+const isAdmin = (email?: Email): boolean => process.env.ADMIN_EMAIL === email;
 
 const protectedController =
   <TResponse = unknown>(handler: ProtectedControllerHandler<TResponse>) =>
