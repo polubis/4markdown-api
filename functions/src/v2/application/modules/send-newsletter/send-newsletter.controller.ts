@@ -74,7 +74,7 @@ const sendNewsletterController = protectedController<Dto>(
         if (prev.cdate === curr.cdate) return 0;
         return 1;
       })
-      .splice(0, 2);
+      .splice(0, 5);
 
     const emailParams = new EmailParams()
       .setFrom(new Sender(`newsletter@4markdown.com`, `4markdown`))
