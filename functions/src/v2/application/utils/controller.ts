@@ -19,11 +19,11 @@ const controller =
   <TResponse = unknown>(handler: ControllerHandler<TResponse>) =>
   (
     firestore: Firestore,
-    secrets?: Secrets,
+    secrets: Secrets = [],
   ): CallableFunction<unknown, unknown> => {
     const db = Db(firestore);
 
-    return onCall<unknown>({ maxInstances: 2 }, async (request) => {
+    return onCall<unknown>({ maxInstances: 2, secrets }, async (request) => {
       return await handler(request.data, { db });
     });
   };
@@ -43,11 +43,11 @@ const protectedController =
   <TResponse = unknown>(handler: ProtectedControllerHandler<TResponse>) =>
   (
     firestore: Firestore,
-    secrets?: Secrets,
+    secrets: Secrets = [],
   ): CallableFunction<unknown, unknown> => {
     const db = Db(firestore);
 
-    return onCall<unknown>({ maxInstances: 2 }, async (request) => {
+    return onCall<unknown>({ maxInstances: 2, secrets }, async (request) => {
       const { auth } = request;
 
       if (!auth) throw errors.unauthenticated();
