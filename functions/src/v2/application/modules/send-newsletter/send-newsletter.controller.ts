@@ -13,8 +13,9 @@ const sendNewsletterController = protectedController<Dto>(
   async (_, { db, projectId }) => {
     const apiKey = getEmailAPIKey(projectId);
     const templateId = process.env.NEWSLETTER_TEMPLATE_ID;
-
-    if (!templateId) throw errors.internal(`Problem with mailing setup`);
+    // @TODO[PRIO=2]: [Move these checks to setup stage, not runtime].
+    if (!templateId)
+      throw errors.internal(`Problem with template mailing setup`);
 
     const recipients = (
       await db.collection(`newsletter-subscribers`).listDocuments()
