@@ -10,7 +10,7 @@ type Secrets = Secret[];
 // @TODO[PRIO=1]: [Make it better typed].
 type ControllerHandler<TResponse = unknown> = (
   rawPayload: unknown,
-  context: { db: DBInstance; projectId: string },
+  context: { db: DBInstance },
 ) => Promise<TResponse>;
 // @TODO[PRIO=2]: [Add and test parent try catch].
 // @TODO[PRIO=2]: [Pass config objects instead of arguments].
@@ -19,13 +19,12 @@ const controller =
   <TResponse = unknown>(handler: ControllerHandler<TResponse>) =>
   (
     firestore: Firestore,
-    projectId: string,
     secrets?: Secrets,
   ): CallableFunction<unknown, unknown> => {
     const db = Db(firestore);
 
     return onCall<unknown>({ maxInstances: 2, secrets }, async (request) => {
-      return await handler(request.data, { db, projectId });
+      return await handler(request.data, { db });
     });
   };
 
@@ -34,7 +33,6 @@ type ProtectedControllerHandler<TResponse = unknown> = (
   context: {
     uid: string;
     db: DBInstance;
-    projectId: string;
     isAdmin: boolean;
   },
 ) => Promise<TResponse>;
@@ -45,7 +43,6 @@ const protectedController =
   <TResponse = unknown>(handler: ProtectedControllerHandler<TResponse>) =>
   (
     firestore: Firestore,
-    projectId: string,
     secrets?: Secrets,
   ): CallableFunction<unknown, unknown> => {
     const db = Db(firestore);
@@ -60,7 +57,6 @@ const protectedController =
       return await handler(request.data, {
         uid,
         db,
-        projectId,
         isAdmin: isAdmin(auth.token.email),
       });
     });
