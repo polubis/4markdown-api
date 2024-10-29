@@ -19,10 +19,6 @@ type EmailArticle = {
   cdate: Date;
 };
 
-// td unsubscribe page
-// newsletter page
-// avatar broken
-
 const sendNewsletterController = protectedController<Dto>(
   async (_, { db, isAdmin, projectId }) => {
     if (!isAdmin) throw errors.unauthorized();
