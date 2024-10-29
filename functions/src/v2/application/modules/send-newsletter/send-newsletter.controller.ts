@@ -10,8 +10,6 @@ import { getDomainUrl } from '../../utils/get-domain-url';
 
 type Dto = void;
 
-// 2. URL na FE dla Unsub.
-
 type EmailArticle = {
   url: Url;
   title: string;
@@ -76,7 +74,7 @@ const sendNewsletterController = protectedController<Dto>(
         if (prev.cdate === curr.cdate) return 0;
         return 1;
       })
-      .splice(0, 5);
+      .slice(0, 5);
 
     const emailParams = new EmailParams()
       .setFrom(new Sender(`newsletter@4markdown.com`, `4markdown`))
