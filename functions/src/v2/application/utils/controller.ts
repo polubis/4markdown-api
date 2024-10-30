@@ -22,6 +22,9 @@ type ControllerHandler<TResponse = unknown> = (
     projectId: ProjectId;
   },
 ) => Promise<TResponse>;
+
+const getSecrets = (secrets?: Secrets): Secrets => secrets ?? [];
+
 // @TODO[PRIO=2]: [Add and test parent try catch].
 const controller =
   <TResponse = unknown>(handler: ControllerHandler<TResponse>) =>
@@ -29,7 +32,7 @@ const controller =
     const db = Db(config.db);
 
     return onCall<unknown>(
-      { maxInstances: 2, secrets: config.secrets ?? [] },
+      { maxInstances: 2, secrets: getSecrets(config.secrets) },
       async (request) => {
         return await handler(request.data, { db, projectId: config.projectId });
       },
@@ -54,7 +57,7 @@ const protectedController =
     const db = Db(config.db);
 
     return onCall<unknown>(
-      { maxInstances: 2, secrets: config.secrets ?? [] },
+      { maxInstances: 2, secrets: getSecrets(config.secrets) },
       async (request) => {
         const { auth } = request;
 
