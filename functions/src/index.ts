@@ -133,6 +133,7 @@ export const sendNewsletter = sendNewsletterController({
 export const subscribeNewsletter = subscribeNewsletterController({
   db,
   projectId,
+  secrets: [`EMAILS_ENCRYPTION_TOKEN`],
 });
 export const unsubscribeNewsletter = unsubscribeNewsletterController({
   db,

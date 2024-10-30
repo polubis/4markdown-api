@@ -5,7 +5,7 @@ import { onCall, type CallableFunction } from 'firebase-functions/https';
 import { type Email } from './validators';
 import type { ProjectId } from '../infra/models';
 
-type Secret = 'EMAILS_API_KEY';
+type Secret = 'EMAILS_API_KEY' | 'EMAILS_ENCRYPTION_TOKEN';
 type Secrets = Secret[];
 
 type ControllerConfig = {
