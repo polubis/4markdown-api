@@ -27,12 +27,12 @@ const app = admin.initializeApp();
 const db = app.firestore();
 const projectId = app.options.projectId!;
 
-export const updateDoc = onCall({ maxInstances: 2 }, async (request) => {
+export const updateDoc = onCall({ maxInstances: 1 }, async (request) => {
   const user = AuthService.authorize({ auth: request.auth });
   return DocsService.update(user.uid, request.data);
 });
 
-export const uploadImage = onCall({ maxInstances: 2 }, async (request) => {
+export const uploadImage = onCall({ maxInstances: 1 }, async (request) => {
   return await UsersService.uploadImage({
     payload: request.data,
     context: {
@@ -42,7 +42,7 @@ export const uploadImage = onCall({ maxInstances: 2 }, async (request) => {
 });
 
 export const updateYourUserProfile = onCall<unknown>(
-  { maxInstances: 2 },
+  { maxInstances: 1 },
   async (request) => {
     return await UsersProfilesService.updateYour({
       payload: request.data,
@@ -54,7 +54,7 @@ export const updateYourUserProfile = onCall<unknown>(
 );
 
 export const getYourUserProfile = onCall<unknown>(
-  { maxInstances: 2 },
+  { maxInstances: 1 },
   async (request) => {
     return await UsersProfilesService.getYour({
       context: {
@@ -65,14 +65,14 @@ export const getYourUserProfile = onCall<unknown>(
 );
 
 export const useBackup = onCall<unknown>(
-  { maxInstances: 2 },
+  { maxInstances: 1 },
   async (request) => {
     await BackupsService.use(projectId, UseBackupPayload(request.data));
   },
 );
 
 export const createBackup = onCall<unknown>(
-  { maxInstances: 2 },
+  { maxInstances: 1 },
   async (request) => {
     await BackupsService.create(projectId, CreateBackupPayload(request.data));
   },
