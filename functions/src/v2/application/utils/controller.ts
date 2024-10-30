@@ -72,4 +72,6 @@ const protectedController =
     );
   };
 
+// @TODO[PRIO=1]: [Add Admin Only controller].
+
 export { controller, protectedController };
