@@ -25,14 +25,6 @@ const sendNewsletterController = protectedController<Dto>(
   async (_, { db, isAdmin, projectId }) => {
     if (!isAdmin) throw errors.unauthorized();
 
-    const apiKey = getEmailsApiKey();
-    const templateId = getNewsletterTemplateId();
-    const domainUrl = getDomainUrl(projectId);
-
-    const mailersend = new MailerSend({
-      apiKey,
-    });
-
     const [subscribersSnap, documentsSnap, usersProfilesSnap] =
       await Promise.all([
         db.collection(`newsletter-subscribers`).listDocuments(),
@@ -61,6 +53,8 @@ const sendNewsletterController = protectedController<Dto>(
     });
 
     const articles: EmailArticle[] = [];
+
+    const domainUrl = getDomainUrl(projectId);
 
     documentsSnap.docs.forEach((documentsListSnap) => {
       const userId = documentsListSnap.id;
@@ -94,7 +88,7 @@ const sendNewsletterController = protectedController<Dto>(
       .setFrom(new Sender(`newsletter@4markdown.com`, `4markdown`))
       .setTo(recipients)
       .setSubject(`Our Weekly Roundup`)
-      .setTemplateId(templateId)
+      .setTemplateId(getNewsletterTemplateId())
       .setPersonalization(
         recipients.map(({ email }) => ({
           email,
@@ -103,6 +97,10 @@ const sendNewsletterController = protectedController<Dto>(
           },
         })),
       );
+
+    const mailersend = new MailerSend({
+      apiKey: getEmailsApiKey(),
+    });
 
     await mailersend.email.send(emailParams);
   },
