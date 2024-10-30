@@ -21,6 +21,14 @@ type EmailArticle = {
   cdate: Date;
 };
 
+// Email avatar
+// Describe a ticket with new content
+// Fix tests e2e
+// Write new e2e tests for new features
+// Add confirm subscription mail
+// Add confirm unsubscribe mail
+// Add unsubscribe link in email content
+
 const sendNewsletterController = protectedController<Dto>(
   async (_, { db, isAdmin, projectId }) => {
     if (!isAdmin) throw errors.unauthorized();
