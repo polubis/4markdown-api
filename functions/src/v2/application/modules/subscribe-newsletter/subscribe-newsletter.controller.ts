@@ -17,11 +17,11 @@ const subscribeNewsletterController = controller<Dto>(
   async (rawPayload, { db }) => {
     const { email } = await parse(payloadSchema, rawPayload);
 
-    const { key, iv } = getEmailsEncryptToken();
+    const emailsEncryptionToken = getEmailsEncryptToken();
 
     const encryptedEmail = await encryptEmail({
-      key,
-      iv,
+      key: emailsEncryptionToken.key,
+      iv: emailsEncryptionToken.iv,
       email,
     });
 

@@ -7,6 +7,8 @@ import type { Date, Id, Url } from '../../utils/validators';
 import type { UserProfileModel } from '../../../domain/models/user-profile';
 import type { DocumentModel } from '../../../domain/models/document';
 import { getDomainUrl } from '../../utils/get-domain-url';
+import { getEmailsEncryptToken } from '../../utils/get-emails-encrypt-token';
+import { decryptEmail } from '../../utils/decrypt-email';
 
 type Dto = void;
 
@@ -38,9 +40,19 @@ const sendNewsletterController = protectedController<Dto>(
         db.collection(`users-profiles`).get(),
       ]);
 
-    const recipients = subscribersSnap.map(
-      ({ id: email }) => new Recipient(email),
+    const emailsEncryptionToken = getEmailsEncryptToken();
+
+    const decryptedEmails = await Promise.all(
+      subscribersSnap.map(({ id: email }) =>
+        decryptEmail({
+          email,
+          iv: emailsEncryptionToken.iv,
+          key: emailsEncryptionToken.key,
+        }),
+      ),
     );
+
+    const recipients = decryptedEmails.map((email) => new Recipient(email));
 
     const usersProfiles: Record<Id, UserProfileModel> = {};
 
@@ -68,13 +80,15 @@ const sendNewsletterController = protectedController<Dto>(
       });
     });
 
+    const articlesLimit = 5;
+
     articles
       .sort((prev, curr) => {
         if (prev.cdate > curr.cdate) return -1;
         if (prev.cdate === curr.cdate) return 0;
         return 1;
       })
-      .slice(0, 5);
+      .slice(0, articlesLimit);
 
     const emailParams = new EmailParams()
       .setFrom(new Sender(`newsletter@4markdown.com`, `4markdown`))

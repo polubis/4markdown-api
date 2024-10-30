@@ -128,7 +128,7 @@ export const updateDocumentName = updateDocumentNameController({
 export const sendNewsletter = sendNewsletterController({
   db,
   projectId,
-  secrets: [`EMAILS_API_KEY`],
+  secrets: [`EMAILS_API_KEY`, `EMAILS_ENCRYPTION_TOKEN`],
 });
 export const subscribeNewsletter = subscribeNewsletterController({
   db,
@@ -138,4 +138,5 @@ export const subscribeNewsletter = subscribeNewsletterController({
 export const unsubscribeNewsletter = unsubscribeNewsletterController({
   db,
   projectId,
+  secrets: [`EMAILS_ENCRYPTION_TOKEN`],
 });
