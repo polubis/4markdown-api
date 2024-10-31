@@ -1,6 +1,6 @@
 import { z, AnyZodObject } from 'zod';
 import { errors } from './errors';
-
+// @TODO[PRIO=3]: [Transform return to "safePayload" object].
 const parse = async <TSchema extends AnyZodObject>(
   schema: TSchema,
   payload: unknown,

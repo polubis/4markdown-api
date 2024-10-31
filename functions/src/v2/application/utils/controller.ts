@@ -52,7 +52,7 @@ type ProtectedControllerHandler<TResponse = unknown> = (
     projectId: ProjectId;
   },
 ) => Promise<TResponse>;
-
+// @TODO[PRIO=2]: [Transfer rawPayload as object property and as a single object].
 const protectedController =
   <TResponse = unknown>(handler: ProtectedControllerHandler<TResponse>) =>
   (config: ControllerConfig): CallableFunction<unknown, unknown> => {
