@@ -3,7 +3,7 @@ import { Db, type DBInstance } from '../database/database';
 import { type Firestore } from 'firebase-admin/firestore';
 import { onCall, type CallableFunction } from 'firebase-functions/https';
 import { type Email } from './validators';
-import type { ProjectId } from '../infra/models';
+import type { ProjectId } from '../infra/models/atoms';
 // @TODO[PRIO=2]: [Split it into separate library].
 type Secret = 'EMAILS_API_KEY' | 'EMAILS_ENCRYPTION_TOKEN';
 type Secrets = Secret[];
