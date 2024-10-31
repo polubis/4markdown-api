@@ -20,6 +20,8 @@ const errors = {
     error(`already-exists`, `already-exists`, content),
   unauthenticated: (content = `Unauthenticated`) =>
     error(`unauthenticated`, `unauthenticated`, content),
+  unauthorized: (content = `Unauthorized`) =>
+    error(`permission-denied`, `unauthorized`, content),
   internal: (content = `Something went wrong`) =>
     error(`internal`, `internal`, content),
   schema: (e: unknown) => {
