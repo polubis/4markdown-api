@@ -23,7 +23,7 @@ const Db = (db: Firestore) => {
     },
   };
 };
-
+// @TODO[PRIO=2]: [Split types to different file].
 type DBInstance = ReturnType<typeof Db>;
 
 export type { DBInstance };
