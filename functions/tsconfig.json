@@ -17,7 +17,7 @@
       "@schemas/*": ["src/v2/application/utils/schemas/*"],
       "@tests/*": ["src/v2/application/__tests__/*"],
       "@types/*": ["src/v2/types/*"],
-      "@errors/*": ["src/v2/application/utils/errors/*"], 
+      "@errors/*": ["src/v2/application/utils/errors/*"],
       "@controllers/*": ["src/v2/application/modules/controllers/*"],
       "@validators/*": ["src/v2/application/utils/validators/*"],
       "@helpers/*": ["src/v2/libs/helpers/*"]
