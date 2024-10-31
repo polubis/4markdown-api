@@ -5,6 +5,7 @@ type DocumentModelBase = {
   name: string;
   cdate: Date;
   mdate: Date;
+  path: string;
 };
 
 type PrivateDocumentModel = DocumentModelBase & {
@@ -18,7 +19,6 @@ type PublicDocumentModel = DocumentModelBase & {
 type PermanentDocumentModel = DocumentModelBase & {
   visibility: `permanent`;
   description: string;
-  path: string;
   tags?: string[];
 };
 
