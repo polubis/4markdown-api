@@ -7,7 +7,7 @@ import { firestore, storage } from 'firebase-admin';
 import { CopyResponse } from '@google-cloud/storage';
 import { z } from 'zod';
 import { errors } from '../v2/application/utils/errors';
-import { IProjectId } from '../core/env-checks';
+import type { ProjectId } from '../v2/application/infra/models/atoms';
 
 type Bucket = ReturnType<ReturnType<typeof storage>['bucket']>;
 type BucketsPair = {
@@ -265,7 +265,7 @@ const removeLatestBackup = async (buckets: BucketsPair): Promise<void> => {
 
 const BackupsService = {
   create: async (
-    projectId: IProjectId,
+    projectId: ProjectId,
     payload: ICreateBackupPayload,
   ): Promise<void> => {
     verifySetup(payload.token);
@@ -281,7 +281,7 @@ const BackupsService = {
     ]);
   },
   use: async (
-    projectId: IProjectId,
+    projectId: ProjectId,
     payload: IUseBackupPayload,
   ): Promise<void> => {
     verifySetup(payload.token);
