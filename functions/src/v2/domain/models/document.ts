@@ -7,7 +7,7 @@ type DocumentModelBase = {
   mdate: Date;
   path: string;
 };
-
+// @TODO[PRIO=1]: [These are not domain models].
 type PrivateDocumentModel = DocumentModelBase & {
   visibility: `private`;
 };
