@@ -1,4 +1,4 @@
-import { createDocumentPath } from '../create-document-path';
+import { createDocumentPath } from '@utils/create-document-path';
 
 describe(`Document path creation works when`, () => {
   describe(`basic transformations`, () => {

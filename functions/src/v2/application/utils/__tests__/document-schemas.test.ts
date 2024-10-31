@@ -1,4 +1,7 @@
-import { documentNameSchema, documentCodeSchema } from '../document-schemas';
+import {
+  documentNameSchema,
+  documentCodeSchema,
+} from '@utils/document-schemas';
 
 describe(`Document schemas works when`, () => {
   describe(`name validation`, () => {

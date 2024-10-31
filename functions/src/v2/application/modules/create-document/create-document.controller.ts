@@ -1,18 +1,18 @@
 import { z } from 'zod';
-import { protectedController } from '../../utils/controller';
-import { type Id } from '../../utils/validators';
-import { parse } from '../../utils/parse';
-import { nowISO, uuid } from '../../../libs/helpers/stamps';
+import { protectedController } from '@utils/controller';
+import { type Id } from '@utils/validators';
+import { parse } from '@utils/parse';
+import { nowISO, uuid } from '@libs/helpers/stamps';
 import type {
   DocumentModel,
   DocumentsModel,
   PrivateDocumentModel,
-} from '../../../domain/models/document';
-import { errors } from '../../utils/errors';
+} from '@domain/models/document';
+import { errors } from '@utils/errors';
 import {
   documentCodeSchema,
   documentNameSchema,
-} from '../../utils/document-schemas';
+} from '@utils/document-schemas';
 
 const payloadSchema = z.object({
   name: documentNameSchema,
