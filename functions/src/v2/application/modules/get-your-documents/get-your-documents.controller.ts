@@ -43,6 +43,7 @@ const getYourDocumentsController = protectedController<Dto>(
           mdate: document.mdate,
           visibility: document.visibility,
           code: document.code,
+          path: document.path,
         };
       })
       .sort((prev, curr) => {

@@ -17,6 +17,7 @@
     "firebase-admin": "^12.7.0",
     "firebase-functions": "^6.1.0",
     "sharp": "^0.33.5",
+    "tsconfig-paths": "^4.2.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {

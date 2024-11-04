@@ -1,3 +1,4 @@
+import 'tsconfig-paths/register';
 import * as admin from 'firebase-admin';
 import { DocsService } from './services/docs.service';
 import { AuthService } from './services/auth.service';

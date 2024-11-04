@@ -1,18 +1,16 @@
-import { errors } from '../../utils/errors';
-import { protectedController } from '../../utils/controller';
+import { errors } from '@utils/errors';
 import { z } from 'zod';
-import { type Date, validators } from '../../utils/validators';
-import { parse } from '../../utils/parse';
-import type {
-  DocumentModel,
-  DocumentsModel,
-} from '../../../domain/models/document';
-import { nowISO } from '../../../libs/helpers/stamps';
+import { type Date, validators } from '@utils/validators';
+import type { DocumentModel, DocumentsModel } from '@models/document';
+import { documentCodeSchema } from '@utils/document-schemas';
+import { nowISO } from '@libs/helpers/stamps';
+import { parse } from '@utils/parse';
+import { protectedController } from '@utils/controller';
 
 const payloadSchema = z.object({
   id: validators.id,
   mdate: validators.date,
-  code: validators.document.code,
+  code: documentCodeSchema,
 });
 
 type Dto = {
