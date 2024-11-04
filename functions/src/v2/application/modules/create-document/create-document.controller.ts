@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { validators, type Id } from '@utils/validators';
 import { parse } from '@utils/parse';
-import { nowISO, uuid } from '../../../libs/helpers/stamps';
+import { nowISO, uuid } from '@libs/helpers/stamps';
 import type {
   DocumentModel,
   DocumentsModel,

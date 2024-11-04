@@ -1,8 +1,8 @@
-import { protectedController } from '../../utils/controller';
+import { protectedController } from '@utils/controller';
 import { z } from 'zod';
-import { validators } from '../../utils/validators';
-import { parse } from '../../utils/parse';
-import { errors } from '../../utils/errors';
+import { validators } from '@utils/validators';
+import { parse } from '@utils/parse';
+import { errors } from '@utils/errors';
 import { FieldValue } from 'firebase-admin/firestore';
 
 const payloadSchema = z.object({

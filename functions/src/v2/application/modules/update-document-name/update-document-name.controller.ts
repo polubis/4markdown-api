@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { type Date, validators } from '@utils/validators';
 import { parse } from '@utils/parse';
 import type { DocumentModel, DocumentsModel } from '@domain/models/document';
-import { nowISO } from '../../../libs/helpers/stamps';
+import { nowISO } from '@libs/helpers/stamps';
 import { DBInstance } from '@database/database';
 
 const payloadSchema = z.object({
