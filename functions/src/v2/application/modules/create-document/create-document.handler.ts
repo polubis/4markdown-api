@@ -16,6 +16,7 @@ const createDocumentHandler = async ({
 }) => {
   const documentsRef = db.collection(`docs`).doc(uid);
   const documentsSnap = await documentsRef.get();
+
   const documents = documentsSnap.data() as DocumentsModel | undefined;
 
   const id = uuid();
