@@ -15,7 +15,12 @@ module.exports = {
     '^@modules/(.*)$': `<rootDir>/functions/src/v2/application/modules/$1`,
     '^@utils/(.*)$': `<rootDir>/functions/src/v2/application/utils/$1`,
   },
-  testPathIgnorePatterns: [`node_modules`, `\\.cache`, `<rootDir>.*/public`],
+  testPathIgnorePatterns: [
+    `node_modules`,
+    `\\.cache`,
+    `<rootDir>.*/public`,
+    `<rootDir>.*/functions/lib`,
+  ],
   transformIgnorePatterns: [
     `node_modules/(?!(gatsby|gatsby-script|gatsby-link)/)`,
   ],
