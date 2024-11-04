@@ -13,7 +13,7 @@ const createDocumentHandler = async ({
 }: {
   payload: CreateDocumentPayload;
   context: ProtectedControllerHandlerContext;
-}) => {
+}): Promise<CreateDocumentDto> => {
   const documentsRef = db.collection(`docs`).doc(uid);
   const documentsSnap = await documentsRef.get();
 
