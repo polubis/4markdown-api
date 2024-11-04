@@ -107,37 +107,45 @@ describe(`Document name update works when`, () => {
       }
     });
 
-    // it(`if contains duplicate in own documents`, async () => {
-    //   try {
-    //     await updateDocumentNameHandler({
-    //       payload: validPayload,
-    //       context: {
-    //         uid,
-    //         db: {
-    //           collection: () => ({
-    //             doc: () => ({
-    //               get: async () => ({
-    //                 data: () => ({
-    //                   'other-document-id': {
-    //                     cdate: `2024-01-01T00:00:00Z`,
-    //                     mdate: `2024-04-01T00:00:00Z`,
-    //                     name: `Test Document For Me`,
-    //                     code: ``,
-    //                     path: `test-document-for-me`,
-    //                     visibility: `private`,
-    //                   },
-    //                 }),
-    //               }),
-    //             }),
-    //           }),
-    //         } as any,
-    //         projectId,
-    //       },
-    //     });
-    //   } catch (error: unknown) {
-    //     expect(error).toMatchSnapshot();
-    //   }
-    // });
+    it(`if contains duplicate in own documents`, async () => {
+      try {
+        await updateDocumentNameHandler({
+          payload: validPayload,
+          context: {
+            uid,
+            db: {
+              collection: () => ({
+                doc: () => ({
+                  get: async () => ({
+                    data: () => ({
+                      [validPayload.id]: {
+                        cdate: `2024-01-01T00:00:00Z`,
+                        mdate: `2024-01-01T00:00:00Z`,
+                        name: `Test Document For Me-2`,
+                        code: ``,
+                        path: `test-document-for-me-2`,
+                        visibility: `private`,
+                      },
+                      'other-document-id': {
+                        cdate: `2024-01-02T00:00:00Z`,
+                        mdate: `2024-01-02T00:00:00Z`,
+                        name: `Test Document For Me`,
+                        code: ``,
+                        path: `test-document-for-me`,
+                        visibility: `private`,
+                      },
+                    }),
+                  }),
+                }),
+              }),
+            } as any,
+            projectId,
+          },
+        });
+      } catch (error: unknown) {
+        expect(error).toMatchSnapshot();
+      }
+    });
   });
 
   //   it(`throws an error when document with provided name exist`, async () => {

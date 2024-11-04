@@ -2,6 +2,8 @@
 
 exports[`Document name update works when throws an error if cannot find document 1`] = `[Error: {"symbol":"not-found","content":"Document not found","message":"Document not found"}]`;
 
+exports[`Document name update works when throws an error if contains duplicate in own documents 1`] = `[Error: {"symbol":"already-exists","content":"Document with provided name already exists, please change name","message":"Document with provided name already exists, please change name"}]`;
+
 exports[`Document name update works when throws an error if there is no documents 1`] = `[Error: {"symbol":"not-found","content":"Document data not found","message":"Document data not found"}]`;
 
 exports[`Document name update works when throws an error if there is out of date change attempt 1`] = `[Error: {"symbol":"out-of-date","content":"The document has been already changed","message":"The document has been already changed"}]`;
