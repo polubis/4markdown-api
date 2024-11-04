@@ -1,3 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`Document creation works when throws an error when document with provided name exist 1`] = `[Error: {"symbol":"already-exists","content":"Document with Test Document For Me already exists","message":"Document with Test Document For Me already exists"}]`;

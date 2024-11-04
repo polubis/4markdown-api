@@ -1,11 +1,15 @@
+import { DocumentModel, DocumentsModel } from '@domain/models/document';
 import { type UpdateDocumentNamePayload } from '../update-document-name.contract';
 import { updateDocumentNameHandler } from '../update-document-name.handler';
 
+const stampMock = `2024-12-01T00:00:00Z`;
+
 jest.mock(`@libs/helpers/stamps`, () => ({
-  nowISO: jest.fn(() => `2024-01-01T00:00:00Z`),
+  nowISO: jest.fn(() => stampMock),
   uuid: jest.fn(() => `mock-id`),
 }));
 
+// @TODO[PRIO=2]: [Prepare fixtures for components testing].
 describe(`Document name update works when`, () => {
   const validPayload: UpdateDocumentNamePayload = {
     name: {
@@ -53,7 +57,7 @@ describe(`Document name update works when`, () => {
               collection: () => ({
                 doc: () => ({
                   get: async () => ({
-                    data: () => ({
+                    data: (): DocumentsModel => ({
                       'not-existing-document': {
                         cdate: `2024-01-01T00:00:00Z`,
                         mdate: `2024-01-01T00:00:00Z`,
@@ -85,7 +89,7 @@ describe(`Document name update works when`, () => {
               collection: () => ({
                 doc: () => ({
                   get: async () => ({
-                    data: () => ({
+                    data: (): DocumentsModel => ({
                       [validPayload.id]: {
                         cdate: `2024-01-01T00:00:00Z`,
                         mdate: `2024-04-01T00:00:00Z`,
@@ -117,7 +121,7 @@ describe(`Document name update works when`, () => {
               collection: () => ({
                 doc: () => ({
                   get: async () => ({
-                    data: () => ({
+                    data: (): DocumentsModel => ({
                       [validPayload.id]: {
                         cdate: `2024-01-01T00:00:00Z`,
                         mdate: `2024-01-01T00:00:00Z`,
@@ -146,76 +150,99 @@ describe(`Document name update works when`, () => {
         expect(error).toMatchSnapshot();
       }
     });
+
+    it(`if contains duplicate in permanent documents between different authors`, async () => {
+      try {
+        await updateDocumentNameHandler({
+          payload: validPayload,
+          context: {
+            uid,
+            db: {
+              collection: () => ({
+                get: () => ({
+                  docs: [
+                    {
+                      data: (): DocumentsModel => ({
+                        'other-document-id': {
+                          cdate: `2024-01-01T00:00:00Z`,
+                          mdate: `2024-01-01T00:00:00Z`,
+                          name: `Test Document For Me`,
+                          code: ``,
+                          path: `test-document-for-me`,
+                          visibility: `permanent`,
+                          description: `Some description of my document`,
+                        },
+                      }),
+                    },
+                  ],
+                }),
+                doc: () => ({
+                  get: async () => ({
+                    data: (): DocumentsModel => ({
+                      [validPayload.id]: {
+                        cdate: `2024-01-01T00:00:00Z`,
+                        mdate: `2024-01-01T00:00:00Z`,
+                        name: `Test Document For Me`,
+                        code: ``,
+                        path: `test-document-for-me`,
+                        visibility: `permanent`,
+                        description: `Some description of my document`,
+                      },
+                    }),
+                  }),
+                }),
+              }),
+            } as any,
+            projectId,
+          },
+        });
+      } catch (error: unknown) {
+        expect(error).toMatchSnapshot();
+      }
+    });
   });
 
-  //   it(`throws an error when document with provided name exist`, async () => {
-  //     const { id, ...documentModel } = validDto;
-  //     const documentsModel: DocumentsModel = {
-  //       [id]: documentModel,
-  //     };
+  it(`updates documents model and returns dto`, async () => {
+    const updateSpy = jest.fn();
 
-  //   try {
-  //     await createDocumentHandler({
-  //       payload: validPayload,
-  //       context: {
-  //         uid,
-  //         db: {
-  //           collection: () => ({
-  //             doc: () => ({
-  //               get: async () => ({
-  //                 data: () => documentsModel,
-  //               }),
-  //             }),
-  //           }),
-  //         } as any,
-  //         projectId,
-  //       },
-  //     });
-  //   } catch (error: unknown) {
-  //     expect(error).toMatchSnapshot();
-  //   }
-  //   });
+    const documentModel: DocumentModel = {
+      cdate: `2024-01-01T00:00:00Z`,
+      mdate: `2024-01-01T00:00:00Z`,
+      name: `Test Document For Me`,
+      code: ``,
+      path: `test-document-for-me`,
+      visibility: `private`,
+    };
 
-  //   it(`adds new document to existing documents collection`, async () => {
-  //     const setSpy = jest.fn();
-  //     const updateSpy = jest.fn();
+    const dto = await updateDocumentNameHandler({
+      payload: validPayload,
+      context: {
+        uid,
+        db: {
+          collection: () => ({
+            doc: () => ({
+              get: async () => ({
+                data: (): DocumentsModel => ({
+                  [validPayload.id]: documentModel,
+                }),
+              }),
+              update: updateSpy,
+            }),
+          }),
+        } as any,
+        projectId,
+      },
+    });
 
-  //     const result = await createDocumentHandler({
-  //       payload: validPayload,
-  //       context: {
-  //         uid,
-  //         db: {
-  //           collection: () => ({
-  //             doc: () => ({
-  //               get: async () => ({
-  //                 data: () => ({
-  //                   'random-id': {
-  //                     id: `mock-id-2`,
-  //                     cdate: `2024-01-01T00:00:00Z`,
-  //                     mdate: `2024-01-01T00:00:00Z`,
-  //                     name: `My custom document name`,
-  //                     code: `empty code`,
-  //                     path: `my-custom-document-name`,
-  //                     visibility: `private`,
-  //                   },
-  //                 }),
-  //               }),
-  //               set: setSpy,
-  //               update: updateSpy,
-  //             }),
-  //           }),
-  //         } as any,
-  //         projectId,
-  //       },
-  //     });
-
-  //     const { id, ...documentModel } = validDto;
-  //     const documentsModel: DocumentsModel = {
-  //       [id]: documentModel,
-  //     };
-
-  //     expect(result).toEqual(validDto);
-  //     expect(setSpy).not.toHaveBeenCalled();
-  //     expect(updateSpy).toHaveBeenCalledWith(documentsModel);
-  //   });
+    expect(updateSpy).toHaveBeenCalledTimes(1);
+    expect(updateSpy).toHaveBeenCalledWith({
+      [validPayload.id]: {
+        ...documentModel,
+        path: validPayload.name.path,
+        name: validPayload.name.raw,
+        mdate: stampMock,
+      },
+    });
+    expect(dto).toEqual({ mdate: stampMock });
+  });
 });

@@ -26,5 +26,5 @@ const Db = (db: Firestore) => {
 
 type DBInstance = ReturnType<typeof Db>;
 
-export type { DBInstance };
+export type { DBInstance, DBCollectionKey };
 export { Db };

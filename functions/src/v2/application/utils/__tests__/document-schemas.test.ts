@@ -29,6 +29,7 @@ describe(`Document schemas works when`, () => {
     });
 
     it(`rejects paths with too few segments`, () => {
+      expect(() => documentNameSchema.parse(`one/two/three`)).not.toThrow();
       expect(() => documentNameSchema.parse(`One/Two`)).toThrow(
         `Generated path from document name must be between 3-15`,
       );
@@ -41,10 +42,16 @@ describe(`Document schemas works when`, () => {
     });
 
     it(`rejects paths with too many segments`, () => {
-      const longPath = `one/two/three/four/five/six/seven/eight/nine/ten/eleven/twelve/thirteen/fourteen/fifteen/sixteen`;
-      expect(() => documentNameSchema.parse(longPath)).toThrow(
-        `Generated path from document name must be between 3-15`,
-      );
+      expect(() =>
+        documentNameSchema.parse(
+          `one/two/three/four/five/six/seven/eight/nine/ten/eleven/twelve/thirteen/fourteen/fifteen`,
+        ),
+      ).not.toThrow();
+      expect(() =>
+        documentNameSchema.parse(
+          `one/two/three/four/five/six/seven/eight/nine/ten/eleven/twelve/thirteen/fourteen/fifteen/sixteen`,
+        ),
+      ).toThrow(`Generated path from document name must be between 3-15`);
     });
 
     it(`normalizes special characters in paths while preserving segments`, () => {
