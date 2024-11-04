@@ -15,13 +15,17 @@ type ControllerConfig = {
   maxInstances?: number;
 };
 
+type RawPayload = unknown;
+
+type ControllerHandlerContext = {
+  db: DBInstance;
+  projectId: ProjectId;
+};
+
 // @TODO[PRIO=1]: [Make it better typed].
 type ControllerHandler<TResponse = unknown> = (
-  rawPayload: unknown,
-  context: {
-    db: DBInstance;
-    projectId: ProjectId;
-  },
+  rawPayload: RawPayload,
+  context: ControllerHandlerContext,
 ) => Promise<TResponse>;
 
 const getSecrets = (secrets?: Secrets): Secrets => secrets ?? [];
@@ -44,15 +48,17 @@ const controller =
     );
   };
 
-type ProtectedControllerHandler<TResponse = unknown> = (
-  rawPayload: unknown,
-  context: {
-    uid: string;
-    db: DBInstance;
-    projectId: ProjectId;
-  },
-) => Promise<TResponse>;
+type ProtectedControllerHandlerContext = {
+  uid: string;
+  db: DBInstance;
+  projectId: ProjectId;
+};
 
+type ProtectedControllerHandler<TResponse = unknown> = (
+  rawPayload: RawPayload,
+  context: ProtectedControllerHandlerContext,
+) => Promise<TResponse>;
+// @TODO[PRIO=2]: [Transfer rawPayload as object property and as a single object].
 const protectedController =
   <TResponse = unknown>(handler: ProtectedControllerHandler<TResponse>) =>
   (config: ControllerConfig): CallableFunction<unknown, unknown> => {
@@ -79,13 +85,16 @@ const protectedController =
     );
   };
 
+type AdminControllerHandlerContext = {
+  uid: string;
+  db: DBInstance;
+  projectId: ProjectId;
+};
+
+// @TODO[PRIO=3]: [Force response and DTO types to be required].
 type AdminControllerHandler<TResponse = unknown> = (
-  rawPayload: unknown,
-  context: {
-    uid: string;
-    db: DBInstance;
-    projectId: ProjectId;
-  },
+  rawPayload: RawPayload,
+  context: AdminControllerHandlerContext,
 ) => Promise<TResponse>;
 
 const isAdmin = (email?: Email): boolean => process.env.ADMIN_EMAIL === email;
@@ -118,4 +127,13 @@ const adminController =
     );
   };
 
+export type {
+  ProtectedControllerHandler,
+  ControllerHandler,
+  AdminControllerHandler,
+  ControllerConfig,
+  ControllerHandlerContext,
+  ProtectedControllerHandlerContext,
+  AdminControllerHandlerContext,
+};
 export { controller, protectedController, adminController };

@@ -41,6 +41,7 @@ const getYourDocumentsController = protectedController<Dto>(
           name: document.name,
           cdate: document.cdate,
           mdate: document.mdate,
+          path: document.path,
           visibility: document.visibility,
           code: document.code,
         };
