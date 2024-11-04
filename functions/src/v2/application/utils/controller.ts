@@ -118,4 +118,10 @@ const adminController =
     );
   };
 
+export {
+  ProtectedControllerHandler,
+  ControllerHandler,
+  AdminControllerHandler,
+  ControllerConfig,
+};
 export { controller, protectedController, adminController };
