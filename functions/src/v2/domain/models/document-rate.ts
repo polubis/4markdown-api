@@ -1,4 +1,4 @@
-import type { Date } from '../../application/utils/validators';
+import type { Date } from '@utils/validators';
 
 const DOCUMENT_RATING_CATEGORIES = [
   `ugly`,

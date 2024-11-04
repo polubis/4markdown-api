@@ -6,8 +6,19 @@
     "outDir": "lib",
     "sourceMap": true,
     "strict": true,
-    "target": "es2017"
+    "target": "es2017",
+    "baseUrl": ".",
+    "paths": {
+      "@controllers/*": ["src/v2/application/modules/controllers/*"],
+      "@database/*": ["src/v2/application/database/*"],
+      "@domain/*": ["src/v2/domain/*"],
+      "@libs/*": ["src/v2/libs/*"],
+      "@models/*": ["src/v2/domain/models/*"],
+      "@modules/*": ["src/v2/application/modules/*"],
+      "@utils/*": ["src/v2/application/utils/*"],
+    }
   },
   "compileOnSave": true,
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["__tests__"]
 }

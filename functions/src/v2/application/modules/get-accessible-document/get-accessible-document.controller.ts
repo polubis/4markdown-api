@@ -1,16 +1,16 @@
-import { controller } from '../../utils/controller';
+import { controller } from '@utils/controller';
 import { z } from 'zod';
-import { type Id, validators } from '../../utils/validators';
-import { parse } from '../../utils/parse';
+import { type Id, validators } from '@utils/validators';
+import { parse } from '@utils/parse';
 import type {
   DocumentModel,
   PermanentDocumentModel,
   PublicDocumentModel,
-} from '../../../domain/models/document';
-import { errors } from '../../utils/errors';
-import type { UserProfileModel } from '../../../domain/models/user-profile';
-import type { DocumentRateModel } from '../../../domain/models/document-rate';
-import { createDocumentRating } from '../../utils/create-document-rating';
+} from '@domain/models/document';
+import { errors } from '@utils/errors';
+import type { UserProfileModel } from '@domain/models/user-profile';
+import type { DocumentRateModel } from '@domain/models/document-rate';
+import { createDocumentRating } from '@utils/create-document-rating';
 
 const payloadSchema = z.object({
   id: validators.id,
