@@ -1,4 +1,4 @@
-import { errors } from '../../utils/errors';
+import { errors } from '@utils/errors';
 import { protectedController } from '../../utils/controller';
 import { z } from 'zod';
 import { type Date, validators } from '../../utils/validators';

@@ -1,5 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Docs updating works when:  throws an error if docs collection is not created yet 1`] = `"Operation not allowed, not found record"`;
+exports[`Docs updating works when:  throws an error if docs collection is not created yet 1`] = `"{"symbol":"not-found","content":"Not found","message":"Not found"}"`;
 
-exports[`Docs updating works when:  throws an error when invalid name 1`] = `"Wrong name format"`;
+exports[`Docs updating works when:  throws an error when invalid name 1`] = `"{"symbol":"bad-request","content":"Wrong name format","message":"Wrong name format"}"`;
