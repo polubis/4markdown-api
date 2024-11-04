@@ -1,11 +1,11 @@
-import { protectedController } from '../../utils/controller';
+import { protectedController } from '@utils/controller';
 import type {
   DocumentsModel,
   PermanentDocumentModel,
   PrivateDocumentModel,
   PublicDocumentModel,
-} from '../../../domain/models/document';
-import { type Id } from '../../utils/validators';
+} from '@domain/models/document';
+import { type Id } from '@utils/validators';
 
 type Dto = ((
   | PrivateDocumentModel
