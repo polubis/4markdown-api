@@ -18,5 +18,8 @@ jobs:
       - name: Install Dependencies
         run: npm install --legacy-peer-deps
 
+      - name: Install Internal Function Deps
+        run: cd && npm i
+
       - name: Run Tests
         run: npm run test:ci
