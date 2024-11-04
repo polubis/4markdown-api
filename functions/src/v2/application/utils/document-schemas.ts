@@ -1,11 +1,11 @@
 import { z } from 'zod';
-import { createDocumentPath } from './create-document-path';
+import { createSlug } from './create-slug';
 
 const documentNameSchema = z
   .string()
   .transform((name) => name.trim())
   .transform((raw) => {
-    const path = createDocumentPath(raw);
+    const path = createSlug(raw);
 
     return {
       raw,
