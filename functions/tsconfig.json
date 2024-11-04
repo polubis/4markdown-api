@@ -10,6 +10,7 @@
     "baseUrl": ".",
     "paths": {
       "@controllers/*": ["src/v2/application/modules/controllers/*"],
+      "@database/*": ["src/v2/application/database/*"],
       "@domain/*": ["src/v2/domain/*"],
       "@libs/*": ["src/v2/libs/*"],
       "@models/*": ["src/v2/domain/models/*"],
