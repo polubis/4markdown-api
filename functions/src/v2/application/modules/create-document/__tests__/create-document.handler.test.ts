@@ -3,7 +3,10 @@ import {
   CreateDocumentDto,
   CreateDocumentPayload,
 } from '../create-document.contract';
-import { DocumentsModel } from '@domain/models/document';
+import {
+  DocumentModelVisibility,
+  DocumentsModel,
+} from '@domain/models/document';
 
 jest.mock(`@libs/helpers/stamps`, () => ({
   nowISO: jest.fn(() => `2024-01-01T00:00:00Z`),
@@ -29,7 +32,7 @@ describe(`Document creation works when`, () => {
     name: validPayload.name.raw,
     code: validPayload.code,
     path: validPayload.name.path,
-    visibility: `private`,
+    visibility: DocumentModelVisibility.Private,
   };
 
   it(`creates first document via "set" function from db provider and ignores "update"`, async () => {

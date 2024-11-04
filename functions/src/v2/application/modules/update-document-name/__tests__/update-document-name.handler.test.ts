@@ -1,4 +1,8 @@
-import { DocumentModel, DocumentsModel } from '@domain/models/document';
+import {
+  DocumentModel,
+  DocumentModelVisibility,
+  DocumentsModel,
+} from '@domain/models/document';
 import { type UpdateDocumentNamePayload } from '../update-document-name.contract';
 import { updateDocumentNameHandler } from '../update-document-name.handler';
 
@@ -64,7 +68,7 @@ describe(`Document name update works when`, () => {
                         name: `Example document name`,
                         code: ``,
                         path: `example-document-name`,
-                        visibility: `private`,
+                        visibility: DocumentModelVisibility.Private,
                       },
                     }),
                   }),
@@ -96,7 +100,7 @@ describe(`Document name update works when`, () => {
                         name: `Example document name`,
                         code: ``,
                         path: `example-document-name`,
-                        visibility: `private`,
+                        visibility: DocumentModelVisibility.Private,
                       },
                     }),
                   }),
@@ -128,7 +132,7 @@ describe(`Document name update works when`, () => {
                         name: `Test Document For Me-2`,
                         code: ``,
                         path: `test-document-for-me-2`,
-                        visibility: `private`,
+                        visibility: DocumentModelVisibility.Private,
                       },
                       'other-document-id': {
                         cdate: `2024-01-02T00:00:00Z`,
@@ -136,7 +140,7 @@ describe(`Document name update works when`, () => {
                         name: `Test Document For Me`,
                         code: ``,
                         path: `test-document-for-me`,
-                        visibility: `private`,
+                        visibility: DocumentModelVisibility.Private,
                       },
                     }),
                   }),
@@ -169,7 +173,7 @@ describe(`Document name update works when`, () => {
                           name: `Test Document For Me`,
                           code: ``,
                           path: `test-document-for-me`,
-                          visibility: `permanent`,
+                          visibility: DocumentModelVisibility.Permanent,
                           description: `Some description of my document`,
                         },
                       }),
@@ -185,7 +189,7 @@ describe(`Document name update works when`, () => {
                         name: `Test Document For Me`,
                         code: ``,
                         path: `test-document-for-me`,
-                        visibility: `permanent`,
+                        visibility: DocumentModelVisibility.Permanent,
                         description: `Some description of my document`,
                       },
                     }),
@@ -211,7 +215,7 @@ describe(`Document name update works when`, () => {
       name: `Test Document For Me`,
       code: ``,
       path: `test-document-for-me`,
-      visibility: `private`,
+      visibility: DocumentModelVisibility.Private,
     };
 
     const dto = await updateDocumentNameHandler({

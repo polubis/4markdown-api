@@ -1,5 +1,9 @@
 import { nowISO, uuid } from '@libs/helpers/stamps';
-import type { DocumentModel, DocumentsModel } from '@domain/models/document';
+import {
+  DocumentModelVisibility,
+  type DocumentModel,
+  type DocumentsModel,
+} from '@domain/models/document';
 import { errors } from '@utils/errors';
 import type {
   CreateDocumentDto,
@@ -28,7 +32,7 @@ const createDocumentHandler = async ({
     name: payload.name.raw,
     code: payload.code,
     path: payload.name.path,
-    visibility: `private`,
+    visibility: DocumentModelVisibility.Private,
   };
 
   const documentsModel: DocumentsModel = {
