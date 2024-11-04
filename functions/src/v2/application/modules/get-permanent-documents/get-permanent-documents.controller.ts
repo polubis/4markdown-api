@@ -1,12 +1,12 @@
 import type {
   DocumentModel,
   PermanentDocumentModel,
-} from '../../../domain/models/document';
-import { DocumentRateModel } from '../../../domain/models/document-rate';
-import type { UserProfileModel } from '../../../domain/models/user-profile';
-import { controller } from '../../utils/controller';
-import { createDocumentRating } from '../../utils/create-document-rating';
-import type { Id } from '../../utils/validators';
+} from '@domain/models/document';
+import { DocumentRateModel } from '@domain/models/document-rate';
+import type { UserProfileModel } from '@domain/models/user-profile';
+import { controller } from '@utils/controller';
+import { createDocumentRating } from '@utils/create-document-rating';
+import type { Id } from '@utils/validators';
 
 type Dto = (Required<PermanentDocumentModel> & {
   id: Id;

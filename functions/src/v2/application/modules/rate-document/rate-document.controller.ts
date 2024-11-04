@@ -1,13 +1,13 @@
-import { controller } from '../../utils/controller';
+import { controller } from '@utils/controller';
 import { z } from 'zod';
-import { validators } from '../../utils/validators';
-import { parse } from '../../utils/parse';
-import { nowISO } from '../../../libs/helpers/stamps';
+import { validators } from '@utils/validators';
+import { parse } from '@utils/parse';
+import { nowISO } from '@libs/helpers/stamps';
 import {
   DOCUMENT_RATING_CATEGORIES,
   DocumentRateModel,
-} from '../../../domain/models/document-rate';
-import { createDocumentRating } from '../../utils/create-document-rating';
+} from '@domain/models/document-rate';
+import { createDocumentRating } from '@utils/create-document-rating';
 
 const payloadSchema = z.object({
   documentId: validators.id,

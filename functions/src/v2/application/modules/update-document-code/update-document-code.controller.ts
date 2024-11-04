@@ -1,13 +1,10 @@
-import { errors } from '../../utils/errors';
-import { protectedController } from '../../utils/controller';
+import { errors } from '@utils/errors';
+import { protectedController } from '@utils/controller';
 import { z } from 'zod';
-import { type Date, validators } from '../../utils/validators';
-import { parse } from '../../utils/parse';
-import type {
-  DocumentModel,
-  DocumentsModel,
-} from '../../../domain/models/document';
-import { nowISO } from '../../../libs/helpers/stamps';
+import { type Date, validators } from '@utils/validators';
+import { parse } from '@utils/parse';
+import type { DocumentModel, DocumentsModel } from '@domain/models/document';
+import { nowISO } from '@libs/helpers/stamps';
 
 const payloadSchema = z.object({
   id: validators.id,

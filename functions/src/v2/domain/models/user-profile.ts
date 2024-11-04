@@ -1,4 +1,4 @@
-import type { Id, Date } from '../../application/utils/validators';
+import type { Id, Date } from '@utils/validators';
 
 type AvatarVariant = {
   id: Id;
