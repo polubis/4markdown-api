@@ -20,4 +20,17 @@ const documentNameSchema = z
 
 const documentCodeSchema = z.string();
 
-export { documentNameSchema, documentCodeSchema };
+const documentTagsSchema = z
+  .array(z.string().min(1).max(50))
+  .min(1)
+  .max(10)
+  .refine(
+    (tags) => tags.length === new Set([...tags]).size,
+    `Tags must be unique`,
+  )
+  .refine(
+    (tags) => tags.every((tag) => /^[a-zA-Z0-9,-]+$/.test(tag)),
+    `Incorrect tag format. Each tag must contain 2-50 characters, using only letters or numbers`,
+  );
+
+export { documentNameSchema, documentCodeSchema, documentTagsSchema };

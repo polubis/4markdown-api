@@ -1,4 +1,8 @@
-import { documentNameSchema, documentCodeSchema } from '../document-schemas';
+import {
+  documentNameSchema,
+  documentCodeSchema,
+  documentTagsSchema,
+} from '../document-schemas';
 
 describe(`Document schemas works when`, () => {
   describe(`name validation`, () => {
@@ -105,6 +109,108 @@ describe(`Document schemas works when`, () => {
       expect(() => documentCodeSchema.parse(undefined)).toThrow();
       expect(() => documentCodeSchema.parse({})).toThrow();
       expect(() => documentCodeSchema.parse([])).toThrow();
+    });
+  });
+
+  describe(`tags validation`, () => {
+    it(`typical use cases works`, () => {
+      expect(
+        documentTagsSchema.parse([
+          `react`,
+          `validator`,
+          `JavaScript`,
+          `c++`,
+          `c#`,
+          `c`,
+          `java script`,
+        ]),
+      ).toEqual([
+        `react`,
+        `validator`,
+        `javascript`,
+        `c++`,
+        `c#`,
+        `c`,
+        `java-script`,
+      ]);
+
+      expect(() => documentTagsSchema.parse([`+`])).toThrowError(
+        `Incorrect tag format. Each tag must contain 2-50 characters, using only letters or numbers`,
+      );
+      expect(() => documentTagsSchema.parse([`/`])).toThrowError(
+        `Incorrect tag format. Each tag must contain 2-50 characters, using only letters or numbers`,
+      );
+      expect(() => documentTagsSchema.parse([`-`])).toThrowError(
+        `Incorrect tag format. Each tag must contain 2-50 characters, using only letters or numbers`,
+      );
+      expect(() => documentTagsSchema.parse([`1`])).toThrowError(
+        `Incorrect tag format. Each tag must contain 2-50 characters, using only letters or numbers`,
+      );
+    });
+
+    it(`verifies if there is not duplicates`, () => {
+      expect(() => documentTagsSchema.parse([`xa`, `xa`])).toThrowError(
+        `Tags must be unique`,
+      );
+      expect(() => documentTagsSchema.parse([`xa`, `xd`])).not.toThrow();
+    });
+
+    it(`verifies if there is no white spacing around tags`, () => {
+      expect(() => documentTagsSchema.parse([`xds     `])).toThrowError(
+        `Incorrect tag format. Each tag must contain 2-50 characters, using only letters or numbers`,
+      );
+      expect(() => documentTagsSchema.parse([`  xd`])).toThrowError(
+        `Incorrect tag format. Each tag must contain 2-50 characters, using only letters or numbers`,
+      );
+      expect(() => documentTagsSchema.parse([`x d`])).toThrowError(
+        `Incorrect tag format. Each tag must contain 2-50 characters, using only letters or numbers`,
+      );
+      expect(() => documentTagsSchema.parse([`x-d`])).not.toThrow();
+    });
+
+    it(`verifies that each tag has 1-50 characters`, () => {
+      expect(() => documentTagsSchema.parse([`xda`, ``])).toThrowError(
+        `String must contain at least 1 character(s)`,
+      );
+      expect(() => documentTagsSchema.parse([`c`])).not.toThrow();
+    });
+
+    it(`verifies that number of tags is between 1-10`, () => {
+      expect(() => documentTagsSchema.parse([])).toThrowError(
+        `Array must contain at least 1 element(s)`,
+      );
+      expect(() =>
+        documentTagsSchema.parse([
+          `tag1`,
+          `tag2`,
+          `tag3`,
+          `tag4`,
+          `tag5`,
+          `tag6`,
+          `tag7`,
+          `tag8`,
+          `tag9`,
+          `tag10`,
+          `tag11`,
+        ]),
+      ).toThrowError(`Array must contain at most 10 element(s)`);
+
+      expect(() => documentTagsSchema.parse([`tag1`])).not.toThrow();
+
+      expect(() =>
+        documentTagsSchema.parse([
+          `tag1`,
+          `tag2`,
+          `tag3`,
+          `tag4`,
+          `tag5`,
+          `tag6`,
+          `tag7`,
+          `tag8`,
+          `tag9`,
+          `tag10`,
+        ]),
+      ).not.toThrow();
     });
   });
 
