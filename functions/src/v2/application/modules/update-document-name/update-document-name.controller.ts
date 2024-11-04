@@ -6,11 +6,12 @@ import { parse } from '@utils/parse';
 import type { DocumentModel, DocumentsModel } from '@domain/models/document';
 import { nowISO } from '@libs/helpers/stamps';
 import { DBInstance } from '@database/database';
+import { documentNameSchema } from '@utils/document-schemas';
 
 const payloadSchema = z.object({
   id: validators.id,
   mdate: validators.date,
-  name: validators.document.name,
+  name: documentNameSchema,
 });
 
 type Payload = z.infer<typeof payloadSchema>;
@@ -32,7 +33,7 @@ const containsDuplicateInAccessibleDocuments = async (
       ([documentId, document]) =>
         documentId !== payload.id &&
         document.visibility === `permanent` &&
-        document.name === payload.name,
+        document.path === payload.name.path,
     );
 
     if (hasDuplicate) return true;
@@ -65,7 +66,8 @@ const updateDocumentNameController = protectedController<Dto>(
     }
 
     const hasDuplicateInOwnDocuments = Object.entries(userDocuments).some(
-      ([id, document]) => id !== payload.id && document.name === payload.name,
+      ([id, document]) =>
+        id !== payload.id && document.path === payload.name.path,
     );
 
     if (
@@ -80,13 +82,16 @@ const updateDocumentNameController = protectedController<Dto>(
 
     const mdate = nowISO();
 
-    await userDocumentsRef.update(<DocumentsModel>{
+    const model: DocumentsModel = {
       [payload.id]: {
         ...userDocument,
-        name: payload.name,
+        path: payload.name.path,
+        name: payload.name.raw,
         mdate,
       },
-    });
+    };
+
+    await userDocumentsRef.update(model);
 
     return { mdate };
   },
