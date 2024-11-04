@@ -9,7 +9,12 @@
     "target": "es2017",
     "baseUrl": ".",
     "paths": {
-      "@utils/*": ["src/v2/application/utils/*"]
+      "@controllers/*": ["src/v2/application/modules/controllers/*"],
+      "@domain/*": ["src/v2/domain/*"],
+      "@libs/*": ["src/v2/libs/*"],
+      "@models/*": ["src/v2/domain/models/*"],
+      "@modules/*": ["src/v2/application/modules/*"],
+      "@utils/*": ["src/v2/application/utils/*"],
     }
   },
   "compileOnSave": true,

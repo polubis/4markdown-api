@@ -6,16 +6,26 @@
     "serve": "npm run build && firebase emulators:start --only functions",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
+    "test:ci": "npm run test",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log"
   },
   "engines": {
     "node": "20"
   },
+  "_moduleAliases": {
+    "@controllers": "src/v2/application/modules/controllers",
+    "@domain": "src/v2/domain",
+    "@libs": "src/v2/libs",
+    "@models": "src/v2/domain/models",
+    "@modules": "src/v2/application/modules",
+    "@utils": "lib/v2/application/utils"
+  },
   "main": "lib/index.js",
   "dependencies": {
     "firebase-admin": "^12.7.0",
     "firebase-functions": "^6.1.0",
+    "module-alias": "^2.2.3",
     "sharp": "^0.33.5",
     "zod": "^3.23.8"
   },
