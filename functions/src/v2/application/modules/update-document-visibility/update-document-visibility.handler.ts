@@ -34,6 +34,29 @@ const updateDocumentVisibilityHandler = async ({
   if (payload.mdate !== userDocument.mdate) {
     throw errors.outOfDate(`The document has been already changed`);
   }
+
+  const mdate = nowISO();
+
+  if (payload.visibility === DocumentModelVisibility.Private) {
+    const model: DocumentsModel = {
+      [payload.id]: {
+        cdate: userDocument.cdate,
+        code: userDocument.code,
+        name: userDocument.name,
+        path: userDocument.path,
+        mdate,
+        visibility: payload.visibility,
+      },
+    };
+    const dto: UpdateDocumentVisibilityDto = {
+      ...model[payload.id],
+      id: payload.id,
+    };
+
+    await userDocumentsRef.update(model);
+
+    return dto;
+  }
 };
 
 export { updateDocumentVisibilityHandler };
