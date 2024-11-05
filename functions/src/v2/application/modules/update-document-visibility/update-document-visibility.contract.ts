@@ -6,7 +6,7 @@ import { documentTagsSchema } from '@utils/document-schemas';
 import { type Id, validators } from '@utils/validators';
 import { z } from 'zod';
 
-const updateDocumentVisibilitySchema = z.union([
+const updateDocumentVisibilityPayloadSchema = z.union([
   z.object({
     id: validators.id,
     mdate: validators.date,
@@ -26,9 +26,9 @@ const updateDocumentVisibilitySchema = z.union([
 ]);
 
 type UpdateDocumentVisibilityPayload = z.infer<
-  typeof updateDocumentVisibilitySchema
+  typeof updateDocumentVisibilityPayloadSchema
 >;
 type UpdateDocumentVisibilityDto = DocumentModel & { id: Id };
 
-export { updateDocumentVisibilitySchema };
+export { updateDocumentVisibilityPayloadSchema };
 export type { UpdateDocumentVisibilityDto, UpdateDocumentVisibilityPayload };
