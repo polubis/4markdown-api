@@ -1,7 +1,5 @@
 import 'module-alias/register';
 import * as admin from 'firebase-admin';
-import { DocsService } from './services/docs.service';
-import { AuthService } from './services/auth.service';
 import { UsersService } from './services/users.service';
 import { UsersProfilesService } from './services/users-profiles.service';
 import { updateDocumentCodeController } from './v2/application/modules/update-document-code/update-document-code.controller';
@@ -20,15 +18,11 @@ import { BackupsService } from './services/backup.service';
 import { onSchedule } from 'firebase-functions/scheduler';
 import { onCall } from 'firebase-functions/https';
 import { isDev } from './v2/application/utils/is-dev';
+import { updateDocumentVisibilityController } from '@modules/update-document-visibility/update-document-visibility.controller';
 
 const app = admin.initializeApp();
 const db = app.firestore();
 const projectId = app.options.projectId!;
-
-export const updateDoc = onCall({ maxInstances: 2 }, async (request) => {
-  const user = AuthService.authorize({ auth: request.auth });
-  return DocsService.update(user.uid, request.data);
-});
 
 export const uploadImage = onCall({ maxInstances: 2 }, async (request) => {
   return await UsersService.uploadImage({
@@ -111,6 +105,10 @@ export const getAccessibleDocument = getAccessibleDocumentController({
 export const createDocument = createDocumentController({ db, projectId });
 export const getYourDocuments = getYourDocumentsController({ db, projectId });
 export const updateDocumentName = updateDocumentNameController({
+  db,
+  projectId,
+});
+export const updateDocumentVisibility = updateDocumentVisibilityController({
   db,
   projectId,
 });

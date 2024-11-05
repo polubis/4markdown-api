@@ -4,6 +4,7 @@ import {
   type UpdateDocumentVisibilityDto,
   updateDocumentVisibilityPayloadSchema,
 } from './update-document-visibility.contract';
+import { updateDocumentVisibilityHandler } from './update-document-visibility.handler';
 
 // 2. Finish update doc visibility controller
 // 3. Remove dead code after that
@@ -14,7 +15,7 @@ import {
 const updateDocumentVisibilityController =
   protectedController<UpdateDocumentVisibilityDto>(
     async (rawPayload, context) => {
-      return await createDocumentHandler({
+      return await updateDocumentVisibilityHandler({
         context,
         payload: await parse(updateDocumentVisibilityPayloadSchema, rawPayload),
       });
