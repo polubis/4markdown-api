@@ -23,6 +23,8 @@ describe(`Document visibility change works when`, () => {
   const projectId = `project-id`;
   const uid = `user-uid`;
 
+  it(`visibility is changed to permanent`, async () => {});
+
   it(`visibility is changed to public from permanent and some data is removed`, async () => {
     const updateSpy = jest.fn();
     const id = `document-id`;

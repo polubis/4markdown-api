@@ -17,8 +17,8 @@ import {
 import { BackupsService } from './services/backup.service';
 import { onSchedule } from 'firebase-functions/scheduler';
 import { onCall } from 'firebase-functions/https';
-import { isDev } from './v2/application/utils/is-dev';
 import { updateDocumentVisibilityController } from '@modules/update-document-visibility/update-document-visibility.controller';
+import { isDev } from '@utils/is-dev';
 
 const app = admin.initializeApp();
 const db = app.firestore();
