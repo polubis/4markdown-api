@@ -6,8 +6,6 @@ import {
 } from './update-document-visibility.contract';
 import { updateDocumentVisibilityHandler } from './update-document-visibility.handler';
 
-// 2. Finish update doc visibility controller
-// 3. Remove dead code after that
 // 4. make tags required
 // 4. Craft migration script and test it on develop
 // before that rename git flow article name

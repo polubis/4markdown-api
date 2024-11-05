@@ -25,7 +25,7 @@ type PublicDocumentModel = DocumentModelBase & {
 type PermanentDocumentModel = DocumentModelBase & {
   visibility: DocumentModelVisibility.Permanent;
   description: string;
-  tags?: string[];
+  tags: string[];
 };
 
 type DocumentModel =
