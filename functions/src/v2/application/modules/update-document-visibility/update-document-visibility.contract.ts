@@ -6,6 +6,7 @@ import {
   documentDescriptionSchema,
   documentNameSchema,
   documentTagsSchema,
+  permanentDocumentNameSegmentsSchema,
 } from '@utils/document-schemas';
 import { type Id, validators } from '@utils/validators';
 import { z } from 'zod';
@@ -25,7 +26,9 @@ const updateDocumentVisibilityPayloadSchema = z.union([
     id: validators.id,
     mdate: validators.date,
     visibility: z.literal(DocumentModelVisibility.Permanent),
-    name: documentNameSchema,
+    name: documentNameSchema.refine(({ segments }) =>
+      permanentDocumentNameSegmentsSchema.parse(segments),
+    ),
     tags: documentTagsSchema,
     description: documentDescriptionSchema,
   }),

@@ -76,6 +76,29 @@ describe(`Document visibility contract works when`, () => {
       );
     });
 
+    it(`rejects payload with invalid amount of segments in name`, () => {
+      expect(() =>
+        updateDocumentVisibilityPayloadSchema.parse({
+          id: `valid-id`,
+          mdate: new Date().toISOString(),
+          visibility: DocumentModelVisibility.Permanent,
+          tags: [`tag1`, `tag2`],
+          name: `This is`,
+          description: `A valid description for the document that contains`,
+        }),
+      ).toThrowError(`Array must contain at least 3 element(s)`);
+      expect(() =>
+        updateDocumentVisibilityPayloadSchema.parse({
+          id: `valid-id`,
+          mdate: new Date().toISOString(),
+          visibility: DocumentModelVisibility.Permanent,
+          tags: [`tag1`, `tag2`],
+          name: `This is`.repeat(15),
+          description: `A valid description for the document that contains`,
+        }),
+      ).toThrowError(`Array must contain at most 15 element(s)`);
+    });
+
     it(`rejects a payload with permanent visibility missing tags`, () => {
       const payload = {
         id: `valid-id`,

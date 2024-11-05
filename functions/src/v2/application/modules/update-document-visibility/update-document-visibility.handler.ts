@@ -5,13 +5,13 @@ import {
   type DocumentsModel,
 } from '@domain/models/document';
 import { errors } from '@utils/errors';
-
 import { type ProtectedControllerHandlerContext } from '@utils/controller';
+import { type DBInstance } from '@database/database';
+
 import {
   type UpdateDocumentVisibilityPayload,
   type UpdateDocumentVisibilityDto,
 } from './update-document-visibility.contract';
-import { type DBInstance } from '@database/database';
 
 const containsDuplicateInPermanentDocuments = async (
   payload: Extract<
