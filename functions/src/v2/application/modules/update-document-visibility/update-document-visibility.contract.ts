@@ -4,6 +4,7 @@ import {
 } from '@domain/models/document';
 import {
   documentDescriptionSchema,
+  documentNameSchema,
   documentTagsSchema,
 } from '@utils/document-schemas';
 import { type Id, validators } from '@utils/validators';
@@ -24,6 +25,7 @@ const updateDocumentVisibilityPayloadSchema = z.union([
     id: validators.id,
     mdate: validators.date,
     visibility: z.literal(DocumentModelVisibility.Permanent),
+    name: documentNameSchema,
     tags: documentTagsSchema,
     description: documentDescriptionSchema,
   }),

@@ -12,7 +12,6 @@ const stampMock = `2024-12-01T00:00:00Z`;
 
 jest.mock(`@libs/helpers/stamps`, () => ({
   nowISO: jest.fn(() => stampMock),
-  uuid: jest.fn(() => `mock-id`),
 }));
 
 describe(`Document visibility change works when`, () => {
@@ -190,51 +189,84 @@ describe(`Document visibility change works when`, () => {
       }
     });
 
-    // it(`if there is duplicate in non-permanent documents`, async () => {
-    //   const id = `document-id`;
-    //   const mdate = `2023-01-01T00:00:00Z`;
+    it(`if there is duplicate in permanent documents`, async () => {
+      const yourDocumentId = `document-id`;
+      const otherDocumentId = `other-id`;
+      const mdate = `2023-01-01T00:00:00Z`;
 
-    //   const yourDocuments: DocumentsModel = {
-    //     [id]: {
-    //       cdate: `2023-01-01T00:00:00Z`,
-    //       mdate: `2023-01-01T00:00:00Z`,
-    //       name: `Test Document With Different Name`,
-    //       code: ``,
-    //       path: `test-document-with-different-name`,
-    //       visibility: DocumentModelVisibility.Permanent,
-    //       description: `Some description of my document`,
-    //     },
-    //   };
+      const yourDocuments: DocumentsModel = {
+        [yourDocumentId]: {
+          cdate: mdate,
+          mdate,
+          name: `Test Document With Different Name`,
+          code: ``,
+          path: `test-document-with-different-name`,
+          visibility: DocumentModelVisibility.Permanent,
+          description: `Some description of my document`,
+        },
+      };
+      const othersDocuments: DocumentsModel = {
+        [otherDocumentId]: {
+          cdate: `2024-01-01T00:00:00Z`,
+          mdate: `2024-01-01T00:00:00Z`,
+          name: `Test Document For Me`,
+          code: `My Code`,
+          path: `test-document-for-me`,
+          visibility: DocumentModelVisibility.Permanent,
+          description: `My own name description that meets validation standards and not throwing e`,
+          tags: [`self-improvement`],
+        },
+      };
 
-    //   try {
-    //     await updateDocumentVisibilityHandler({
-    //       payload: validPayload,
-    //       context: {
-    //         uid,
-    //         db: {
-    //           collection: () => ({
-    //             doc: () => ({
-    //               get: async () => ({
-    //                 data: () => undefined,
-    //               }),
-    //             }),
-    //           }),
-    //         } as any,
-    //         projectId,
-    //       },
-    //     });
-    //   } catch (error: unknown) {
-    //     expect(error).toEqual(
-    //       Error(
-    //         JSON.stringify({
-    //           symbol: `xd`,
-    //           content: `xd`,
-    //           message: `xd`,
-    //         }),
-    //       ),
-    //     );
-    //   }
-    // });
+      const payload: UpdateDocumentVisibilityPayload = {
+        visibility: DocumentModelVisibility.Permanent,
+        id: yourDocumentId,
+        mdate,
+        name: {
+          raw: `Test Document For Me`,
+          path: `test-document-for-me`,
+          segments: [`test`, `document`, `for`, `me`],
+        },
+        description: `My own name description that meets validation standards and not throwing exception`,
+        tags: [`programming`],
+      };
+
+      try {
+        await updateDocumentVisibilityHandler({
+          payload,
+          context: {
+            uid,
+            db: {
+              collection: () => ({
+                get: () => ({
+                  docs: [
+                    {
+                      data: () => othersDocuments,
+                    },
+                  ],
+                }),
+                doc: () => ({
+                  get: async () => ({
+                    data: () => yourDocuments,
+                  }),
+                }),
+              }),
+            } as any,
+            projectId,
+          },
+        });
+      } catch (error: unknown) {
+        expect(error).toEqual(
+          Error(
+            JSON.stringify({
+              symbol: `already-exists`,
+              content: `Document with provided name already exists, please change name`,
+              message: `Document with provided name already exists, please change name`,
+            }),
+          ),
+        );
+      }
+    });
 
     it(`if there is no documents`, async () => {
       try {

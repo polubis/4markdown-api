@@ -1,4 +1,7 @@
-import { updateDocumentVisibilityPayloadSchema } from '../update-document-visibility.contract';
+import {
+  updateDocumentVisibilityPayloadSchema,
+  type UpdateDocumentVisibilityPayload,
+} from '../update-document-visibility.contract';
 import { DocumentModelVisibility } from '@domain/models/document';
 
 describe(`Document visibility contract works when`, () => {
@@ -41,7 +44,7 @@ describe(`Document visibility contract works when`, () => {
       const payload = {
         mdate: new Date().toISOString(),
         visibility: DocumentModelVisibility.Public,
-      };
+      } as UpdateDocumentVisibilityPayload;
       expect(() =>
         updateDocumentVisibilityPayloadSchema.parse(payload),
       ).toThrowError();
@@ -50,15 +53,26 @@ describe(`Document visibility contract works when`, () => {
 
   describe(`handling permanent visibility`, () => {
     it(`accepts a valid payload with permanent visibility, tags, and description`, () => {
+      const mdate = new Date().toISOString();
       const payload = {
         id: `valid-id`,
-        mdate: new Date().toISOString(),
+        mdate,
         visibility: DocumentModelVisibility.Permanent,
         tags: [`tag1`, `tag2`],
+        name: `This is valid name`,
         description: `A valid description for the document that contains`,
       };
+      const expectedPayload: UpdateDocumentVisibilityPayload = {
+        ...payload,
+        name: {
+          raw: `This is valid name`,
+          path: `this-is-valid-name`,
+          segments: [`this`, `is`, `valid`, `name`],
+        },
+      };
+
       expect(updateDocumentVisibilityPayloadSchema.parse(payload)).toEqual(
-        payload,
+        expectedPayload,
       );
     });
 
@@ -67,6 +81,7 @@ describe(`Document visibility contract works when`, () => {
         id: `valid-id`,
         mdate: new Date().toISOString(),
         visibility: DocumentModelVisibility.Permanent,
+        name: `This is valid name`,
         description: `A valid description for the document`,
       };
       expect(() =>
