@@ -3,9 +3,40 @@ import {
   documentCodeSchema,
   documentTagsSchema,
   permanentDocumentNameSegmentsSchema,
+  documentDescriptionSchema,
 } from '../document-schemas';
 
 describe(`Document schemas works when`, () => {
+  describe(`description validation`, () => {
+    it(`accepts a valid description with 50-250 characters`, () => {
+      const description = `This is a valid description with exactly the minimum length required by the schema, totaling fifty characters.`;
+      expect(documentDescriptionSchema.parse(description)).toBe(
+        description.trim(),
+      );
+    });
+
+    it(`rejects a description shorter than 50 characters`, () => {
+      const shortDescription = `Too short.`;
+      expect(() =>
+        documentDescriptionSchema.parse(shortDescription),
+      ).toThrowError(`String must contain at least 50 character(s)`);
+    });
+
+    it(`rejects a description longer than 250 characters`, () => {
+      const longDescription = `This description is way too long `.repeat(10);
+      expect(() =>
+        documentDescriptionSchema.parse(longDescription),
+      ).toThrowError(`String must contain at most 250 character(s)`);
+    });
+
+    it(`trims whitespace from a valid description`, () => {
+      const descriptionWithWhitespace = `    This is a description with leading and trailing whitespace that should be trimmed by the schema.     `;
+      expect(documentDescriptionSchema.parse(descriptionWithWhitespace)).toBe(
+        descriptionWithWhitespace.trim(),
+      );
+    });
+  });
+
   describe(`name validation`, () => {
     it(`accepts valid names and generates correct paths with segments`, () => {
       expect(documentNameSchema.parse(`Hello world test`)).toEqual({
@@ -148,6 +179,9 @@ describe(`Document schemas works when`, () => {
       );
       expect(documentTagsSchema.parse([`-x`])).toEqual([`x`]);
       expect(documentTagsSchema.parse([`-a    -`])).toEqual([`a`]);
+      expect(documentTagsSchema.parse([`invalid-tag-@`])).toEqual([
+        `invalid-tag`,
+      ]);
     });
 
     it(`typical use cases works`, () => {

@@ -20,6 +20,12 @@ const documentNameSchema = z
 
 const permanentDocumentNameSegmentsSchema = z.array(z.string()).min(3).max(15);
 
+const documentDescriptionSchema = z
+  .string()
+  .min(50)
+  .max(250)
+  .transform((description) => description.trim());
+
 const documentCodeSchema = z.string();
 
 const documentTagsWhiteList: Record<string, boolean> = {
@@ -52,5 +58,6 @@ export {
   documentNameSchema,
   documentCodeSchema,
   documentTagsSchema,
+  documentDescriptionSchema,
   permanentDocumentNameSegmentsSchema,
 };

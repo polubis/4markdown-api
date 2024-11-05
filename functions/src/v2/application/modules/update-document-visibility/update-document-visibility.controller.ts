@@ -5,10 +5,12 @@ import {
   updateDocumentVisibilityPayloadSchema,
 } from './update-document-visibility.contract';
 
-// 1. Add error throw when permanent document name is changed + tests
 // 2. Finish update doc visibility controller
 // 3. Remove dead code after that
 // 4. Craft migration script and test it on develop
+// before that rename git flow article name
+// "adds empty tag" for each tag if no tags
+// // adds path to every document type
 const updateDocumentVisibilityController =
   protectedController<UpdateDocumentVisibilityDto>(
     async (rawPayload, context) => {
