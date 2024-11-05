@@ -155,6 +155,46 @@ describe(`Document name update works when`, () => {
       }
     });
 
+    it(`if validation for permanent document name fails`, async () => {
+      try {
+        await updateDocumentNameHandler({
+          payload: {
+            ...validPayload,
+            name: {
+              raw: `Too Short`,
+              segments: [`too`, `short`],
+              path: `too-short`,
+            },
+          },
+          context: {
+            uid,
+            db: {
+              collection: () => ({
+                doc: () => ({
+                  get: async () => ({
+                    data: (): DocumentsModel => ({
+                      [validPayload.id]: {
+                        cdate: `2024-01-01T00:00:00Z`,
+                        mdate: `2024-01-01T00:00:00Z`,
+                        name: `Test Document With Different Name`,
+                        code: ``,
+                        path: `test-document-with-different-name`,
+                        visibility: DocumentModelVisibility.Permanent,
+                        description: `Some description of my document`,
+                      },
+                    }),
+                  }),
+                }),
+              }),
+            } as any,
+            projectId,
+          },
+        });
+      } catch (error: unknown) {
+        expect(error).toMatchSnapshot();
+      }
+    });
+
     it(`if contains duplicate in permanent documents between different authors`, async () => {
       try {
         await updateDocumentNameHandler({

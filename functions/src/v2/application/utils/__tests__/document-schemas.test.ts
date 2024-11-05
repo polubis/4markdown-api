@@ -34,14 +34,17 @@ describe(`Document schemas works when`, () => {
 
     it(`rejects paths with too few segments`, () => {
       expect(() => documentNameSchema.parse(`one/two/three`)).not.toThrow();
-      expect(() => documentNameSchema.parse(`One/Two`)).toThrow(
-        `Generated path from document name must be between 3-15`,
+      expect(() => documentNameSchema.parse(`One/Two`)).not.toThrow();
+      expect(() => documentNameSchema.parse(`Single`)).not.toThrow();
+      expect(() => documentNameSchema.parse(`x-ad`)).not.toThrow();
+      expect(() => documentNameSchema.parse(``)).toThrowError(
+        `Generated path from document name must be between 1-15`,
       );
-      expect(() => documentNameSchema.parse(`Single`)).toThrow(
-        `Generated path from document name must be between 3-15`,
+      expect(() => documentNameSchema.parse(`-`)).toThrowError(
+        `Generated path from document name must be between 1-15`,
       );
-      expect(() => documentNameSchema.parse(`x-ad`)).toThrow(
-        `Generated path from document name must be between 3-15`,
+      expect(() => documentNameSchema.parse(`+-`)).toThrowError(
+        `Generated path from document name must be between 1-15`,
       );
     });
 
@@ -55,7 +58,7 @@ describe(`Document schemas works when`, () => {
         documentNameSchema.parse(
           `one/two/three/four/five/six/seven/eight/nine/ten/eleven/twelve/thirteen/fourteen/fifteen/sixteen`,
         ),
-      ).toThrow(`Generated path from document name must be between 3-15`);
+      ).toThrow(`Generated path from document name must be between 1-15`);
     });
 
     it(`normalizes special characters in paths while preserving segments`, () => {
@@ -94,16 +97,18 @@ describe(`Document schemas works when`, () => {
 
     it(`handles invalid inputs appropriately`, () => {
       expect(() => documentNameSchema.parse(`!!!???###`)).toThrow(
-        `Generated path from document name must be between 3-15`,
+        `Generated path from document name must be between 1-15`,
       );
 
       expect(() => documentNameSchema.parse(`   `)).toThrow(
-        `Generated path from document name must be between 3-15`,
+        `Generated path from document name must be between 1-15`,
       );
 
-      expect(() => documentNameSchema.parse(`a/b`)).toThrow(
-        `Generated path from document name must be between 3-15`,
-      );
+      expect(documentNameSchema.parse(`a/b`)).toEqual({
+        path: `a-b`,
+        raw: `a/b`,
+        segments: [`a`, `b`],
+      });
     });
   });
 

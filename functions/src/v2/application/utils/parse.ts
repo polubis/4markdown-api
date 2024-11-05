@@ -1,8 +1,18 @@
-import { z, type AnyZodObject, type ZodUnion, ZodObject } from 'zod';
+import {
+  z,
+  AnyZodObject,
+  ZodUnion,
+  ZodObject,
+  ZodArray,
+  ZodTypeAny,
+} from 'zod';
 import { errors } from './errors';
 
 const parse = async <
-  TSchema extends AnyZodObject | ZodUnion<[AnyZodObject, ...AnyZodObject[]]>,
+  TSchema extends
+    | AnyZodObject
+    | ZodUnion<[AnyZodObject, ...AnyZodObject[]]>
+    | ZodArray<ZodTypeAny>,
 >(
   schema: TSchema,
   payload: unknown,

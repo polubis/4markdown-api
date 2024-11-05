@@ -10,13 +10,15 @@ const documentNameSchema = z
     return {
       raw,
       path,
-      segments: path.split(`-`),
+      segments: path === `` ? [] : path.split(`-`),
     };
   })
   .refine(
-    ({ segments }) => segments.length >= 3 && segments.length <= 15,
-    `Generated path from document name must be between 3-15`,
+    ({ segments }) => segments.length >= 1 && segments.length <= 15,
+    `Generated path from document name must be between 1-15`,
   );
+
+const permanentDocumentNameSegmentsSchema = z.array(z.string()).min(3).max(15);
 
 const documentCodeSchema = z.string();
 
@@ -46,4 +48,9 @@ const documentTagsSchema = z
     `Tags must be unique`,
   );
 
-export { documentNameSchema, documentCodeSchema, documentTagsSchema };
+export {
+  documentNameSchema,
+  documentCodeSchema,
+  documentTagsSchema,
+  permanentDocumentNameSegmentsSchema,
+};

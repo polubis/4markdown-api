@@ -9,3 +9,5 @@ exports[`Document name update works when throws an error if contains duplicate i
 exports[`Document name update works when throws an error if there is no documents 1`] = `[Error: {"symbol":"not-found","content":"Document data not found","message":"Document data not found"}]`;
 
 exports[`Document name update works when throws an error if there is out of date change attempt 1`] = `[Error: {"symbol":"out-of-date","content":"The document has been already changed","message":"The document has been already changed"}]`;
+
+exports[`Document name update works when throws an error if validation for permanent document name fails 1`] = `[Error: {"symbol":"invalid-schema","content":[{"message":"Array must contain at least 3 element(s)","key":""}],"message":"Array must contain at least 3 element(s)"}]`;

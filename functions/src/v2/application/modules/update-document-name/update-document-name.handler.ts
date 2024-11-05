@@ -1,5 +1,9 @@
 import { nowISO } from '@libs/helpers/stamps';
-import type { DocumentModel, DocumentsModel } from '@domain/models/document';
+import {
+  DocumentModelVisibility,
+  type DocumentModel,
+  type DocumentsModel,
+} from '@domain/models/document';
 import { errors } from '@utils/errors';
 import { type ProtectedControllerHandlerContext } from '@utils/controller';
 import {
@@ -7,8 +11,10 @@ import {
   type UpdateDocumentNamePayload,
 } from './update-document-name.contract';
 import { type DBInstance } from '@database/database';
+import { parse } from '@utils/parse';
+import { permanentDocumentNameSegmentsSchema } from '@utils/document-schemas';
 
-const containsDuplicateInAccessibleDocuments = async (
+const containsDuplicateInPermanentDocuments = async (
   payload: UpdateDocumentNamePayload,
   db: DBInstance,
 ): Promise<boolean> => {
@@ -53,6 +59,9 @@ const updateDocumentNameHandler = async ({
     throw errors.outOfDate(`The document has been already changed`);
   }
 
+  userDocument.visibility === DocumentModelVisibility.Permanent &&
+    (await parse(permanentDocumentNameSegmentsSchema, payload.name.segments));
+
   const hasDuplicateInOwnDocuments = Object.entries(userDocuments).some(
     ([id, document]) =>
       id !== payload.id && document.path === payload.name.path,
@@ -60,8 +69,8 @@ const updateDocumentNameHandler = async ({
 
   if (
     hasDuplicateInOwnDocuments ||
-    (userDocument.visibility === `permanent` &&
-      (await containsDuplicateInAccessibleDocuments(payload, db)))
+    (userDocument.visibility === DocumentModelVisibility.Permanent &&
+      (await containsDuplicateInPermanentDocuments(payload, db)))
   ) {
     throw errors.exists(
       `Document with provided name already exists, please change name`,
