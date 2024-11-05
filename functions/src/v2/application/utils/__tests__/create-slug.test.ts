@@ -4,6 +4,9 @@ describe(`Document path creation works when`, () => {
   describe(`basic transformations`, () => {
     it(`handles basic cases`, () => {
       expect(createSlug(`Hello World`)).toBe(`hello-world`);
+      expect(
+        createSlug(`How I Crafted My Own Gherkin Syntax Interpreter`),
+      ).toBe(`how-i-crafted-my-own-gherkin-syntax-interpreter`);
       expect(createSlug(`Hello   World`)).toBe(`hello-world`);
     });
 

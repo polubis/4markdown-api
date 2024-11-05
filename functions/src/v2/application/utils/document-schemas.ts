@@ -20,17 +20,30 @@ const documentNameSchema = z
 
 const documentCodeSchema = z.string();
 
+const documentTagsWhiteList: Record<string, boolean> = {
+  'c++': true,
+  'c#': true,
+  'f#': true,
+};
+
 const documentTagsSchema = z
-  .array(z.string().min(1).max(50))
+  .array(
+    z
+      .string()
+      .min(1)
+      .max(40)
+      .transform((tag) => tag.trim().toLowerCase())
+      .transform((tag) => (documentTagsWhiteList[tag] ? tag : createSlug(tag)))
+      .refine(
+        (tag) => tag.length >= 1 && tag.length <= 40,
+        `Invalid tag format`,
+      ),
+  )
   .min(1)
   .max(10)
   .refine(
     (tags) => tags.length === new Set([...tags]).size,
     `Tags must be unique`,
-  )
-  .refine(
-    (tags) => tags.every((tag) => /^[a-zA-Z0-9,-]+$/.test(tag)),
-    `Incorrect tag format. Each tag must contain 2-50 characters, using only letters or numbers`,
   );
 
 export { documentNameSchema, documentCodeSchema, documentTagsSchema };

@@ -91,6 +91,20 @@ describe(`Document schemas works when`, () => {
         segments: [`one`, `two`, `three`],
       });
     });
+
+    it(`handles invalid inputs appropriately`, () => {
+      expect(() => documentNameSchema.parse(`!!!???###`)).toThrow(
+        `Generated path from document name must be between 3-15`,
+      );
+
+      expect(() => documentNameSchema.parse(`   `)).toThrow(
+        `Generated path from document name must be between 3-15`,
+      );
+
+      expect(() => documentNameSchema.parse(`a/b`)).toThrow(
+        `Generated path from document name must be between 3-15`,
+      );
+    });
   });
 
   describe(`code validation`, () => {
@@ -113,6 +127,23 @@ describe(`Document schemas works when`, () => {
   });
 
   describe(`tags validation`, () => {
+    it(`blocks non-letters and non-numbers values`, () => {
+      expect(() => documentTagsSchema.parse([`-`])).toThrowError(
+        `Invalid tag format`,
+      );
+      expect(() => documentTagsSchema.parse([``])).toThrowError(
+        `Invalid tag format`,
+      );
+      expect(() => documentTagsSchema.parse([`+`])).toThrowError(
+        `Invalid tag format`,
+      );
+      expect(() => documentTagsSchema.parse([`>>`])).toThrowError(
+        `Invalid tag format`,
+      );
+      expect(documentTagsSchema.parse([`-x`])).toEqual([`x`]);
+      expect(documentTagsSchema.parse([`-a    -`])).toEqual([`a`]);
+    });
+
     it(`typical use cases works`, () => {
       expect(
         documentTagsSchema.parse([
@@ -122,7 +153,10 @@ describe(`Document schemas works when`, () => {
           `c++`,
           `c#`,
           `c`,
-          `java script`,
+          `type script`,
+          `r`,
+          `ruby on rails`,
+          `c9`,
         ]),
       ).toEqual([
         `react`,
@@ -131,21 +165,11 @@ describe(`Document schemas works when`, () => {
         `c++`,
         `c#`,
         `c`,
-        `java-script`,
+        `type-script`,
+        `r`,
+        `ruby-on-rails`,
+        `c9`,
       ]);
-
-      expect(() => documentTagsSchema.parse([`+`])).toThrowError(
-        `Incorrect tag format. Each tag must contain 2-50 characters, using only letters or numbers`,
-      );
-      expect(() => documentTagsSchema.parse([`/`])).toThrowError(
-        `Incorrect tag format. Each tag must contain 2-50 characters, using only letters or numbers`,
-      );
-      expect(() => documentTagsSchema.parse([`-`])).toThrowError(
-        `Incorrect tag format. Each tag must contain 2-50 characters, using only letters or numbers`,
-      );
-      expect(() => documentTagsSchema.parse([`1`])).toThrowError(
-        `Incorrect tag format. Each tag must contain 2-50 characters, using only letters or numbers`,
-      );
     });
 
     it(`verifies if there is not duplicates`, () => {
@@ -153,19 +177,22 @@ describe(`Document schemas works when`, () => {
         `Tags must be unique`,
       );
       expect(() => documentTagsSchema.parse([`xa`, `xd`])).not.toThrow();
+      expect(() => documentTagsSchema.parse([`c`, `c    `])).toThrowError(
+        `Tags must be unique`,
+      );
+      expect(() =>
+        documentTagsSchema.parse([`c++`, `c    `, `c+`]),
+      ).toThrowError(`Tags must be unique`);
+      expect(() =>
+        documentTagsSchema.parse([`c#`, `c    `, `c##`]),
+      ).toThrowError(`Tags must be unique`);
     });
 
     it(`verifies if there is no white spacing around tags`, () => {
-      expect(() => documentTagsSchema.parse([`xds     `])).toThrowError(
-        `Incorrect tag format. Each tag must contain 2-50 characters, using only letters or numbers`,
-      );
-      expect(() => documentTagsSchema.parse([`  xd`])).toThrowError(
-        `Incorrect tag format. Each tag must contain 2-50 characters, using only letters or numbers`,
-      );
-      expect(() => documentTagsSchema.parse([`x d`])).toThrowError(
-        `Incorrect tag format. Each tag must contain 2-50 characters, using only letters or numbers`,
-      );
-      expect(() => documentTagsSchema.parse([`x-d`])).not.toThrow();
+      expect(documentTagsSchema.parse([`xds     `])).toEqual([`xds`]);
+      expect(documentTagsSchema.parse([`  xd`])).toEqual([`xd`]);
+      expect(documentTagsSchema.parse([`x d`])).toEqual([`x-d`]);
+      expect(documentTagsSchema.parse([`x-d`])).toEqual([`x-d`]);
     });
 
     it(`verifies that each tag has 1-50 characters`, () => {
@@ -211,22 +238,6 @@ describe(`Document schemas works when`, () => {
           `tag10`,
         ]),
       ).not.toThrow();
-    });
-  });
-
-  describe(`boundary cases`, () => {
-    it(`handles invalid inputs appropriately`, () => {
-      expect(() => documentNameSchema.parse(`!!!???###`)).toThrow(
-        `Generated path from document name must be between 3-15`,
-      );
-
-      expect(() => documentNameSchema.parse(`   `)).toThrow(
-        `Generated path from document name must be between 3-15`,
-      );
-
-      expect(() => documentNameSchema.parse(`a/b`)).toThrow(
-        `Generated path from document name must be between 3-15`,
-      );
     });
   });
 });
