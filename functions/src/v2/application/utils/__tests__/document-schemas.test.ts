@@ -2,6 +2,7 @@ import {
   documentNameSchema,
   documentCodeSchema,
   documentTagsSchema,
+  permanentDocumentNameSegmentsSchema,
 } from '../document-schemas';
 
 describe(`Document schemas works when`, () => {
@@ -243,6 +244,61 @@ describe(`Document schemas works when`, () => {
           `tag10`,
         ]),
       ).not.toThrow();
+    });
+  });
+
+  describe(`permanent document name segment validation`, () => {
+    it(`accepts valid arrays with length between 3 and 15`, () => {
+      expect(
+        permanentDocumentNameSegmentsSchema.parse([
+          `segment1`,
+          `segment2`,
+          `segment3`,
+        ]),
+      ).toEqual([`segment1`, `segment2`, `segment3`]);
+      expect(
+        permanentDocumentNameSegmentsSchema.parse(Array(15).fill(`segment`)),
+      ).toHaveLength(15);
+    });
+
+    it(`rejects arrays shorter than the minimum length`, () => {
+      expect(() =>
+        permanentDocumentNameSegmentsSchema.parse([`one`, `two`]),
+      ).toThrowError(`Array must contain at least 3 element(s)`);
+    });
+
+    it(`rejects arrays longer than the maximum length`, () => {
+      expect(() =>
+        permanentDocumentNameSegmentsSchema.parse(Array(16).fill(`segment`)),
+      ).toThrowError(`Array must contain at most 15 element(s)`);
+    });
+
+    it(`rejects arrays with non-string elements`, () => {
+      expect(() =>
+        permanentDocumentNameSegmentsSchema.parse([
+          `string`,
+          123,
+          `anotherString`,
+        ]),
+      ).toThrowError();
+      expect(() =>
+        permanentDocumentNameSegmentsSchema.parse([
+          `string`,
+          {},
+          `anotherString`,
+        ]),
+      ).toThrowError();
+    });
+
+    it(`handles arrays with exactly minimum and maximum lengths`, () => {
+      expect(
+        permanentDocumentNameSegmentsSchema.parse([`one`, `two`, `three`]),
+      ).toHaveLength(3);
+      expect(
+        permanentDocumentNameSegmentsSchema.parse(
+          Array(15).fill(`validSegment`),
+        ),
+      ).toHaveLength(15);
     });
   });
 });
