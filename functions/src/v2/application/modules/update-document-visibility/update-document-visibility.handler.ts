@@ -18,6 +18,22 @@ const updateDocumentVisibilityHandler = async ({
 }: {
   payload: UpdateDocumentVisibilityPayload;
   context: ProtectedControllerHandlerContext;
-}): Promise<UpdateDocumentVisibilityDto> => {};
+}): Promise<UpdateDocumentVisibilityDto> => {
+  const userDocumentsRef = db.collection(`docs`).doc(uid);
+  const userDocumentsSnap = await userDocumentsRef.get();
+  const userDocuments = userDocumentsSnap.data() as DocumentsModel | undefined;
+
+  if (!userDocuments) throw errors.notFound(`Document data not found`);
+
+  const userDocument = userDocuments[payload.id] as DocumentModel | undefined;
+
+  if (!userDocument) {
+    throw errors.notFound(`Document not found`);
+  }
+
+  if (payload.mdate !== userDocument.mdate) {
+    throw errors.outOfDate(`The document has been already changed`);
+  }
+};
 
 export { updateDocumentVisibilityHandler };
