@@ -23,7 +23,98 @@ describe(`Document visibility change works when`, () => {
   const projectId = `project-id`;
   const uid = `user-uid`;
 
-  it(`visibility is changed to permanent`, async () => {});
+  it(`visibility is changed to permanent`, async () => {
+    const yourDocumentId = `document-id`;
+    const otherDocumentId = `other-id`;
+    const mdate = `2023-01-01T00:00:00Z`;
+
+    const yourDocuments: DocumentsModel = {
+      [yourDocumentId]: {
+        cdate: mdate,
+        mdate,
+        name: `Test Document With Different Name`,
+        code: ``,
+        path: `test-document-with-different-name`,
+        visibility: DocumentModelVisibility.Private,
+      },
+    };
+    const othersDocuments: DocumentsModel = {
+      [otherDocumentId]: {
+        cdate: `2024-01-01T00:00:00Z`,
+        mdate: `2024-01-01T00:00:00Z`,
+        name: `Test Document For Me`,
+        code: `My Code`,
+        path: `test-document-for-me`,
+        visibility: DocumentModelVisibility.Permanent,
+        description: `My own name description that meets validation standards and not throwing exception`,
+        tags: [`self-improvement`],
+      },
+    };
+
+    const payload: Exclude<
+      UpdateDocumentVisibilityPayload,
+      { visiblity: DocumentModelVisibility.Permanent }
+    > = {
+      visibility: DocumentModelVisibility.Permanent,
+      id: yourDocumentId,
+      mdate,
+      name: {
+        raw: `My Totally New Document`,
+        path: `my-totally-new-document`,
+        segments: [`my`, `totally`, `new`, `document`],
+      },
+      description: `My own name description that meets validation standards and not throwing exception`,
+      tags: [`programming`],
+    };
+
+    const updateSpy = jest.fn();
+
+    const dto = await updateDocumentVisibilityHandler({
+      payload,
+      context: {
+        uid,
+        db: {
+          collection: () => ({
+            get: () => ({
+              docs: [
+                {
+                  data: () => othersDocuments,
+                },
+              ],
+            }),
+            doc: () => ({
+              get: async () => ({
+                data: () => yourDocuments,
+              }),
+              update: updateSpy,
+            }),
+          }),
+        } as any,
+        projectId,
+      },
+    });
+
+    const expectedUpdatePayload: DocumentsModel = {
+      [yourDocumentId]: {
+        cdate: yourDocuments[yourDocumentId].cdate,
+        mdate: stampMock,
+        name: payload.name.raw,
+        code: yourDocuments[yourDocumentId].code,
+        path: payload.name.path,
+        visibility: DocumentModelVisibility.Permanent,
+        description: payload.description,
+        tags: payload.tags,
+      },
+    };
+    const expectedDto: UpdateDocumentVisibilityDto = {
+      ...expectedUpdatePayload[yourDocumentId],
+      id: yourDocumentId,
+    };
+
+    expect(updateSpy).toHaveBeenCalledTimes(1);
+    expect(updateSpy).toHaveBeenCalledWith(expectedUpdatePayload);
+    expect(dto).toEqual(expectedDto);
+  });
 
   it(`visibility is changed to public from permanent and some data is removed`, async () => {
     const updateSpy = jest.fn();
@@ -215,7 +306,7 @@ describe(`Document visibility change works when`, () => {
           code: `My Code`,
           path: `test-document-for-me`,
           visibility: DocumentModelVisibility.Permanent,
-          description: `My own name description that meets validation standards and not throwing e`,
+          description: `My own name description that meets validation standards and not throwing exception`,
           tags: [`self-improvement`],
         },
       };
