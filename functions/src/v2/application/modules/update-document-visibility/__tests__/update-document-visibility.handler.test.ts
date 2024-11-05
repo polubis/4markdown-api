@@ -24,13 +24,27 @@ describe(`Document visibility change works when`, () => {
   const projectId = `project-id`;
   const uid = `user-uid`;
 
-  it(`visibility is changed to private from permanent and some data is removed`, async () => {
+  it(`visibility is changed to public from permanent and some data is removed`, async () => {
     const updateSpy = jest.fn();
+    const id = `document-id`;
+    const mdate = `2023-01-01T00:00:00Z`;
+    const yourDocuments: DocumentsModel = {
+      [id]: {
+        cdate: `2023-01-01T00:00:00Z`,
+        mdate: `2023-01-01T00:00:00Z`,
+        name: `Test Document With Different Name`,
+        code: ``,
+        path: `test-document-with-different-name`,
+        visibility: DocumentModelVisibility.Permanent,
+        description: `Some description of my document`,
+      },
+    };
 
     const dto = await updateDocumentVisibilityHandler({
       payload: {
-        ...validPayload,
-        mdate: `2023-01-01T00:00:00Z`,
+        visibility: DocumentModelVisibility.Public,
+        id,
+        mdate,
       },
       context: {
         uid,
@@ -38,17 +52,7 @@ describe(`Document visibility change works when`, () => {
           collection: () => ({
             doc: () => ({
               get: async () => ({
-                data: (): DocumentsModel => ({
-                  [validPayload.id]: {
-                    cdate: `2023-01-01T00:00:00Z`,
-                    mdate: `2023-01-01T00:00:00Z`,
-                    name: `Test Document With Different Name`,
-                    code: ``,
-                    path: `test-document-with-different-name`,
-                    visibility: DocumentModelVisibility.Permanent,
-                    description: `Some description of my document`,
-                  },
-                }),
+                data: () => yourDocuments,
               }),
               update: updateSpy,
             }),
@@ -59,18 +63,76 @@ describe(`Document visibility change works when`, () => {
     });
 
     const expectedUpdatePayload: DocumentsModel = {
-      [validPayload.id]: {
-        cdate: `2023-01-01T00:00:00Z`,
+      [id]: {
+        cdate: yourDocuments[id].cdate,
         mdate: stampMock,
+        name: yourDocuments[id].name,
+        code: yourDocuments[id].code,
+        path: yourDocuments[id].path,
+        visibility: DocumentModelVisibility.Public,
+      },
+    };
+    const expectedDto: UpdateDocumentVisibilityDto = {
+      ...expectedUpdatePayload[id],
+      id,
+    };
+
+    expect(updateSpy).toHaveBeenCalledTimes(1);
+    expect(updateSpy).toHaveBeenCalledWith(expectedUpdatePayload);
+    expect(dto).toEqual(expectedDto);
+  });
+
+  it(`visibility is changed to private from permanent and some data is removed`, async () => {
+    const updateSpy = jest.fn();
+    const id = `document-id`;
+    const mdate = `2023-01-01T00:00:00Z`;
+    const yourDocuments: DocumentsModel = {
+      [id]: {
+        cdate: `2023-01-01T00:00:00Z`,
+        mdate: `2023-01-01T00:00:00Z`,
         name: `Test Document With Different Name`,
         code: ``,
         path: `test-document-with-different-name`,
+        visibility: DocumentModelVisibility.Permanent,
+        description: `Some description of my document`,
+      },
+    };
+
+    const dto = await updateDocumentVisibilityHandler({
+      payload: {
+        visibility: DocumentModelVisibility.Private,
+        id,
+        mdate,
+      },
+      context: {
+        uid,
+        db: {
+          collection: () => ({
+            doc: () => ({
+              get: async () => ({
+                data: () => yourDocuments,
+              }),
+              update: updateSpy,
+            }),
+          }),
+        } as any,
+        projectId,
+      },
+    });
+
+    const expectedUpdatePayload: DocumentsModel = {
+      [id]: {
+        cdate: yourDocuments[id].cdate,
+        mdate: stampMock,
+        name: yourDocuments[id].name,
+        code: yourDocuments[id].code,
+        path: yourDocuments[id].path,
         visibility: DocumentModelVisibility.Private,
       },
     };
     const expectedDto: UpdateDocumentVisibilityDto = {
-      ...expectedUpdatePayload[validPayload.id],
-      id: validPayload.id,
+      ...expectedUpdatePayload[id],
+      id,
     };
 
     expect(updateSpy).toHaveBeenCalledTimes(1);
@@ -79,6 +141,101 @@ describe(`Document visibility change works when`, () => {
   });
 
   describe(`throws an error`, () => {
+    it(`if there is unsupported visibility passed`, async () => {
+      const id = `document-id`;
+      const mdate = `2023-01-01T00:00:00Z`;
+      const yourDocuments: DocumentsModel = {
+        [id]: {
+          cdate: `2023-01-01T00:00:00Z`,
+          mdate,
+          name: `Test Document With Different Name`,
+          code: ``,
+          path: `test-document-with-different-name`,
+          visibility: DocumentModelVisibility.Permanent,
+          description: `Some description of my document`,
+        },
+      };
+
+      try {
+        await updateDocumentVisibilityHandler({
+          payload: {
+            mdate,
+            id,
+            visibility: `unsupported` as any,
+          },
+          context: {
+            uid,
+            db: {
+              collection: () => ({
+                doc: () => ({
+                  get: async () => ({
+                    data: () => yourDocuments,
+                  }),
+                }),
+              }),
+            } as any,
+            projectId,
+          },
+        });
+      } catch (error: unknown) {
+        expect(error).toEqual(
+          Error(
+            JSON.stringify({
+              symbol: `bad-request`,
+              content: `Unsupported visibility`,
+              message: `Unsupported visibility`,
+            }),
+          ),
+        );
+      }
+    });
+
+    // it(`if there is duplicate in non-permanent documents`, async () => {
+    //   const id = `document-id`;
+    //   const mdate = `2023-01-01T00:00:00Z`;
+
+    //   const yourDocuments: DocumentsModel = {
+    //     [id]: {
+    //       cdate: `2023-01-01T00:00:00Z`,
+    //       mdate: `2023-01-01T00:00:00Z`,
+    //       name: `Test Document With Different Name`,
+    //       code: ``,
+    //       path: `test-document-with-different-name`,
+    //       visibility: DocumentModelVisibility.Permanent,
+    //       description: `Some description of my document`,
+    //     },
+    //   };
+
+    //   try {
+    //     await updateDocumentVisibilityHandler({
+    //       payload: validPayload,
+    //       context: {
+    //         uid,
+    //         db: {
+    //           collection: () => ({
+    //             doc: () => ({
+    //               get: async () => ({
+    //                 data: () => undefined,
+    //               }),
+    //             }),
+    //           }),
+    //         } as any,
+    //         projectId,
+    //       },
+    //     });
+    //   } catch (error: unknown) {
+    //     expect(error).toEqual(
+    //       Error(
+    //         JSON.stringify({
+    //           symbol: `xd`,
+    //           content: `xd`,
+    //           message: `xd`,
+    //         }),
+    //       ),
+    //     );
+    //   }
+    // });
+
     it(`if there is no documents`, async () => {
       try {
         await updateDocumentVisibilityHandler({

@@ -37,7 +37,10 @@ const updateDocumentVisibilityHandler = async ({
 
   const mdate = nowISO();
 
-  if (payload.visibility === DocumentModelVisibility.Private) {
+  if (
+    payload.visibility === DocumentModelVisibility.Private ||
+    payload.visibility === DocumentModelVisibility.Public
+  ) {
     const model: DocumentsModel = {
       [payload.id]: {
         cdate: userDocument.cdate,
@@ -57,6 +60,11 @@ const updateDocumentVisibilityHandler = async ({
 
     return dto;
   }
+
+  //   if (payload.visibility === DocumentModelVisibility.Permanent) {
+  //   }
+
+  throw errors.badRequest(`Unsupported visibility`);
 };
 
 export { updateDocumentVisibilityHandler };
