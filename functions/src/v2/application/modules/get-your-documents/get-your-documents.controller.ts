@@ -10,7 +10,7 @@ import { type Id } from '@utils/validators';
 type Dto = ((
   | PrivateDocumentModel
   | PublicDocumentModel
-  | (Omit<PermanentDocumentModel, 'tags'> & { tags: string[] })
+  | PermanentDocumentModel
 ) & { id: Id })[];
 
 const getYourDocumentsController = protectedController<Dto>(
@@ -30,7 +30,7 @@ const getYourDocumentsController = protectedController<Dto>(
             mdate: document.mdate,
             visibility: document.visibility,
             description: document.description,
-            tags: document.tags ?? [],
+            tags: document.tags,
             path: document.path,
             code: document.code,
           };

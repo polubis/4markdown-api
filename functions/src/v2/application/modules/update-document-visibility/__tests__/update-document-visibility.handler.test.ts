@@ -129,6 +129,7 @@ describe(`Document visibility change works when`, () => {
         path: `test-document-with-different-name`,
         visibility: DocumentModelVisibility.Permanent,
         description: `Some description of my document`,
+        tags: [`programming`],
       },
     };
 
@@ -187,6 +188,7 @@ describe(`Document visibility change works when`, () => {
         path: `test-document-with-different-name`,
         visibility: DocumentModelVisibility.Permanent,
         description: `Some description of my document`,
+        tags: [`programming`],
       },
     };
 
@@ -245,6 +247,7 @@ describe(`Document visibility change works when`, () => {
           path: `test-document-with-different-name`,
           visibility: DocumentModelVisibility.Permanent,
           description: `Some description of my document`,
+          tags: [`programming`],
         },
       };
 
@@ -296,6 +299,7 @@ describe(`Document visibility change works when`, () => {
           path: `test-document-with-different-name`,
           visibility: DocumentModelVisibility.Permanent,
           description: `Some description of my document`,
+          tags: [`programming`],
         },
       };
       const othersDocuments: DocumentsModel = {
