@@ -6,8 +6,6 @@ import {
 } from './update-document-visibility.contract';
 import { updateDocumentVisibilityHandler } from './update-document-visibility.handler';
 
-// 1. Paths haves invalid format
-// 2. Fix migration script
 const updateDocumentVisibilityController =
   protectedController<UpdateDocumentVisibilityDto>(
     async (rawPayload, context) => {
