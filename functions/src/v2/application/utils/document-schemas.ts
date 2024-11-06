@@ -3,7 +3,7 @@ import { createSlug } from './create-slug';
 
 const documentNameSchema = z
   .string()
-  .transform((name) => name.trim())
+  .trim()
   .transform((name) => {
     const slug = createSlug(name);
 
@@ -32,11 +32,7 @@ const documentNameSchema = z
 
 const permanentDocumentNameSegmentsSchema = z.array(z.string()).min(3).max(15);
 
-const documentDescriptionSchema = z
-  .string()
-  .min(50)
-  .max(250)
-  .transform((description) => description.trim());
+const documentDescriptionSchema = z.string().trim().min(50).max(250);
 
 const documentCodeSchema = z.string();
 
@@ -50,9 +46,10 @@ const documentTagsSchema = z
   .array(
     z
       .string()
+      .trim()
+      .toLowerCase()
       .min(1)
       .max(40)
-      .transform((tag) => tag.trim().toLowerCase())
       .transform((tag) => (documentTagsWhiteList[tag] ? tag : createSlug(tag)))
       .refine(
         (tag) => tag.length >= 1 && tag.length <= 40,
