@@ -22,6 +22,8 @@ const migrateDatabaseController = adminController<Dto>(async (_, { db }) => {
         path: name.path,
       };
 
+      newDocuments[userId] = {};
+
       if (
         newDocument.visibility === `permanent` &&
         (!Array.isArray(newDocument.tags) || newDocument.tags?.length === 0)
