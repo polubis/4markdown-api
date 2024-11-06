@@ -4,7 +4,6 @@ import { createSlug } from './create-slug';
 const documentNameSchema = z
   .string()
   .transform((name) => name.trim())
-  // .refine((name) => name.length >= 1 && name.length <= 160)
   .transform((name) => {
     const slug = createSlug(name);
 
@@ -15,10 +14,21 @@ const documentNameSchema = z
       segments: slug === `` ? [] : slug.split(`-`),
     };
   })
-  .refine(
-    ({ segments }) => segments.length >= 1 && segments.length <= 15,
-    `Generated path from document name must be between 1-15`,
-  );
+  .superRefine(({ segments, raw }, { addIssue }) => {
+    if (!(raw.length >= 1 && raw.length <= 160)) {
+      addIssue({
+        code: `custom`,
+        message: `Name must be between 1-160 characters`,
+      });
+    }
+
+    if (!(segments.length >= 1 && segments.length <= 15)) {
+      addIssue({
+        code: `custom`,
+        message: `Generated path from document name must be between 1-15`,
+      });
+    }
+  });
 
 const permanentDocumentNameSegmentsSchema = z.array(z.string()).min(3).max(15);
 

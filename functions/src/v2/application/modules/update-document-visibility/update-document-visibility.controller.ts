@@ -6,7 +6,6 @@ import {
 } from './update-document-visibility.contract';
 import { updateDocumentVisibilityHandler } from './update-document-visibility.handler';
 
-// 1. ToDo prevent to big names to be passed into document
 const updateDocumentVisibilityController =
   protectedController<UpdateDocumentVisibilityDto>(
     async (rawPayload, context) => {

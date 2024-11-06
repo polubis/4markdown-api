@@ -17,16 +17,16 @@ describe(`Document schemas works when`, () => {
 
     it(`rejects a description shorter than 50 characters`, () => {
       const shortDescription = `Too short.`;
-      expect(() =>
-        documentDescriptionSchema.parse(shortDescription),
-      ).toThrowError(`String must contain at least 50 character(s)`);
+      expect(() => documentDescriptionSchema.parse(shortDescription)).toThrow(
+        `String must contain at least 50 character(s)`,
+      );
     });
 
     it(`rejects a description longer than 250 characters`, () => {
       const longDescription = `This description is way too long `.repeat(10);
-      expect(() =>
-        documentDescriptionSchema.parse(longDescription),
-      ).toThrowError(`String must contain at most 250 character(s)`);
+      expect(() => documentDescriptionSchema.parse(longDescription)).toThrow(
+        `String must contain at most 250 character(s)`,
+      );
     });
 
     it(`trims whitespace from a valid description`, () => {
@@ -38,6 +38,16 @@ describe(`Document schemas works when`, () => {
   });
 
   describe(`name validation`, () => {
+    it(`verifies total length`, () => {
+      expect(() => documentNameSchema.parse(`a`.repeat(160))).not.toThrow();
+      expect(() => documentNameSchema.parse(`a`.repeat(161))).toThrow(
+        `Name must be between 1-160 characters`,
+      );
+      expect(() => documentNameSchema.parse(``)).toThrow(
+        `Generated path from document name must be between 1-15`,
+      );
+    });
+
     it(`accepts valid names and generates correct paths with segments`, () => {
       expect(documentNameSchema.parse(`Hello world test`)).toEqual({
         raw: `Hello world test`,
@@ -73,13 +83,13 @@ describe(`Document schemas works when`, () => {
       expect(() => documentNameSchema.parse(`One/Two`)).not.toThrow();
       expect(() => documentNameSchema.parse(`Single`)).not.toThrow();
       expect(() => documentNameSchema.parse(`x-ad`)).not.toThrow();
-      expect(() => documentNameSchema.parse(``)).toThrowError(
+      expect(() => documentNameSchema.parse(``)).toThrow(
         `Generated path from document name must be between 1-15`,
       );
-      expect(() => documentNameSchema.parse(`-`)).toThrowError(
+      expect(() => documentNameSchema.parse(`-`)).toThrow(
         `Generated path from document name must be between 1-15`,
       );
-      expect(() => documentNameSchema.parse(`+-`)).toThrowError(
+      expect(() => documentNameSchema.parse(`+-`)).toThrow(
         `Generated path from document name must be between 1-15`,
       );
     });
@@ -175,16 +185,16 @@ describe(`Document schemas works when`, () => {
 
   describe(`tags validation`, () => {
     it(`blocks non-letters and non-numbers values`, () => {
-      expect(() => documentTagsSchema.parse([`-`])).toThrowError(
+      expect(() => documentTagsSchema.parse([`-`])).toThrow(
         `Invalid tag format`,
       );
-      expect(() => documentTagsSchema.parse([``])).toThrowError(
+      expect(() => documentTagsSchema.parse([``])).toThrow(
         `Invalid tag format`,
       );
-      expect(() => documentTagsSchema.parse([`+`])).toThrowError(
+      expect(() => documentTagsSchema.parse([`+`])).toThrow(
         `Invalid tag format`,
       );
-      expect(() => documentTagsSchema.parse([`>>`])).toThrowError(
+      expect(() => documentTagsSchema.parse([`>>`])).toThrow(
         `Invalid tag format`,
       );
       expect(documentTagsSchema.parse([`-x`])).toEqual([`x`]);
@@ -223,19 +233,19 @@ describe(`Document schemas works when`, () => {
     });
 
     it(`verifies if there is not duplicates`, () => {
-      expect(() => documentTagsSchema.parse([`xa`, `xa`])).toThrowError(
+      expect(() => documentTagsSchema.parse([`xa`, `xa`])).toThrow(
         `Tags must be unique`,
       );
       expect(() => documentTagsSchema.parse([`xa`, `xd`])).not.toThrow();
-      expect(() => documentTagsSchema.parse([`c`, `c    `])).toThrowError(
+      expect(() => documentTagsSchema.parse([`c`, `c    `])).toThrow(
         `Tags must be unique`,
       );
-      expect(() =>
-        documentTagsSchema.parse([`c++`, `c    `, `c+`]),
-      ).toThrowError(`Tags must be unique`);
-      expect(() =>
-        documentTagsSchema.parse([`c#`, `c    `, `c##`]),
-      ).toThrowError(`Tags must be unique`);
+      expect(() => documentTagsSchema.parse([`c++`, `c    `, `c+`])).toThrow(
+        `Tags must be unique`,
+      );
+      expect(() => documentTagsSchema.parse([`c#`, `c    `, `c##`])).toThrow(
+        `Tags must be unique`,
+      );
     });
 
     it(`verifies if there is no white spacing around tags`, () => {
@@ -246,14 +256,14 @@ describe(`Document schemas works when`, () => {
     });
 
     it(`verifies that each tag has 1-50 characters`, () => {
-      expect(() => documentTagsSchema.parse([`xda`, ``])).toThrowError(
+      expect(() => documentTagsSchema.parse([`xda`, ``])).toThrow(
         `String must contain at least 1 character(s)`,
       );
       expect(() => documentTagsSchema.parse([`c`])).not.toThrow();
     });
 
     it(`verifies that number of tags is between 1-10`, () => {
-      expect(() => documentTagsSchema.parse([])).toThrowError(
+      expect(() => documentTagsSchema.parse([])).toThrow(
         `Array must contain at least 1 element(s)`,
       );
       expect(() =>
@@ -270,7 +280,7 @@ describe(`Document schemas works when`, () => {
           `tag10`,
           `tag11`,
         ]),
-      ).toThrowError(`Array must contain at most 10 element(s)`);
+      ).toThrow(`Array must contain at most 10 element(s)`);
 
       expect(() => documentTagsSchema.parse([`tag1`])).not.toThrow();
 
@@ -308,13 +318,13 @@ describe(`Document schemas works when`, () => {
     it(`rejects arrays shorter than the minimum length`, () => {
       expect(() =>
         permanentDocumentNameSegmentsSchema.parse([`one`, `two`]),
-      ).toThrowError(`Array must contain at least 3 element(s)`);
+      ).toThrow(`Array must contain at least 3 element(s)`);
     });
 
     it(`rejects arrays longer than the maximum length`, () => {
       expect(() =>
         permanentDocumentNameSegmentsSchema.parse(Array(16).fill(`segment`)),
-      ).toThrowError(`Array must contain at most 15 element(s)`);
+      ).toThrow(`Array must contain at most 15 element(s)`);
     });
 
     it(`rejects arrays with non-string elements`, () => {
@@ -324,14 +334,14 @@ describe(`Document schemas works when`, () => {
           123,
           `anotherString`,
         ]),
-      ).toThrowError();
+      ).toThrow();
       expect(() =>
         permanentDocumentNameSegmentsSchema.parse([
           `string`,
           {},
           `anotherString`,
         ]),
-      ).toThrowError();
+      ).toThrow();
     });
 
     it(`handles arrays with exactly minimum and maximum lengths`, () => {
