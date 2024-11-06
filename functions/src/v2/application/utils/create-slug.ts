@@ -61,6 +61,8 @@ const characterMap: Record<string, string> = {
 };
 
 const createSlug = (name: string): string => {
+  if (typeof name !== `string`) return ``;
+
   return name
     .toLowerCase()
     .split(``)

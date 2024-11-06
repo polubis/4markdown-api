@@ -132,4 +132,13 @@ describe(`Document path creation works when`, () => {
       ).toBe(`i-shut-down-mybeststartup-here-s-the-honest-truth`);
     });
   });
+
+  describe(`invalid use cases`, () => {
+    it(`are handled`, () => {
+      expect(createSlug(``)).toBe(``);
+      expect(createSlug(null as any)).toBe(``);
+      expect(createSlug(undefined as any)).toBe(``);
+      expect(createSlug(1 as any)).toBe(``);
+    });
+  });
 });

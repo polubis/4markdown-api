@@ -4,6 +4,7 @@ import { createSlug } from './create-slug';
 const documentNameSchema = z
   .string()
   .transform((name) => name.trim())
+  // .refine((name) => name.length >= 1 && name.length <= 160)
   .transform((name) => {
     const slug = createSlug(name);
 
