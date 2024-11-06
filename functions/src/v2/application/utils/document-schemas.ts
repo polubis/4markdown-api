@@ -4,13 +4,14 @@ import { createSlug } from './create-slug';
 const documentNameSchema = z
   .string()
   .transform((name) => name.trim())
-  .transform((raw) => {
-    const path = createSlug(raw);
+  .transform((name) => {
+    const slug = createSlug(name);
 
     return {
-      raw,
-      path,
-      segments: path === `` ? [] : path.split(`-`),
+      raw: name,
+      path: `/${slug}/`,
+      slug,
+      segments: slug === `` ? [] : slug.split(`-`),
     };
   })
   .refine(

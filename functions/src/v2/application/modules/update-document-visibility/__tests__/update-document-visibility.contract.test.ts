@@ -66,7 +66,8 @@ describe(`Document visibility contract works when`, () => {
         ...payload,
         name: {
           raw: `This is valid name`,
-          path: `this-is-valid-name`,
+          path: `/this-is-valid-name/`,
+          slug: `this-is-valid-name`,
           segments: [`this`, `is`, `valid`, `name`],
         },
       };

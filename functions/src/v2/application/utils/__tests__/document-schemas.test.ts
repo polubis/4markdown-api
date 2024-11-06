@@ -41,25 +41,29 @@ describe(`Document schemas works when`, () => {
     it(`accepts valid names and generates correct paths with segments`, () => {
       expect(documentNameSchema.parse(`Hello world test`)).toEqual({
         raw: `Hello world test`,
-        path: `hello-world-test`,
+        path: `/hello-world-test/`,
+        slug: `hello-world-test`,
         segments: [`hello`, `world`, `test`],
       });
 
       expect(documentNameSchema.parse(`Hello/World/Test`)).toEqual({
         raw: `Hello/World/Test`,
-        path: `hello-world-test`,
+        path: `/hello-world-test/`,
+        slug: `hello-world-test`,
         segments: [`hello`, `world`, `test`],
       });
 
       expect(documentNameSchema.parse(`  One/Two/Three  `)).toEqual({
         raw: `One/Two/Three`,
-        path: `one-two-three`,
+        path: `/one-two-three/`,
+        slug: `one-two-three`,
         segments: [`one`, `two`, `three`],
       });
 
       expect(documentNameSchema.parse(`Test/123/Path`)).toEqual({
         raw: `Test/123/Path`,
-        path: `test-123-path`,
+        slug: `test-123-path`,
+        path: `/test-123-path/`,
         segments: [`test`, `123`, `path`],
       });
     });
@@ -96,19 +100,22 @@ describe(`Document schemas works when`, () => {
     it(`normalizes special characters in paths while preserving segments`, () => {
       expect(documentNameSchema.parse(`Hello & World/Test!/Now`)).toEqual({
         raw: `Hello & World/Test!/Now`,
-        path: `hello-world-test-now`,
+        path: `/hello-world-test-now/`,
+        slug: `hello-world-test-now`,
         segments: [`hello`, `world`, `test`, `now`],
       });
 
       expect(documentNameSchema.parse(`Test@123/Path#1/Final`)).toEqual({
         raw: `Test@123/Path#1/Final`,
-        path: `test-123-path-1-final`,
+        slug: `test-123-path-1-final`,
+        path: `/test-123-path-1-final/`,
         segments: [`test`, `123`, `path`, `1`, `final`],
       });
 
       expect(documentNameSchema.parse(`Café/Menu/Items`)).toEqual({
         raw: `Café/Menu/Items`,
-        path: `cafe-menu-items`,
+        path: `/cafe-menu-items/`,
+        slug: `cafe-menu-items`,
         segments: [`cafe`, `menu`, `items`],
       });
     });
@@ -116,13 +123,15 @@ describe(`Document schemas works when`, () => {
     it(`handles whitespace correctly while maintaining segments`, () => {
       expect(documentNameSchema.parse(`  First/  Second  /Third  `)).toEqual({
         raw: `First/  Second  /Third`,
-        path: `first-second-third`,
+        slug: `first-second-third`,
+        path: `/first-second-third/`,
         segments: [`first`, `second`, `third`],
       });
 
       expect(documentNameSchema.parse(`\tOne/Two/Three\t`)).toEqual({
         raw: `One/Two/Three`,
-        path: `one-two-three`,
+        slug: `one-two-three`,
+        path: `/one-two-three/`,
         segments: [`one`, `two`, `three`],
       });
     });
@@ -137,8 +146,9 @@ describe(`Document schemas works when`, () => {
       );
 
       expect(documentNameSchema.parse(`a/b`)).toEqual({
-        path: `a-b`,
+        slug: `a-b`,
         raw: `a/b`,
+        path: `/a-b/`,
         segments: [`a`, `b`],
       });
     });
