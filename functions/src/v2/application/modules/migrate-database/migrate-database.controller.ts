@@ -1,6 +1,6 @@
 import { DocumentsModel, type DocumentModel } from '@domain/models/document';
 import { adminController } from '@utils/controller';
-import { createSlug } from '@utils/create-slug';
+import { documentNameSchema } from '@utils/document-schemas';
 import { Id } from '@utils/validators';
 
 type Dto = null;
@@ -15,11 +15,11 @@ const migrateDatabaseController = adminController<Dto>(async (_, { db }) => {
     const documentsListData = Object.entries(documentsListSnap.data());
 
     documentsListData.forEach(([documentId, document]: [Id, DocumentModel]) => {
-      const path = createSlug(document.name);
+      const name = documentNameSchema.parse(document.name);
 
       const newDocument: DocumentModel = {
         ...document,
-        path,
+        path: name.path,
       };
 
       if (
