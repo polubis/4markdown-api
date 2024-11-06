@@ -4,7 +4,7 @@ import { type Firestore } from 'firebase-admin/firestore';
 import { onCall, type CallableFunction } from 'firebase-functions/https';
 import type { ProjectId } from '../infra/models/atoms';
 import type { UserId } from '@domain/models/atoms';
-import { asUserId } from '@domain/creators/atoms';
+import { asUserId } from '@domain/converters/atoms';
 // @TODO[PRIO=2]: [Split it into separate library].
 type Secret = 'EMAILS_API_KEY' | 'EMAILS_ENCRYPTION_TOKEN' | `ADMIN_LIST`;
 type Secrets = Secret[];
