@@ -19,7 +19,7 @@ import { onSchedule } from 'firebase-functions/scheduler';
 import { onCall } from 'firebase-functions/https';
 import { updateDocumentVisibilityController } from '@modules/update-document-visibility/update-document-visibility.controller';
 import { isDev } from '@utils/is-dev';
-import { migrateDatabaseController } from '@modules/migrate/migrate.controller';
+import { migrateDatabaseController } from '@modules/migrate-database/migrate-database.controller';
 
 const app = admin.initializeApp();
 const db = app.firestore();
@@ -114,4 +114,8 @@ export const updateDocumentVisibility = updateDocumentVisibilityController({
   projectId,
 });
 
-export const migrateDatabase = migrateDatabaseController({ db, projectId });
+export const migrateDatabase = migrateDatabaseController({
+  db,
+  projectId,
+  secrets: [`ADMIN_LIST`],
+});
