@@ -3,8 +3,8 @@ import { Db, type DBInstance } from '../database/database';
 import { type Firestore } from 'firebase-admin/firestore';
 import { onCall, type CallableFunction } from 'firebase-functions/https';
 import type { ProjectId } from '../infra/models/atoms';
-import type { UId } from '@domain/models/atoms';
-import { asUId } from '@domain/creators/atoms';
+import type { UserId } from '@domain/models/atoms';
+import { asUserId } from '@domain/creators/atoms';
 // @TODO[PRIO=2]: [Split it into separate library].
 type Secret = 'EMAILS_API_KEY' | 'EMAILS_ENCRYPTION_TOKEN' | `ADMIN_LIST`;
 type Secrets = Secret[];
@@ -98,10 +98,8 @@ type AdminControllerHandler<TResponse = unknown> = (
   context: AdminControllerHandlerContext,
 ) => Promise<TResponse>;
 
-const isAdmin = (uid: UId): boolean =>
-  (process.env.ADMIN_LIST ?? ``)
-    .split(`|`)
-    .some((adminUid) => adminUid === uid);
+const isAdmin = (userId: UserId): boolean =>
+  (process.env.ADMIN_LIST ?? ``).split(`|`).some((id) => id === userId);
 
 const adminController =
   <TResponse = unknown>(handler: AdminControllerHandler<TResponse>) =>
@@ -118,7 +116,7 @@ const adminController =
 
         if (!auth) throw errors.unauthenticated();
 
-        if (!isAdmin(asUId(auth.uid))) throw errors.unauthorized();
+        if (!isAdmin(asUserId(auth.uid))) throw errors.unauthorized();
 
         const { uid } = auth;
 
