@@ -14,6 +14,7 @@ type ControllerConfig = {
   secrets?: Secrets;
   projectId: ProjectId;
   maxInstances?: number;
+  concurrency?: number;
 };
 
 type RawPayload = unknown;
@@ -30,7 +31,8 @@ type ControllerHandler<TResponse = unknown> = (
 ) => Promise<TResponse>;
 
 const getSecrets = (secrets?: Secrets): Secrets => secrets ?? [];
-const getMaxInstances = (maxInstances?: number) => maxInstances ?? 1;
+const getMaxInstances = (maxInstances?: number): number => maxInstances ?? 1;
+const getConcurrency = (concurrency?: number): number => concurrency ?? 6;
 
 // @TODO[PRIO=2]: [Add and test parent try catch].
 const controller =
@@ -69,6 +71,7 @@ const protectedController =
       {
         maxInstances: getMaxInstances(config.maxInstances),
         secrets: getSecrets(config.secrets),
+        concurrency: getConcurrency(config.concurrency),
       },
       async (request) => {
         const { auth } = request;
