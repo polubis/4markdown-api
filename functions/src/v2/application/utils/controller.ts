@@ -44,6 +44,7 @@ const controller =
       {
         maxInstances: getMaxInstances(config.maxInstances),
         secrets: getSecrets(config.secrets),
+        concurrency: getConcurrency(config.concurrency),
       },
       async (request) => {
         return await handler(request.data, { db, projectId: config.projectId });
@@ -113,6 +114,7 @@ const adminController =
       {
         maxInstances: getMaxInstances(config.maxInstances),
         secrets: getSecrets(config.secrets),
+        concurrency: getConcurrency(config.concurrency),
       },
       async (request) => {
         const { auth } = request;
