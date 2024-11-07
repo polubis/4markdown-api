@@ -14,6 +14,8 @@ const migrateDatabaseController = adminController<Dto>(async (_, { db }) => {
     const userId = documentsListSnap.id;
     const documentsListData = Object.entries(documentsListSnap.data());
 
+    newDocuments[userId] = {};
+
     documentsListData.forEach(([documentId, document]: [Id, DocumentModel]) => {
       const name = documentNameSchema.parse(document.name);
 
@@ -22,11 +24,9 @@ const migrateDatabaseController = adminController<Dto>(async (_, { db }) => {
         path: name.path,
       };
 
-      newDocuments[userId] = {};
-
       if (
         newDocument.visibility === `permanent` &&
-        (!Array.isArray(newDocument.tags) || newDocument.tags?.length === 0)
+        (!Array.isArray(newDocument.tags) || newDocument.tags?.length < 1)
       ) {
         newDocument.tags = [`programming`];
       }
