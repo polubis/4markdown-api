@@ -39,9 +39,9 @@ describe(`Document schemas works when`, () => {
 
   describe(`name validation`, () => {
     it(`verifies total length`, () => {
-      expect(() => documentNameSchema.parse(`a`.repeat(160))).not.toThrow();
-      expect(() => documentNameSchema.parse(`a`.repeat(161))).toThrow(
-        `Name must be between 1-160 characters`,
+      expect(() => documentNameSchema.parse(`a`.repeat(70))).not.toThrow();
+      expect(() => documentNameSchema.parse(`a`.repeat(71))).toThrow(
+        `Name must be between 1-70 characters`,
       );
       expect(() => documentNameSchema.parse(``)).toThrow(
         `Generated path from document name must be between 1-15`,
@@ -96,14 +96,10 @@ describe(`Document schemas works when`, () => {
 
     it(`rejects paths with too many segments`, () => {
       expect(() =>
-        documentNameSchema.parse(
-          `one/two/three/four/five/six/seven/eight/nine/ten/eleven/twelve/thirteen/fourteen/fifteen`,
-        ),
+        documentNameSchema.parse(`o/t/t/t/t/t/t/t/t/t/t/t/t/t/t`),
       ).not.toThrow();
       expect(() =>
-        documentNameSchema.parse(
-          `one/two/three/four/five/six/seven/eight/nine/ten/eleven/twelve/thirteen/fourteen/fifteen/sixteen`,
-        ),
+        documentNameSchema.parse(`o/t/t/f/f/f/f/f/f/f/f/f/f/f/f/f`),
       ).toThrow(`Generated path from document name must be between 1-15`);
     });
 

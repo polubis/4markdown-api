@@ -15,10 +15,10 @@ const documentNameSchema = z
     };
   })
   .superRefine(({ segments, raw }, { addIssue }) => {
-    if (!(raw.length >= 1 && raw.length <= 160)) {
+    if (!(raw.length >= 1 && raw.length <= 70)) {
       addIssue({
         code: `custom`,
-        message: `Name must be between 1-160 characters`,
+        message: `Name must be between 1-70 characters`,
       });
     }
 
