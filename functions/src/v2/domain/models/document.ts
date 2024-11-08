@@ -1,25 +1,31 @@
 import type { Id, Date } from '@utils/validators';
 
+const enum DocumentModelVisibility {
+  Private = `private`,
+  Public = `public`,
+  Permanent = `permanent`,
+}
+
 type DocumentModelBase = {
   code: string;
   name: string;
   cdate: Date;
   mdate: Date;
+  path: string;
 };
 
 type PrivateDocumentModel = DocumentModelBase & {
-  visibility: `private`;
+  visibility: DocumentModelVisibility.Private;
 };
 
 type PublicDocumentModel = DocumentModelBase & {
-  visibility: `public`;
+  visibility: DocumentModelVisibility.Public;
 };
 
 type PermanentDocumentModel = DocumentModelBase & {
-  visibility: `permanent`;
+  visibility: DocumentModelVisibility.Permanent;
   description: string;
-  path: string;
-  tags?: string[];
+  tags: string[];
 };
 
 type DocumentModel =
@@ -29,6 +35,7 @@ type DocumentModel =
 
 type DocumentsModel = Record<Id, DocumentModel>;
 
+export { DocumentModelVisibility };
 export type {
   DocumentsModel,
   DocumentModel,
