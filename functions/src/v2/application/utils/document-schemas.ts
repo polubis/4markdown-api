@@ -32,7 +32,11 @@ const documentNameSchema = z
 
 const permanentDocumentNameSegmentsSchema = z.array(z.string()).min(3).max(15);
 
-const documentDescriptionSchema = z.string().trim().min(50).max(250);
+const documentDescriptionSchema = z
+  .string()
+  .trim()
+  .min(110, `Description must be at least 110 characters`)
+  .max(160, `Description must be fewer than 160 characters`);
 
 const documentCodeSchema = z.string();
 
@@ -48,19 +52,19 @@ const documentTagsSchema = z
       .string()
       .trim()
       .toLowerCase()
-      .min(1)
-      .max(40)
+      .min(1, `Tag must be at least 1 character`)
+      .max(40, `Tag must be fewer than 40 characters`)
       .transform((tag) => (documentTagsWhiteList[tag] ? tag : createSlug(tag)))
       .refine(
         (tag) => tag.length >= 1 && tag.length <= 40,
-        `Invalid tag format`,
+        `One of the tags has an invalid format`,
       ),
   )
-  .min(1)
-  .max(10)
+  .min(1, `At least 1 tag is required`)
+  .max(10, `No more than 10 tags are allowed`)
   .refine(
     (tags) => tags.length === new Set([...tags]).size,
-    `Tags must be unique`,
+    `Tags contain duplicates`,
   );
 
 export {

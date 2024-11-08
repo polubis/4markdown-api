@@ -60,7 +60,7 @@ describe(`Document visibility contract works when`, () => {
         visibility: DocumentModelVisibility.Permanent,
         tags: [`tag1`, `tag2`],
         name: `This is valid name`,
-        description: `A valid description for the document that contains`,
+        description: `A valid description for the document that contains for the document that contains for the document that contains`,
       };
       const expectedPayload: UpdateDocumentVisibilityPayload = {
         ...payload,

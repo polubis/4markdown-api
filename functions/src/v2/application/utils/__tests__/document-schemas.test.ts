@@ -15,22 +15,22 @@ describe(`Document schemas works when`, () => {
       );
     });
 
-    it(`rejects a description shorter than 50 characters`, () => {
+    it(`rejects a description shorter than 110 characters`, () => {
       const shortDescription = `Too short.`;
       expect(() => documentDescriptionSchema.parse(shortDescription)).toThrow(
-        `String must contain at least 50 character(s)`,
+        `Description must be at least 110 characters`,
       );
     });
 
-    it(`rejects a description longer than 250 characters`, () => {
-      const longDescription = `This description is way too long `.repeat(10);
+    it(`rejects a description longer than 160 characters`, () => {
+      const longDescription = `a`.repeat(161);
       expect(() => documentDescriptionSchema.parse(longDescription)).toThrow(
-        `String must contain at most 250 character(s)`,
+        `Description must be fewer than 160 characters`,
       );
     });
 
     it(`trims whitespace from a valid description`, () => {
-      const descriptionWithWhitespace = `    This is a description with leading and trailing whitespace that should be trimmed by the schema.     `;
+      const descriptionWithWhitespace = `    This is a description with leading and trailing whitespace that should be trimmed by the schema. should be trimmed by should be trimmed by    `;
       expect(documentDescriptionSchema.parse(descriptionWithWhitespace)).toBe(
         descriptionWithWhitespace.trim(),
       );
@@ -186,16 +186,16 @@ describe(`Document schemas works when`, () => {
   describe(`tags validation`, () => {
     it(`blocks non-letters and non-numbers values`, () => {
       expect(() => documentTagsSchema.parse([`-`])).toThrow(
-        `Invalid tag format`,
+        `One of the tags has an invalid format`,
       );
       expect(() => documentTagsSchema.parse([``])).toThrow(
-        `Invalid tag format`,
+        `One of the tags has an invalid format`,
       );
       expect(() => documentTagsSchema.parse([`+`])).toThrow(
-        `Invalid tag format`,
+        `One of the tags has an invalid format`,
       );
       expect(() => documentTagsSchema.parse([`>>`])).toThrow(
-        `Invalid tag format`,
+        `One of the tags has an invalid format`,
       );
       expect(documentTagsSchema.parse([`-x`])).toEqual([`x`]);
       expect(documentTagsSchema.parse([`-a    -`])).toEqual([`a`]);
@@ -234,17 +234,17 @@ describe(`Document schemas works when`, () => {
 
     it(`verifies if there is not duplicates`, () => {
       expect(() => documentTagsSchema.parse([`xa`, `xa`])).toThrow(
-        `Tags must be unique`,
+        `Tags contain duplicates`,
       );
       expect(() => documentTagsSchema.parse([`xa`, `xd`])).not.toThrow();
       expect(() => documentTagsSchema.parse([`c`, `c    `])).toThrow(
-        `Tags must be unique`,
+        `Tags contain duplicates`,
       );
       expect(() => documentTagsSchema.parse([`c++`, `c    `, `c+`])).toThrow(
-        `Tags must be unique`,
+        `Tags contain duplicates`,
       );
       expect(() => documentTagsSchema.parse([`c#`, `c    `, `c##`])).toThrow(
-        `Tags must be unique`,
+        `Tags contain duplicates`,
       );
     });
 
@@ -257,14 +257,14 @@ describe(`Document schemas works when`, () => {
 
     it(`verifies that each tag has 1-50 characters`, () => {
       expect(() => documentTagsSchema.parse([`xda`, ``])).toThrow(
-        `String must contain at least 1 character(s)`,
+        `Tag must be at least 1 character`,
       );
       expect(() => documentTagsSchema.parse([`c`])).not.toThrow();
     });
 
     it(`verifies that number of tags is between 1-10`, () => {
       expect(() => documentTagsSchema.parse([])).toThrow(
-        `Array must contain at least 1 element(s)`,
+        `At least 1 tag is required`,
       );
       expect(() =>
         documentTagsSchema.parse([
@@ -280,7 +280,7 @@ describe(`Document schemas works when`, () => {
           `tag10`,
           `tag11`,
         ]),
-      ).toThrow(`Array must contain at most 10 element(s)`);
+      ).toThrow(`No more than 10 tags are allowed`);
 
       expect(() => documentTagsSchema.parse([`tag1`])).not.toThrow();
 
