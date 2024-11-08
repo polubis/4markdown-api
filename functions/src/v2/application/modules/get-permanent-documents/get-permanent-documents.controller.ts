@@ -51,7 +51,6 @@ const getPermanentDocumentsController = controller<Dto>(async (_, { db }) => {
           id: documentId,
           author: usersProfiles[userId] ?? null,
           rating: documentsRates[documentId] ?? defaultRate,
-          tags: document.tags ?? [],
         });
       }
     });

@@ -1,12 +1,28 @@
-import { z, AnyZodObject } from 'zod';
+import {
+  z,
+  AnyZodObject,
+  ZodUnion,
+  ZodObject,
+  ZodArray,
+  ZodTypeAny,
+} from 'zod';
 import { errors } from './errors';
 
-const parse = async <TSchema extends AnyZodObject>(
+const parse = async <
+  TSchema extends
+    | AnyZodObject
+    | ZodUnion<[AnyZodObject, ...AnyZodObject[]]>
+    | ZodArray<ZodTypeAny>,
+>(
   schema: TSchema,
   payload: unknown,
 ): Promise<z.infer<TSchema>> => {
   try {
-    const result = await schema.strict().parseAsync(payload);
+    const result = await (schema instanceof ZodObject
+      ? schema.strict()
+      : schema
+    ).parseAsync(payload);
+
     return result;
   } catch (e: unknown) {
     throw errors.schema(e);
