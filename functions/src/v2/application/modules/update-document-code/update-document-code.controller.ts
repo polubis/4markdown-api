@@ -5,11 +5,12 @@ import { type Date, validators } from '@utils/validators';
 import { parse } from '@utils/parse';
 import type { DocumentModel, DocumentsModel } from '@domain/models/document';
 import { nowISO } from '@libs/helpers/stamps';
+import { documentCodeSchema } from '@utils/document-schemas';
 
 const payloadSchema = z.object({
   id: validators.id,
   mdate: validators.date,
-  code: validators.document.code,
+  code: documentCodeSchema,
 });
 
 type Dto = {
@@ -41,13 +42,15 @@ const updateDocumentCodeController = protectedController<Dto>(
 
     const mdate = nowISO();
 
-    await ref.update(<DocumentsModel>{
+    const model: DocumentsModel = {
       [payload.id]: {
         ...document,
         code: payload.code,
         mdate,
       },
-    });
+    };
+
+    await ref.update(model);
 
     return { mdate };
   },

@@ -1,12 +1,12 @@
-import { https } from 'firebase-functions';
+import { type FunctionsErrorCode, HttpsError } from 'firebase-functions/https';
 import { z } from 'zod';
 
 const error = (
-  code: https.FunctionsErrorCode,
+  code: FunctionsErrorCode,
   symbol: string,
   content: string | { message: string; key: string }[],
-): https.HttpsError =>
-  new https.HttpsError(
+): HttpsError =>
+  new HttpsError(
     code,
     JSON.stringify({
       symbol,
