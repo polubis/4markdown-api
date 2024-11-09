@@ -17,7 +17,8 @@ describe(`Document creation works when`, () => {
   const validPayload: CreateDocumentPayload = {
     name: {
       raw: `Test Document For Me`,
-      path: `test-document-for-me`,
+      slug: `test-document-for-me`,
+      path: `/test-document-for-me/`,
       segments: [`test`, `document`, `for`, `me`],
     },
     code: `console.log("test")`,
@@ -115,7 +116,7 @@ describe(`Document creation works when`, () => {
                     mdate: `2024-01-01T00:00:00Z`,
                     name: `My custom document name`,
                     code: `empty code`,
-                    path: `my-custom-document-name`,
+                    path: `/my-custom-document-name/`,
                     visibility: `private`,
                   },
                 }),
