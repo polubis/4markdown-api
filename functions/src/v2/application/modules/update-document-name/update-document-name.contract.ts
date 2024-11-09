@@ -1,3 +1,4 @@
+import { type DocumentModel } from '@domain/models/document';
 import { documentNameSchema } from '@utils/document-schemas';
 import { type Date, validators } from '@utils/validators';
 import { z } from 'zod';
@@ -14,7 +15,7 @@ type UpdateDocumentNamePayload = z.infer<
 
 type UpdateDocumentNameDto = {
   mdate: Date;
-  name: string;
+  name: DocumentModel['name'];
 };
 
 export type { UpdateDocumentNamePayload, UpdateDocumentNameDto };
