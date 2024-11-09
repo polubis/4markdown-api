@@ -15,8 +15,5 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
 
-      - name: Install Internal Function Deps
-        run: cd functions && npm i
-
       - name: Run Typecheck
-        run: cd functions && npm run build
+        run: cd functions && npm i && npm run build
