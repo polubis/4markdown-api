@@ -38,6 +38,15 @@ describe(`Document schemas works when`, () => {
   });
 
   describe(`name validation`, () => {
+    it(`trims white space`, () => {
+      expect(documentNameSchema.parse(`   aas  sas as   `)).toEqual({
+        path: `/aas-sas-as/`,
+        raw: `aas  sas as`,
+        segments: [`aas`, `sas`, `as`],
+        slug: `aas-sas-as`,
+      });
+    });
+
     it(`verifies total length`, () => {
       expect(() => documentNameSchema.parse(`a`.repeat(70))).not.toThrow();
       expect(() => documentNameSchema.parse(`a`.repeat(71))).toThrow(
