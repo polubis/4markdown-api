@@ -14,6 +14,7 @@ type UpdateDocumentNamePayload = z.infer<
 
 type UpdateDocumentNameDto = {
   mdate: Date;
+  name: string;
 };
 
 export type { UpdateDocumentNamePayload, UpdateDocumentNameDto };

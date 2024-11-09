@@ -292,6 +292,6 @@ describe(`Document name update works when`, () => {
         mdate: stampMock,
       },
     });
-    expect(dto).toEqual({ mdate: stampMock });
+    expect(dto).toEqual({ mdate: stampMock, name: validPayload.name.raw });
   });
 });
