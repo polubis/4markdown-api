@@ -19,4 +19,4 @@ jobs:
         run: cd functions && npm i
 
       - name: Run Typecheck
-        run: npm run build
+        run: cd functions && npm run build
