@@ -18,7 +18,8 @@ describe(`Document name update works when`, () => {
   const validPayload: UpdateDocumentNamePayload = {
     name: {
       raw: `Test Document For Me`,
-      path: `test-document-for-me`,
+      slug: `test-document-for-me`,
+      path: `/test-document-for-me/`,
       segments: [`test`, `document`, `for`, `me`],
     },
     id: `document-id`,
@@ -67,7 +68,7 @@ describe(`Document name update works when`, () => {
                         mdate: `2024-01-01T00:00:00Z`,
                         name: `Example document name`,
                         code: ``,
-                        path: `example-document-name`,
+                        path: `/example-document-name/`,
                         visibility: DocumentModelVisibility.Private,
                       },
                     }),
@@ -131,7 +132,7 @@ describe(`Document name update works when`, () => {
                         mdate: `2024-01-01T00:00:00Z`,
                         name: `Test Document For Me-2`,
                         code: ``,
-                        path: `test-document-for-me-2`,
+                        path: `/test-document-for-me-2/`,
                         visibility: DocumentModelVisibility.Private,
                       },
                       'other-document-id': {
@@ -139,7 +140,7 @@ describe(`Document name update works when`, () => {
                         mdate: `2024-01-02T00:00:00Z`,
                         name: `Test Document For Me`,
                         code: ``,
-                        path: `test-document-for-me`,
+                        path: `/test-document-for-me/`,
                         visibility: DocumentModelVisibility.Private,
                       },
                     }),
@@ -162,8 +163,9 @@ describe(`Document name update works when`, () => {
             ...validPayload,
             name: {
               raw: `Too Short`,
+              slug: `too-short`,
               segments: [`too`, `short`],
-              path: `too-short`,
+              path: `/too-short/`,
             },
           },
           context: {
@@ -178,7 +180,7 @@ describe(`Document name update works when`, () => {
                         mdate: `2024-01-01T00:00:00Z`,
                         name: `Test Document With Different Name`,
                         code: ``,
-                        path: `test-document-with-different-name`,
+                        path: `/test-document-with-different-name/`,
                         visibility: DocumentModelVisibility.Permanent,
                         description: `Some description of my document`,
                         tags: [`programming`],
@@ -213,7 +215,7 @@ describe(`Document name update works when`, () => {
                           mdate: `2024-01-01T00:00:00Z`,
                           name: `Test Document For Me`,
                           code: ``,
-                          path: `test-document-for-me`,
+                          path: `/test-document-for-me/`,
                           visibility: DocumentModelVisibility.Permanent,
                           description: `Some description of my document`,
                           tags: [`programming`],
@@ -230,7 +232,7 @@ describe(`Document name update works when`, () => {
                         mdate: `2024-01-01T00:00:00Z`,
                         name: `Test Document For Me`,
                         code: ``,
-                        path: `test-document-for-me`,
+                        path: `/test-document-for-me/`,
                         visibility: DocumentModelVisibility.Permanent,
                         description: `Some description of my document`,
                         tags: [`programming`],
@@ -257,7 +259,7 @@ describe(`Document name update works when`, () => {
       mdate: `2024-01-01T00:00:00Z`,
       name: `Test Document For Me`,
       code: ``,
-      path: `test-document-for-me`,
+      path: `/test-document-for-me/`,
       visibility: DocumentModelVisibility.Private,
     };
 
@@ -290,6 +292,6 @@ describe(`Document name update works when`, () => {
         mdate: stampMock,
       },
     });
-    expect(dto).toEqual({ mdate: stampMock });
+    expect(dto).toEqual({ mdate: stampMock, name: validPayload.name.raw });
   });
 });

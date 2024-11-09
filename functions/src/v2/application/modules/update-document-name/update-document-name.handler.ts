@@ -90,7 +90,7 @@ const updateDocumentNameHandler = async ({
 
   await userDocumentsRef.update(model);
 
-  return { mdate };
+  return { mdate, name: payload.name.raw };
 };
 
 export { updateDocumentNameHandler };
