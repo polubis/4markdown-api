@@ -27,6 +27,10 @@ const getPermanentDocumentsController = controller<Dto>(async (_, { db }) => {
     db.collection(`account-permissions`).where(`trusted`, `==`, true).get(),
   ]);
 
+  if (accountPermissionsSnap.docs.length === 0) {
+    return [];
+  }
+
   const trustedAuthors: Record<Id, true> = {};
 
   accountPermissionsSnap.docs.forEach((accountPermissionSnap) => {
