@@ -15,12 +15,23 @@ type Dto = (Required<PermanentDocumentModel> & {
 })[];
 
 const getPermanentDocumentsController = controller<Dto>(async (_, { db }) => {
-  const [documentsSnap, usersProfilesSnap, documentsRatesSnap] =
-    await Promise.all([
-      db.collection(`docs`).get(),
-      db.collection(`users-profiles`).get(),
-      db.collection(`documents-rates`).get(),
-    ]);
+  const [
+    documentsSnap,
+    usersProfilesSnap,
+    documentsRatesSnap,
+    accountPermissionsSnap,
+  ] = await Promise.all([
+    db.collection(`docs`).get(),
+    db.collection(`users-profiles`).get(),
+    db.collection(`documents-rates`).get(),
+    db.collection(`account-permissions`).where(`trusted`, `==`, true).get(),
+  ]);
+
+  const trustedAuthors: Record<Id, true> = {};
+
+  accountPermissionsSnap.docs.forEach((accountPermissionSnap) => {
+    trustedAuthors[accountPermissionSnap.id] = true;
+  });
 
   const usersProfiles: Record<Id, UserProfileModel> = {};
 
@@ -44,16 +55,20 @@ const getPermanentDocumentsController = controller<Dto>(async (_, { db }) => {
     const userId = documentsListSnap.id;
     const documentsListData = Object.entries(documentsListSnap.data());
 
-    documentsListData.forEach(([documentId, document]: [Id, DocumentModel]) => {
-      if (document.visibility === `permanent`) {
-        permanentDocuments.push({
-          ...document,
-          id: documentId,
-          author: usersProfiles[userId] ?? null,
-          rating: documentsRates[documentId] ?? defaultRate,
-        });
-      }
-    });
+    if (trustedAuthors[userId]) {
+      documentsListData.forEach(
+        ([documentId, document]: [Id, DocumentModel]) => {
+          if (document.visibility === `permanent`) {
+            permanentDocuments.push({
+              ...document,
+              id: documentId,
+              author: usersProfiles[userId] ?? null,
+              rating: documentsRates[documentId] ?? defaultRate,
+            });
+          }
+        },
+      );
+    }
   });
 
   return permanentDocuments.sort((prev, curr) => {
