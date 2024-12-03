@@ -17,4 +17,4 @@ type ImageModel = {
 };
 
 export { IMAGE_EXTENSIONS, IMAGE_CONTENT_TYPES };
-export type { ImageModel };
+export type { ImageModel, ImageExtension, ImageContentType };
