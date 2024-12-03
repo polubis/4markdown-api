@@ -5,6 +5,7 @@ import {
   ZodObject,
   ZodArray,
   ZodTypeAny,
+  ZodString,
 } from 'zod';
 import { errors } from './errors';
 
@@ -12,7 +13,8 @@ const parse = async <
   TSchema extends
     | AnyZodObject
     | ZodUnion<[AnyZodObject, ...AnyZodObject[]]>
-    | ZodArray<ZodTypeAny>,
+    | ZodArray<ZodTypeAny>
+    | ZodString,
 >(
   schema: TSchema,
   payload: unknown,
