@@ -1,7 +1,7 @@
 import { decodeBase64Asset } from '../decode-base-64-asset';
 
-describe(`Decoding base 64 assets works when`, () => {
-  it(`decoding base64 data for various asset types returns expected values`, () => {
+describe(`Decoding base64 assets`, () => {
+  it(`handles image assets and extracts expected values`, () => {
     const imageBase64 = `data:image/jpeg;base64,/9j/4AAQSkZJRgABAQE..`;
     const result = decodeBase64Asset(imageBase64);
 
@@ -10,7 +10,7 @@ describe(`Decoding base 64 assets works when`, () => {
     expect(result.extension).toBe(`jpeg`);
   });
 
-  it(`decoding base64 data for audio assets returns expected values`, () => {
+  it(`handles audio assets and extracts expected values`, () => {
     const audioBase64 = `data:audio/mp3;base64,SUQzAwAAAAAA..`;
     const result = decodeBase64Asset(audioBase64);
 
@@ -19,7 +19,7 @@ describe(`Decoding base 64 assets works when`, () => {
     expect(result.extension).toBe(`mp3`);
   });
 
-  it(`decoding base64 data for video assets returns expected values`, () => {
+  it(`handles video assets and extracts expected values`, () => {
     const videoBase64 = `data:video/mp4;base64,AAAAIGZ0eXBtcDQyLj..`;
     const result = decodeBase64Asset(videoBase64);
 
@@ -28,7 +28,7 @@ describe(`Decoding base 64 assets works when`, () => {
     expect(result.extension).toBe(`mp4`);
   });
 
-  it(`decoding base64 data for text assets returns expected values`, () => {
+  it(`handles text assets and extracts expected values`, () => {
     const textBase64 = `data:text/plain;base64,SGVsbG8gd29ybGQh`;
     const result = decodeBase64Asset(textBase64);
 
@@ -37,7 +37,7 @@ describe(`Decoding base 64 assets works when`, () => {
     expect(result.extension).toBe(`plain`);
   });
 
-  it(`handling base64 data with unknown MIME types returns expected values`, () => {
+  it(`handles assets with unknown MIME types and extracts expected values`, () => {
     const unknownBase64 = `data:application/unknown;base64,abcdef123456`;
     const result = decodeBase64Asset(unknownBase64);
 
