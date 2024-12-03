@@ -1,4 +1,5 @@
-import { base64 } from '@utils/validators';
+import { ImageModel } from '@domain/models/image';
+import { base64, Id } from '@utils/validators';
 import { z } from 'zod';
 
 const uploadImagePayloadSchema = z.object({
@@ -6,6 +7,9 @@ const uploadImagePayloadSchema = z.object({
 });
 
 type UploadImagePayload = z.infer<typeof uploadImagePayloadSchema>;
+type UploadImageDto = ImageModel & {
+  id: Id;
+};
 
-export type { UploadImagePayload };
+export type { UploadImagePayload, UploadImageDto };
 export { uploadImagePayloadSchema };
