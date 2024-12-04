@@ -80,6 +80,7 @@ export const autoCreateBackup = onSchedule(
 export const uploadImage = uploadImageController({
   db,
   projectId,
+  memory: `512MiB`,
 });
 export const updateDocumentCode = updateDocumentCodeController({
   db,
