@@ -15,6 +15,7 @@ import { errors } from '@utils/errors';
 import { toUnit } from '@libs/helpers/to-unit';
 import { storage } from 'firebase-admin';
 import { uuid } from '@libs/helpers/stamps';
+import { Id } from '@utils/validators';
 
 const isSupportedContentType = (
   contentType: string,
@@ -32,6 +33,23 @@ const decodeImage = (
   } catch {
     throw errors.badRequest(`Cannot decode. Invalid image format`);
   }
+};
+
+// @TODO[PRIO=2]: [Add bucket + storage to injected API's??? Or abstract it?].
+const createUrl = ({
+  id,
+  uid,
+  name,
+}: {
+  name: string;
+  id: Id;
+  uid: Id;
+}): string => {
+  const location = `${uid}/images/${id}`;
+
+  return `https://firebasestorage.googleapis.com/v0/b/${name}/o/${encodeURIComponent(
+    location,
+  )}?alt=media`;
 };
 
 const uploadImageHandler = async ({
@@ -67,19 +85,11 @@ const uploadImageHandler = async ({
     );
   }
 
-  const bucket = storage().bucket();
-  const [bucketExists] = await bucket.exists();
-
-  if (!bucketExists) {
-    throw errors.internal(`Cannot find bucket for images`);
-  }
-
   const id = uuid();
   const location = `${uid}/images/${id}`;
+  const bucket = storage().bucket();
   const file = bucket.file(location);
-  const url = `https://firebasestorage.googleapis.com/v0/b/${
-    bucket.name
-  }/o/${encodeURIComponent(location)}?alt=media`;
+  const url = createUrl({ name: bucket.name, id, uid });
 
   const imagesModel: ImagesModel = {
     [id]: {
