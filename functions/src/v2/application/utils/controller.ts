@@ -3,8 +3,8 @@ import { Db, type DBInstance } from '../database/database';
 import { type Firestore } from 'firebase-admin/firestore';
 import { onCall, type CallableFunction } from 'firebase-functions/https';
 import type { ProjectId } from '../infra/models/atoms';
-import type { UserId } from '@domain/models/atoms';
-import { asUserId } from '@domain/converters/atoms';
+import type { Id } from './validators';
+import type { MemoryOption } from 'firebase-functions/options';
 // @TODO[PRIO=2]: [Split it into separate library].
 type Secret = 'EMAILS_API_KEY' | 'EMAILS_ENCRYPTION_TOKEN' | `ADMIN_LIST`;
 type Secrets = Secret[];
@@ -15,6 +15,7 @@ type ControllerConfig = {
   projectId: ProjectId;
   maxInstances?: number;
   concurrency?: number;
+  memory?: MemoryOption;
 };
 
 type RawPayload = unknown;
@@ -33,6 +34,9 @@ type ControllerHandler<TResponse = unknown> = (
 const getSecrets = (secrets?: Secrets): Secrets => secrets ?? [];
 const getMaxInstances = (maxInstances?: number): number => maxInstances ?? 1;
 const getConcurrency = (concurrency?: number): number => concurrency ?? 6;
+const getMemory = (
+  memory?: ControllerConfig['memory'],
+): ControllerConfig['memory'] => memory ?? `256MiB`;
 
 // @TODO[PRIO=2]: [Add and test parent try catch].
 const controller =
@@ -45,6 +49,7 @@ const controller =
         maxInstances: getMaxInstances(config.maxInstances),
         secrets: getSecrets(config.secrets),
         concurrency: getConcurrency(config.concurrency),
+        memory: getMemory(config.memory),
       },
       async (request) => {
         return await handler(request.data, { db, projectId: config.projectId });
@@ -73,6 +78,7 @@ const protectedController =
         maxInstances: getMaxInstances(config.maxInstances),
         secrets: getSecrets(config.secrets),
         concurrency: getConcurrency(config.concurrency),
+        memory: getMemory(config.memory),
       },
       async (request) => {
         const { auth } = request;
@@ -102,7 +108,7 @@ type AdminControllerHandler<TResponse = unknown> = (
   context: AdminControllerHandlerContext,
 ) => Promise<TResponse>;
 
-const isAdmin = (userId: UserId): boolean =>
+const isAdmin = (userId: Id): boolean =>
   (process.env.ADMIN_LIST ?? ``).split(`|`).some((id) => id === userId);
 
 const adminController =
@@ -115,13 +121,14 @@ const adminController =
         maxInstances: getMaxInstances(config.maxInstances),
         secrets: getSecrets(config.secrets),
         concurrency: getConcurrency(config.concurrency),
+        memory: getMemory(config.memory),
       },
       async (request) => {
         const { auth } = request;
 
         if (!auth) throw errors.unauthenticated();
 
-        if (!isAdmin(asUserId(auth.uid))) throw errors.unauthorized();
+        if (!isAdmin(auth.uid)) throw errors.unauthorized();
 
         const { uid } = auth;
 
