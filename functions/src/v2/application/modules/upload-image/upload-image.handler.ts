@@ -110,11 +110,9 @@ const uploadImageHandler = async ({
 
   const userImages = userImagesSnap.data();
 
-  if (userImages) {
-    await userImagesRef.update(imagesModel);
-  } else {
-    await userImagesRef.set(imagesModel);
-  }
+  userImages
+    ? await userImagesRef.update(imagesModel)
+    : await userImagesRef.set(imagesModel);
 
   return {
     contentType,
