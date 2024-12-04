@@ -24,7 +24,7 @@ describe(`Image upload works when`, () => {
   const bucketName = `bucket`;
   const oneYearCache = `public, max-age=31536000`;
 
-  it(`uploads image and creates metadata entry if there is no images yet`, async () => {
+  it(`uploads image in webp format and creates metadata entry if there is no images yet`, async () => {
     const setSpy = jest.fn();
     const saveSpy = jest.fn();
     const fileSpy = jest.fn().mockImplementation(() => ({
@@ -67,8 +67,8 @@ describe(`Image upload works when`, () => {
     });
 
     const imageModel: ImageModel = {
-      contentType: `image/jpeg`,
-      extension: `jpeg`,
+      contentType: `image/webp`,
+      extension: `webp`,
       url: `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/user-uid%2Fimages%2F2024-12-01T00%3A00%3A00Z?alt=media`,
     };
 
@@ -88,7 +88,7 @@ describe(`Image upload works when`, () => {
     });
     expect(saveSpy).toHaveBeenCalledTimes(1);
     expect(saveSpy).toHaveBeenCalledWith(expect.any(Buffer), {
-      contentType: `image/jpeg`,
+      contentType: `image/webp`,
       metadata: {
         cacheControl: oneYearCache,
       },

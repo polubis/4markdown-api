@@ -49,15 +49,6 @@ const createUrl = ({
   )}?alt=media`;
 };
 
-const optimizeImage = (
-  extension: ImageExtension,
-  buffer: Buffer,
-): Promise<Buffer> => {
-  if (extension === `gif`) return Promise.resolve(buffer);
-
-  return webp({ buffer, quality: 50 });
-};
-
 const uploadImageHandler = async ({
   payload,
   context: { db, uid },
@@ -86,6 +77,15 @@ const uploadImageHandler = async ({
     );
   }
 
+  const userImagesRef = db.collection(`images`).doc(uid);
+
+  const [userImagesSnap, resizedBuffer] = await Promise.all([
+    userImagesRef.get(),
+    extension === `gif`
+      ? Promise.resolve(buffer)
+      : webp({ buffer, quality: 50 }),
+  ]);
+
   const id = uuid();
   const location = `${uid}/images/${id}`;
   const bucket = storage().bucket();
@@ -93,8 +93,8 @@ const uploadImageHandler = async ({
   const url = createUrl({ name: bucket.name, location });
 
   const imageModel: ImageModel = {
-    extension,
-    contentType,
+    extension: extension === `gif` ? `gif` : `webp`,
+    contentType: contentType === `image/gif` ? `image/gif` : `image/webp`,
     url,
   };
 
@@ -102,20 +102,13 @@ const uploadImageHandler = async ({
     [id]: imageModel,
   };
 
-  const userImagesRef = db.collection(`images`).doc(uid);
-
-  const [userImagesSnap, resizedBuffer] = await Promise.all([
-    userImagesRef.get(),
-    optimizeImage(extension, buffer),
-  ]);
-
   const userImages = userImagesSnap.data();
 
   const oneYearCache = `public, max-age=31536000`;
 
   await Promise.all([
     file.save(resizedBuffer, {
-      contentType,
+      contentType: imageModel.contentType,
       metadata: {
         cacheControl: oneYearCache,
       },
