@@ -16,6 +16,7 @@ import { toUnit } from '@libs/helpers/to-unit';
 import { storage } from 'firebase-admin';
 import { uuid } from '@libs/helpers/stamps';
 import { Id } from '@utils/validators';
+import * as sharp from 'sharp';
 
 const isSupportedContentType = (
   contentType: string,
@@ -50,6 +51,15 @@ const createUrl = ({
   return `https://firebasestorage.googleapis.com/v0/b/${name}/o/${encodeURIComponent(
     location,
   )}?alt=media`;
+};
+
+const optimizeImage = (
+  extension: ImageExtension,
+  buffer: Buffer,
+): Promise<Buffer> => {
+  if (extension === `gif`) return Promise.resolve(buffer);
+
+  return sharp(buffer).webp({ quality: 50 }).toBuffer();
 };
 
 const uploadImageHandler = async ({
@@ -101,18 +111,21 @@ const uploadImageHandler = async ({
 
   const userImagesRef = db.collection(`images`).doc(uid);
 
-  const [userImagesSnap] = await Promise.all([
+  const [userImagesSnap, resizedBuffer] = await Promise.all([
     userImagesRef.get(),
-    file.save(buffer, {
-      contentType,
-    }),
+    optimizeImage(extension, buffer),
   ]);
 
   const userImages = userImagesSnap.data();
 
-  userImages
-    ? await userImagesRef.update(imagesModel)
-    : await userImagesRef.set(imagesModel);
+  await Promise.all([
+    file.save(resizedBuffer, {
+      contentType,
+    }),
+    userImages
+      ? userImagesRef.update(imagesModel)
+      : userImagesRef.set(imagesModel),
+  ]);
 
   return {
     contentType,
