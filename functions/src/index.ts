@@ -1,6 +1,5 @@
 import 'module-alias/register';
 import * as admin from 'firebase-admin';
-import { UsersService } from './services/users.service';
 import { UsersProfilesService } from './services/users-profiles.service';
 import { updateDocumentCodeController } from './v2/application/modules/update-document-code/update-document-code.controller';
 import { rateDocumentController } from './v2/application/modules/rate-document/rate-document.controller';
@@ -20,19 +19,11 @@ import { onCall } from 'firebase-functions/https';
 import { updateDocumentVisibilityController } from '@modules/update-document-visibility/update-document-visibility.controller';
 import { isDev } from '@utils/is-dev';
 import { migrateDatabaseController } from '@modules/migrate-database/migrate-database.controller';
+import { uploadImageController } from '@modules/upload-image/upload-image.controller';
 
 const app = admin.initializeApp();
 const db = app.firestore();
 const projectId = app.options.projectId!;
-
-export const uploadImage = onCall({ maxInstances: 2 }, async (request) => {
-  return await UsersService.uploadImage({
-    payload: request.data,
-    context: {
-      auth: request.auth,
-    },
-  });
-});
 
 export const updateYourUserProfile = onCall<unknown>(
   { maxInstances: 2 },
@@ -86,6 +77,11 @@ export const autoCreateBackup = onSchedule(
   },
 );
 
+export const uploadImage = uploadImageController({
+  db,
+  projectId,
+  memory: `512MiB`,
+});
 export const updateDocumentCode = updateDocumentCodeController({
   db,
   projectId,
