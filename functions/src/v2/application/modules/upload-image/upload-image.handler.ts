@@ -16,7 +16,7 @@ import { toUnit } from '@libs/helpers/to-unit';
 import { storage } from 'firebase-admin';
 import { uuid } from '@libs/helpers/stamps';
 import { Id } from '@utils/validators';
-import * as sharp from 'sharp';
+import { webp } from '@libs/helpers/webp';
 
 const isSupportedContentType = (
   contentType: string,
@@ -59,7 +59,7 @@ const optimizeImage = (
 ): Promise<Buffer> => {
   if (extension === `gif`) return Promise.resolve(buffer);
 
-  return sharp(buffer).webp({ quality: 50 }).toBuffer();
+  return webp({ buffer, quality: 50 });
 };
 
 const uploadImageHandler = async ({
