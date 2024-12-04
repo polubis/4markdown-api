@@ -50,7 +50,6 @@ describe(`Image upload works when`, () => {
               get: async () => ({
                 data: () => null,
               }),
-              update: jest.fn(),
               set: setSpy,
             }),
           }),
