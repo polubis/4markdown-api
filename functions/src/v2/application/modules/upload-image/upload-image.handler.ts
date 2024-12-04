@@ -9,56 +9,12 @@ import {
   IMAGE_EXTENSIONS,
   ImageContentType,
   ImageExtension,
+  ImagesModel,
 } from '@domain/models/image';
 import { errors } from '@utils/errors';
 import { toUnit } from '@libs/helpers/to-unit';
-
-// uploadImage: async ({
-//     payload,
-//     context,
-//   }: {
-//     payload: UploadImagePayload;
-//     context: Pick<CallableRequest<UploadImagePayload>, 'auth'>;
-//   }): Promise<UploadImageDto> => {
-//     const auth = AuthService.authorize(context);
-
-//     const { extension, contentType, buffer } = Image.create(payload.image);
-//     const storage = admin.storage();
-//     const bucket = storage.bucket();
-//     const [bucketExists] = await bucket.exists();
-
-//     if (!bucketExists) {
-//       throw errors.internal(`Cannot find bucket for images`);
-//     }
-
-//     const id = uuid();
-//     const location = `${auth.uid}/images/${id}`;
-//     const file = bucket.file(location);
-
-//     await file.save(buffer, {
-//       contentType,
-//     });
-
-//     const url = `https://firebasestorage.googleapis.com/v0/b/${
-//       bucket.name
-//     }/o/${encodeURIComponent(location)}?alt=media`;
-
-//     await ImagesRepository(auth.uid).create({
-//       id,
-//       url,
-//       contentType,
-//       extension,
-//     });
-
-//     return {
-//       extension,
-//       contentType,
-//       url,
-//       id,
-//     };
-//   },
-
-const SIZE_IN_MB_LIMIT = 4;
+import { storage } from 'firebase-admin';
+import { uuid } from '@libs/helpers/stamps';
 
 const isSupportedContentType = (
   contentType: string,
@@ -85,9 +41,7 @@ const uploadImageHandler = async ({
   payload: UploadImagePayload;
   context: ProtectedControllerHandlerContext;
 }): Promise<UploadImageDto> => {
-  const { contentType, extension, blob, size, buffer } = decodeImage(
-    payload.image,
-  );
+  const { contentType, extension, size, buffer } = decodeImage(payload.image);
 
   if (!isSupportedContentType(contentType)) {
     throw errors.badRequest(
@@ -105,19 +59,58 @@ const uploadImageHandler = async ({
     );
   }
 
-  if (toUnit(size, `MB`) > SIZE_IN_MB_LIMIT) {
+  const SIZE_IN_MB_LIMIT = 4;
+
+  if (toUnit(size, `mb`) > SIZE_IN_MB_LIMIT) {
     throw errors.badRequest(
-      `The provided image extension is not supported. Supported extensions are: ${IMAGE_EXTENSIONS.join(
-        `, `,
-      )}`,
+      `Max image size is ${SIZE_IN_MB_LIMIT} megabytes (MB)`,
     );
+  }
+
+  const bucket = storage().bucket();
+  const [bucketExists] = await bucket.exists();
+
+  if (!bucketExists) {
+    throw errors.internal(`Cannot find bucket for images`);
+  }
+
+  const id = uuid();
+  const location = `${uid}/images/${id}`;
+  const file = bucket.file(location);
+  const url = `https://firebasestorage.googleapis.com/v0/b/${
+    bucket.name
+  }/o/${encodeURIComponent(location)}?alt=media`;
+
+  const imagesModel: ImagesModel = {
+    [id]: {
+      extension,
+      contentType,
+      url,
+    },
+  };
+
+  const userImagesRef = db.collection(`images`).doc(uid);
+
+  const [userImagesSnap] = await Promise.all([
+    userImagesRef.get(),
+    file.save(buffer, {
+      contentType,
+    }),
+  ]);
+
+  const userImages = userImagesSnap.data();
+
+  if (userImages) {
+    await userImagesRef.update(imagesModel);
+  } else {
+    await userImagesRef.set(imagesModel);
   }
 
   return {
     contentType,
     extension,
-    id: ``,
-    url: ``,
+    id,
+    url,
   };
 };
 

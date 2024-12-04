@@ -1,4 +1,4 @@
-import type { Url } from '@utils/validators';
+import type { Id, Url } from '@utils/validators';
 
 const IMAGE_EXTENSIONS = [`jpg`, `jpeg`, `png`, `webp`, `gif`] as const;
 
@@ -16,5 +16,7 @@ type ImageModel = {
   contentType: ImageContentType;
 };
 
+type ImagesModel = Record<Id, ImageModel>;
+
 export { IMAGE_EXTENSIONS, IMAGE_CONTENT_TYPES };
-export type { ImageModel, ImageExtension, ImageContentType };
+export type { ImageModel, ImageExtension, ImageContentType, ImagesModel };
