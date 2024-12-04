@@ -1,6 +1,6 @@
 import { controller } from '@utils/controller';
 import { z } from 'zod';
-import { validators } from '@utils/validators';
+import { id } from '@utils/validators';
 import { parse } from '@utils/parse';
 import { nowISO } from '@libs/helpers/stamps';
 import {
@@ -10,7 +10,7 @@ import {
 import { createDocumentRating } from '@utils/create-document-rating';
 
 const payloadSchema = z.object({
-  documentId: validators.id,
+  documentId: id,
   category: z.enum(DOCUMENT_RATING_CATEGORIES),
 });
 
