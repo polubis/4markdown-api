@@ -1,6 +1,6 @@
 import { controller } from '@utils/controller';
 import { z } from 'zod';
-import { type Id, validators } from '@utils/validators';
+import { type Id, id } from '@utils/validators';
 import { parse } from '@utils/parse';
 import type {
   DocumentModel,
@@ -13,7 +13,7 @@ import type { DocumentRateModel } from '@domain/models/document-rate';
 import { createDocumentRating } from '@utils/create-document-rating';
 
 const payloadSchema = z.object({
-  id: validators.id,
+  id,
 });
 
 type SharedDtoPart = {

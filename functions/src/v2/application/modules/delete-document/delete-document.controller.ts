@@ -1,12 +1,12 @@
 import { protectedController } from '@utils/controller';
 import { z } from 'zod';
-import { validators } from '@utils/validators';
+import { id } from '@utils/validators';
 import { parse } from '@utils/parse';
 import { errors } from '@utils/errors';
 import { FieldValue } from 'firebase-admin/firestore';
 
 const payloadSchema = z.object({
-  id: validators.id,
+  id,
 });
 
 type Dto = void;

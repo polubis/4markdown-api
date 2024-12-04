@@ -1,11 +1,11 @@
 import { type DocumentModel } from '@domain/models/document';
 import { documentNameSchema } from '@utils/document-schemas';
-import { type Date, validators } from '@utils/validators';
+import { type Date, date, id } from '@utils/validators';
 import { z } from 'zod';
 
 const updateDocumentNamePayloadSchema = z.object({
-  id: validators.id,
-  mdate: validators.date,
+  id,
+  mdate: date,
   name: documentNameSchema,
 });
 
