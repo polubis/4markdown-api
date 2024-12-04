@@ -22,19 +22,27 @@ describe(`Image upload works when`, () => {
   const uid = `user-uid`;
   const projectId = `project-id`;
   const bucketName = `bucket`;
+  const oneYearCache = `public, max-age=31536000`;
 
   it(`uploads image and creates metadata entry if there is no images yet`, async () => {
     const setSpy = jest.fn();
+    const saveSpy = jest.fn();
+    const fileSpy = jest.fn().mockImplementation(() => ({
+      save: saveSpy,
+    }));
+    const bucketSpy = jest.fn().mockImplementation(() => ({
+      name: bucketName,
+      file: fileSpy,
+    }));
+
+    mockedWebp.mockImplementation(
+      () => Promise.resolve(Buffer.alloc(1)) as any,
+    );
 
     mockedStorage.mockImplementation(
       () =>
         ({
-          bucket: () => ({
-            name: bucketName,
-            file: () => ({
-              save: jest.fn(),
-            }),
-          }),
+          bucket: bucketSpy,
         }) as any,
     );
 
@@ -64,6 +72,9 @@ describe(`Image upload works when`, () => {
       url: `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/user-uid%2Fimages%2F2024-12-01T00%3A00%3A00Z?alt=media`,
     };
 
+    expect(bucketSpy).toHaveBeenCalledTimes(1);
+    expect(fileSpy).toHaveBeenCalledTimes(1);
+    expect(fileSpy).toHaveBeenCalledWith(`${uid}/images/${uuidMock}`);
     expect(mockedWebp).toHaveBeenCalledTimes(1);
     expect(mockedWebp).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -74,6 +85,13 @@ describe(`Image upload works when`, () => {
     expect(setSpy).toHaveBeenCalledTimes(1);
     expect(setSpy).toHaveBeenCalledWith({
       [uuidMock]: imageModel,
+    });
+    expect(saveSpy).toHaveBeenCalledTimes(1);
+    expect(saveSpy).toHaveBeenCalledWith(expect.any(Buffer), {
+      contentType: `image/jpeg`,
+      metadata: {
+        cacheControl: oneYearCache,
+      },
     });
     expect(response).toEqual({
       id: uuidMock,

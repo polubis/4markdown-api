@@ -9,13 +9,13 @@ import {
   IMAGE_EXTENSIONS,
   ImageContentType,
   ImageExtension,
+  ImageModel,
   ImagesModel,
 } from '@domain/models/image';
 import { errors } from '@utils/errors';
 import { toUnit } from '@libs/helpers/to-unit';
 import { storage } from 'firebase-admin';
 import { uuid } from '@libs/helpers/stamps';
-import { Id } from '@utils/validators';
 import { webp } from '@libs/helpers/webp';
 
 const isSupportedContentType = (
@@ -38,16 +38,12 @@ const decodeImage = (
 
 // @TODO[PRIO=2]: [Add bucket + storage to injected API's??? Or abstract it?].
 const createUrl = ({
-  id,
-  uid,
+  location,
   name,
 }: {
   name: string;
-  id: Id;
-  uid: Id;
+  location: string;
 }): string => {
-  const location = `${uid}/images/${id}`;
-
   return `https://firebasestorage.googleapis.com/v0/b/${name}/o/${encodeURIComponent(
     location,
   )}?alt=media`;
@@ -94,14 +90,16 @@ const uploadImageHandler = async ({
   const location = `${uid}/images/${id}`;
   const bucket = storage().bucket();
   const file = bucket.file(location);
-  const url = createUrl({ name: bucket.name, id, uid });
+  const url = createUrl({ name: bucket.name, location });
+
+  const imageModel: ImageModel = {
+    extension,
+    contentType,
+    url,
+  };
 
   const imagesModel: ImagesModel = {
-    [id]: {
-      extension,
-      contentType,
-      url,
-    },
+    [id]: imageModel,
   };
 
   const userImagesRef = db.collection(`images`).doc(uid);
@@ -113,9 +111,14 @@ const uploadImageHandler = async ({
 
   const userImages = userImagesSnap.data();
 
+  const oneYearCache = `public, max-age=31536000`;
+
   await Promise.all([
     file.save(resizedBuffer, {
       contentType,
+      metadata: {
+        cacheControl: oneYearCache,
+      },
     }),
     userImages
       ? userImagesRef.update(imagesModel)
@@ -123,10 +126,8 @@ const uploadImageHandler = async ({
   ]);
 
   return {
-    contentType,
-    extension,
     id,
-    url,
+    ...imageModel,
   };
 };
 
