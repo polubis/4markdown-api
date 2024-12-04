@@ -11,6 +11,7 @@ import {
   ImageExtension,
 } from '@domain/models/image';
 import { errors } from '@utils/errors';
+import { toUnit } from '@libs/helpers/to-unit';
 
 // uploadImage: async ({
 //     payload,
@@ -57,6 +58,8 @@ import { errors } from '@utils/errors';
 //     };
 //   },
 
+const SIZE_IN_MB_LIMIT = 4;
+
 const isSupportedContentType = (
   contentType: string,
 ): contentType is ImageContentType =>
@@ -82,7 +85,9 @@ const uploadImageHandler = async ({
   payload: UploadImagePayload;
   context: ProtectedControllerHandlerContext;
 }): Promise<UploadImageDto> => {
-  const { contentType, extension, blob } = decodeImage(payload.image);
+  const { contentType, extension, blob, size, buffer } = decodeImage(
+    payload.image,
+  );
 
   if (!isSupportedContentType(contentType)) {
     throw errors.badRequest(
@@ -93,6 +98,14 @@ const uploadImageHandler = async ({
   }
 
   if (!isSupportedExtension(extension)) {
+    throw errors.badRequest(
+      `The provided image extension is not supported. Supported extensions are: ${IMAGE_EXTENSIONS.join(
+        `, `,
+      )}`,
+    );
+  }
+
+  if (toUnit(size, `MB`) > SIZE_IN_MB_LIMIT) {
     throw errors.badRequest(
       `The provided image extension is not supported. Supported extensions are: ${IMAGE_EXTENSIONS.join(
         `, `,

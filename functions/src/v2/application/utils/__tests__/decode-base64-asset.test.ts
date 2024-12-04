@@ -8,6 +8,8 @@ describe(`Decoding base64 assets`, () => {
     expect(result.blob).toBe(`/9j/4AAQSkZJRgABAQE..`);
     expect(result.contentType).toBe(`image/jpeg`);
     expect(result.extension).toBe(`jpeg`);
+    expect(result.size).toBeGreaterThan(0);
+    expect(result.buffer).toBeInstanceOf(Buffer);
   });
 
   it(`handles audio assets and extracts expected values`, () => {
@@ -17,6 +19,8 @@ describe(`Decoding base64 assets`, () => {
     expect(result.blob).toBe(`SUQzAwAAAAAA..`);
     expect(result.contentType).toBe(`audio/mp3`);
     expect(result.extension).toBe(`mp3`);
+    expect(result.size).toBeGreaterThan(0);
+    expect(result.buffer).toBeInstanceOf(Buffer);
   });
 
   it(`handles video assets and extracts expected values`, () => {
@@ -26,6 +30,8 @@ describe(`Decoding base64 assets`, () => {
     expect(result.blob).toBe(`AAAAIGZ0eXBtcDQyLj..`);
     expect(result.contentType).toBe(`video/mp4`);
     expect(result.extension).toBe(`mp4`);
+    expect(result.size).toBeGreaterThan(0);
+    expect(result.buffer).toBeInstanceOf(Buffer);
   });
 
   it(`handles text assets and extracts expected values`, () => {
@@ -35,6 +41,8 @@ describe(`Decoding base64 assets`, () => {
     expect(result.blob).toBe(`SGVsbG8gd29ybGQh`);
     expect(result.contentType).toBe(`text/plain`);
     expect(result.extension).toBe(`plain`);
+    expect(result.size).toBeGreaterThan(0);
+    expect(result.buffer).toBeInstanceOf(Buffer);
   });
 
   it(`handles assets with unknown MIME types and extracts expected values`, () => {
@@ -44,5 +52,7 @@ describe(`Decoding base64 assets`, () => {
     expect(result.blob).toBe(`abcdef123456`);
     expect(result.contentType).toBe(`application/unknown`);
     expect(result.extension).toBe(`unknown`);
+    expect(result.size).toBeGreaterThan(0);
+    expect(result.buffer).toBeInstanceOf(Buffer);
   });
 });
