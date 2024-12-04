@@ -71,15 +71,10 @@ const uploadImageHandler = async ({
 }): Promise<UploadImageDto> => {
   const { contentType, extension, size, buffer } = decodeImage(payload.image);
 
-  if (!isSupportedContentType(contentType)) {
-    throw errors.badRequest(
-      `The provided image content type is not supported. Supported content types are: ${IMAGE_CONTENT_TYPES.join(
-        `, `,
-      )}`,
-    );
-  }
-
-  if (!isSupportedExtension(extension)) {
+  if (
+    !isSupportedExtension(extension) ||
+    !isSupportedContentType(contentType)
+  ) {
     throw errors.badRequest(
       `The provided image extension is not supported. Supported extensions are: ${IMAGE_EXTENSIONS.join(
         `, `,
