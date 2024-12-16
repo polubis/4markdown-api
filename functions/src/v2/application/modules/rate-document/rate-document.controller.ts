@@ -4,17 +4,17 @@ import { id } from '@utils/validators';
 import { parse } from '@utils/parse';
 import { nowISO } from '@libs/helpers/stamps';
 import {
-  DOCUMENT_RATING_CATEGORIES,
-  DocumentRateModel,
-} from '@domain/models/document-rate';
-import { createDocumentRating } from '@utils/create-document-rating';
+  RATING_CATEGORIES,
+  RateModel,
+} from '@domain/models/rate';
+import { createRating } from '@utils/create-rating';
 
 const payloadSchema = z.object({
   documentId: id,
-  category: z.enum(DOCUMENT_RATING_CATEGORIES),
+  category: z.enum(RATING_CATEGORIES),
 });
 
-type Dto = DocumentRateModel['rating'];
+type Dto = RateModel['rating'];
 
 const rateDocumentController = controller<Dto>(async (rawPayload, { db }) => {
   const { documentId, category } = await parse(payloadSchema, rawPayload);
@@ -25,12 +25,12 @@ const rateDocumentController = controller<Dto>(async (rawPayload, { db }) => {
     const [documentRateSnap] = await transaction.getAll(documentRateRef);
 
     const documentRateData = documentRateSnap.data() as
-      | DocumentRateModel
+      | RateModel
       | undefined;
 
     if (!documentRateData) {
-      const model: DocumentRateModel = {
-        rating: createDocumentRating({ [category]: 1 }),
+      const model: RateModel = {
+        rating: createRating({ [category]: 1 }),
         cdate: now,
         mdate: now,
       };
@@ -40,7 +40,7 @@ const rateDocumentController = controller<Dto>(async (rawPayload, { db }) => {
       return model.rating;
     }
 
-    const model: Pick<DocumentRateModel, 'mdate' | 'rating'> = {
+    const model: Pick<RateModel, 'mdate' | 'rating'> = {
       mdate: now,
       rating: {
         ...documentRateData.rating,
