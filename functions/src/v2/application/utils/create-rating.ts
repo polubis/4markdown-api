@@ -1,4 +1,4 @@
-import { RateModel } from '../../domain/models/rate';
+import type { RateModel } from '@domain/models/rate';
 
 const createRating = (
   rating: Partial<RateModel['rating']> = {},
