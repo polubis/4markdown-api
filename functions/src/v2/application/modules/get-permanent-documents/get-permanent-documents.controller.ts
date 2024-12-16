@@ -2,16 +2,16 @@ import type {
   DocumentModel,
   PermanentDocumentModel,
 } from '@domain/models/document';
-import { DocumentRateModel } from '@domain/models/document-rate';
+import { RateModel } from '@domain/models/rate';
 import type { UserProfileModel } from '@domain/models/user-profile';
 import { controller } from '@utils/controller';
-import { createDocumentRating } from '@utils/create-document-rating';
+import { createRating } from '@utils/create-rating';
 import type { Id } from '@utils/validators';
 
 type Dto = (Required<PermanentDocumentModel> & {
   id: Id;
   author: UserProfileModel | null;
-  rating: DocumentRateModel['rating'];
+  rating: RateModel['rating'];
 })[];
 
 const getPermanentDocumentsController = controller<Dto>(async (_, { db }) => {
@@ -43,17 +43,17 @@ const getPermanentDocumentsController = controller<Dto>(async (_, { db }) => {
     usersProfiles[userSnap.id] = userSnap.data() as UserProfileModel;
   });
 
-  const documentsRates: Record<Id, DocumentRateModel['rating']> = {};
+  const documentsRates: Record<Id, RateModel['rating']> = {};
 
   documentsRatesSnap.docs.forEach((documentRateSnap) => {
     documentsRates[documentRateSnap.id] = (
-      documentRateSnap.data() as DocumentRateModel
+      documentRateSnap.data() as RateModel
     ).rating;
   });
 
   const permanentDocuments: Dto = [];
 
-  const defaultRate = createDocumentRating();
+  const defaultRate = createRating();
 
   documentsSnap.docs.forEach((documentsListSnap) => {
     const userId = documentsListSnap.id;

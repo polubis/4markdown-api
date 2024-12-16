@@ -9,8 +9,8 @@ import type {
 } from '@domain/models/document';
 import { errors } from '@utils/errors';
 import type { UserProfileModel } from '@domain/models/user-profile';
-import type { DocumentRateModel } from '@domain/models/document-rate';
-import { createDocumentRating } from '@utils/create-document-rating';
+import type { RateModel } from '@domain/models/rate';
+import { createRating } from '@utils/create-rating';
 
 const payloadSchema = z.object({
   id,
@@ -18,7 +18,7 @@ const payloadSchema = z.object({
 
 type SharedDtoPart = {
   author: UserProfileModel | null;
-  rating: DocumentRateModel['rating'];
+  rating: RateModel['rating'];
 };
 
 type Dto =
@@ -66,15 +66,12 @@ const getAccessibleDocumentController = controller<Dto>(
     const userProfile = usersProfilesSnap.data() as
       | UserProfileModel
       | undefined;
-    const documentRate = documentRateSnap.data() as
-      | DocumentRateModel
-      | undefined;
+    const documentRate = documentRateSnap.data() as RateModel | undefined;
 
     const foundDocument = foundDocumentEntry.document;
     const author = userProfile ?? null;
-    const defaultRating = createDocumentRating();
-    const rating: DocumentRateModel['rating'] =
-      documentRate?.rating ?? defaultRating;
+    const defaultRating = createRating();
+    const rating: RateModel['rating'] = documentRate?.rating ?? defaultRating;
 
     if (foundDocument.visibility === `permanent`) {
       const dto: Extract<Dto, { visibility: 'permanent' }> = {
