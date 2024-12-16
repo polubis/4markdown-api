@@ -20,6 +20,7 @@ import { updateDocumentVisibilityController } from '@modules/update-document-vis
 import { isDev } from '@utils/is-dev';
 import { migrateDatabaseController } from '@modules/migrate-database/migrate-database.controller';
 import { uploadImageController } from '@modules/upload-image/upload-image.controller';
+import { addDocumentCommentController } from '@modules/add-document-comment/add-document-comment.controller';
 
 const app = admin.initializeApp();
 const db = app.firestore();
@@ -77,6 +78,10 @@ export const autoCreateBackup = onSchedule(
   },
 );
 
+export const addDocumentComment = addDocumentCommentController({
+  db,
+  projectId,
+});
 export const uploadImage = uploadImageController({
   db,
   projectId,
