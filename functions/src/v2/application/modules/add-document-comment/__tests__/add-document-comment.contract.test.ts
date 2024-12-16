@@ -4,8 +4,10 @@ describe(`Add document comment contract works when`, () => {
   it(`accepts valid payload`, () => {
     expect(() =>
       addDocumentCommentPayloadSchema.parse({
-        documentId: `some-string-id`,
-        authorId: `some-string-id`,
+        document: {
+          id: `some-string-id`,
+          authorId: `some-string-id`,
+        },
         content: `a`,
       }),
     ).not.toThrow();
@@ -14,17 +16,25 @@ describe(`Add document comment contract works when`, () => {
   it(`rejects invalid payload`, () => {
     expect(() =>
       addDocumentCommentPayloadSchema.parse({
-        documentId: null,
+        document: {
+          id: null,
+          authorId: `some-string-id`,
+        },
+        content: `a`,
       }),
     ).toThrow();
     expect(() =>
       addDocumentCommentPayloadSchema.parse({
-        documentId: `some-string-id`,
+        document: {
+          id: `some-string-id`,
+        },
       }),
     ).toThrow();
     expect(() =>
       addDocumentCommentPayloadSchema.parse({
-        documentId: `some-string-id`,
+        document: {
+          id: `some-string-id`,
+        },
         content: ``,
       }),
     ).toThrow();

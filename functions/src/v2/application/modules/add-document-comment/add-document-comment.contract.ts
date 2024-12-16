@@ -4,8 +4,10 @@ import { id } from '@utils/validators';
 import { z } from 'zod';
 
 const addDocumentCommentPayloadSchema = z.object({
-  documentId: id,
-  authorId: id,
+  document: z.object({
+    id,
+    authorId: id,
+  }),
   content: commentContentSchema,
 });
 

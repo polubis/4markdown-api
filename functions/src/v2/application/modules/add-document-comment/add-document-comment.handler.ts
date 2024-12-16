@@ -14,16 +14,18 @@ import { errors } from '@utils/errors';
 
 const addDocumentCommentHandler = async ({
   payload,
-  context: { db, uid },
+  context,
 }: {
   payload: AddDocumentCommentPayload;
   context: ProtectedControllerHandlerContext;
 }): Promise<AddDocumentCommentDto> => {
-  const documentsRef = db.collection(`docs`).doc(payload.authorId);
+  const documentsRef = context.db
+    .collection(`docs`)
+    .doc(payload.document.authorId);
   const documentsSnap = await documentsRef.get();
 
   const documents = documentsSnap.data() as DocumentsModel | undefined;
-  const foundDocument = documents?.[payload.documentId];
+  const foundDocument = documents?.[payload.document.id];
 
   if (
     !foundDocument ||
@@ -32,15 +34,15 @@ const addDocumentCommentHandler = async ({
     throw errors.badRequest(`Cannot find document to comment`);
   }
 
-  const documentCommentsRef = db
+  const documentCommentsRef = context.db
     .collection(`documents-comments`)
-    .doc(payload.documentId)
+    .doc(payload.document.id)
     .collection(`comments`);
 
   const cdate = nowISO();
 
   const documentCommentModel: DocumentCommentModel = {
-    authorId: uid,
+    authorId: context.uid,
     cdate,
     mdate: cdate,
     content: payload.content,
