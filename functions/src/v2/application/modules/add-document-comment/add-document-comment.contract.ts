@@ -5,6 +5,7 @@ import { z } from 'zod';
 
 const addDocumentCommentPayloadSchema = z.object({
   documentId: id,
+  authorId: id,
   content: commentContentSchema,
 });
 

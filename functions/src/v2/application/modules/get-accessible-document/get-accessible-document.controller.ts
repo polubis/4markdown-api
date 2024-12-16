@@ -66,15 +66,12 @@ const getAccessibleDocumentController = controller<Dto>(
     const userProfile = usersProfilesSnap.data() as
       | UserProfileModel
       | undefined;
-    const documentRate = documentRateSnap.data() as
-      | RateModel
-      | undefined;
+    const documentRate = documentRateSnap.data() as RateModel | undefined;
 
     const foundDocument = foundDocumentEntry.document;
     const author = userProfile ?? null;
     const defaultRating = createRating();
-    const rating: RateModel['rating'] =
-      documentRate?.rating ?? defaultRating;
+    const rating: RateModel['rating'] = documentRate?.rating ?? defaultRating;
 
     if (foundDocument.visibility === `permanent`) {
       const dto: Extract<Dto, { visibility: 'permanent' }> = {

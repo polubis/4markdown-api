@@ -5,6 +5,7 @@ describe(`Add document comment contract works when`, () => {
     expect(() =>
       addDocumentCommentPayloadSchema.parse({
         documentId: `some-string-id`,
+        authorId: `some-string-id`,
         content: `a`,
       }),
     ).not.toThrow();
@@ -35,5 +36,12 @@ describe(`Add document comment contract works when`, () => {
     ).toThrow();
     expect(() => addDocumentCommentPayloadSchema.parse({})).toThrow();
     expect(() => addDocumentCommentPayloadSchema.parse(null)).toThrow();
+    expect(() =>
+      addDocumentCommentPayloadSchema.parse({
+        documentId: `some-string-id`,
+        authorId: ``,
+        content: `ds`,
+      }),
+    ).toThrow();
   });
 });

@@ -19,7 +19,7 @@ const addDocumentCommentHandler = async ({
   payload: AddDocumentCommentPayload;
   context: ProtectedControllerHandlerContext;
 }): Promise<AddDocumentCommentDto> => {
-  const documentsRef = db.collection(`docs`).doc(uid);
+  const documentsRef = db.collection(`docs`).doc(payload.authorId);
   const documentsSnap = await documentsRef.get();
 
   const documents = documentsSnap.data() as DocumentsModel | undefined;
