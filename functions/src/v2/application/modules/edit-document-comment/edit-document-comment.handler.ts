@@ -38,6 +38,10 @@ const editDocumentCommentHandler = async ({
     throw errors.badRequest(`You're not allowed to change this comment`);
   }
 
+  if (documentComment.mdate !== payload.comment.mdate) {
+    throw errors.outOfDate(`The comment has been already changed`);
+  }
+
   const mdate = nowISO();
 
   const updateDocumentData: Pick<DocumentCommentModel, 'content' | 'mdate'> = {
