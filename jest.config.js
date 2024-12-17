@@ -14,7 +14,6 @@ module.exports = {
     '^@models/(.*)$': `<rootDir>/functions/src/v2/domain/models/$1`,
     '^@modules/(.*)$': `<rootDir>/functions/src/v2/application/modules/$1`,
     '^@utils/(.*)$': `<rootDir>/functions/src/v2/application/utils/$1`,
-    '^@services/(.*)$': `<rootDir>/functions/src/v2/application/services/$1`,
   },
   testPathIgnorePatterns: [
     `node_modules`,

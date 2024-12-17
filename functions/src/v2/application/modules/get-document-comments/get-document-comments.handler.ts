@@ -4,7 +4,7 @@ import type {
   GetDocumentCommentsPayload,
 } from './get-document-comments.contract';
 import { type DocumentCommentModel } from '@domain/models/document-comment';
-import { findAccessibleDocument } from '@services/documents.service';
+import { findAccessibleDocument } from '@utils/find-documents';
 
 const getDocumentCommentsHandler = async ({
   payload,

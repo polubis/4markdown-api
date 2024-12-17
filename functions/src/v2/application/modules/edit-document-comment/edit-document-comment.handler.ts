@@ -3,7 +3,7 @@ import {
   type EditDocumentCommentDto,
   type EditDocumentCommentPayload,
 } from './edit-document-comment.contract';
-import { findAccessibleDocument } from '@services/documents.service';
+import { findAccessibleDocument } from '@utils/find-documents';
 import { DocumentCommentModel } from '@domain/models/document-comment';
 import { errors } from '@utils/errors';
 import { nowISO } from '@libs/helpers/stamps';

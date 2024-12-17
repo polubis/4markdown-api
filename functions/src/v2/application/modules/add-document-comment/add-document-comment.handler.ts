@@ -6,7 +6,7 @@ import {
 import { nowISO } from '@libs/helpers/stamps';
 import { DocumentCommentModel } from '@domain/models/document-comment';
 import { createRating } from '@utils/create-rating';
-import { findAccessibleDocument } from '@services/documents.service';
+import { findAccessibleDocument } from '@utils/find-documents';
 
 const addDocumentCommentHandler = async ({
   payload,
