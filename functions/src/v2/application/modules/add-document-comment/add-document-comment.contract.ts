@@ -1,4 +1,4 @@
-import { DocumentCommentModel } from '@domain/models/document-comment';
+import { type DocumentCommentModel } from '@domain/models/document-comment';
 import { commentContentSchema } from '@utils/comment-schemas';
 import { id } from '@utils/validators';
 import { z } from 'zod';
