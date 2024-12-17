@@ -7,7 +7,6 @@ describe(`Edit document comment contract`, () => {
       comment: {
         id: `some-id`,
         content: `a`,
-        authorId: `some-id`,
         mdate: `2024-06-17T12:34:56.789Z`,
       },
     };
