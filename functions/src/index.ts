@@ -21,6 +21,7 @@ import { isDev } from '@utils/is-dev';
 import { migrateDatabaseController } from '@modules/migrate-database/migrate-database.controller';
 import { uploadImageController } from '@modules/upload-image/upload-image.controller';
 import { addDocumentCommentController } from '@modules/add-document-comment/add-document-comment.controller';
+import { getDocumentCommentsController } from '@modules/get-document-comments/get-document-comments.controller';
 
 const app = admin.initializeApp();
 const db = app.firestore();
@@ -79,6 +80,10 @@ export const autoCreateBackup = onSchedule(
 );
 
 export const addDocumentComment = addDocumentCommentController({
+  db,
+  projectId,
+});
+export const getDocumentComments = getDocumentCommentsController({
   db,
   projectId,
 });

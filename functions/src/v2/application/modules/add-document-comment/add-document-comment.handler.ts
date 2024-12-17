@@ -6,11 +6,7 @@ import {
 import { nowISO } from '@libs/helpers/stamps';
 import { DocumentCommentModel } from '@domain/models/document-comment';
 import { createRating } from '@utils/create-rating';
-import {
-  DocumentModelVisibility,
-  DocumentsModel,
-} from '@domain/models/document';
-import { errors } from '@utils/errors';
+import { findAccessibleDocument } from '@services/documents.service';
 
 const addDocumentCommentHandler = async ({
   payload,
@@ -19,20 +15,10 @@ const addDocumentCommentHandler = async ({
   payload: AddDocumentCommentPayload;
   context: ProtectedControllerHandlerContext;
 }): Promise<AddDocumentCommentDto> => {
-  const documentsRef = context.db
-    .collection(`docs`)
-    .doc(payload.document.authorId);
-  const documentsSnap = await documentsRef.get();
-
-  const documents = documentsSnap.data() as DocumentsModel | undefined;
-  const foundDocument = documents?.[payload.document.id];
-
-  if (
-    !foundDocument ||
-    foundDocument.visibility === DocumentModelVisibility.Private
-  ) {
-    throw errors.badRequest(`Cannot find document to comment`);
-  }
+  await findAccessibleDocument({
+    db: context.db,
+    payload,
+  });
 
   const documentCommentsRef = context.db
     .collection(`documents-comments`)
