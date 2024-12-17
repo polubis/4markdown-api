@@ -1,6 +1,6 @@
 import { type DocumentCommentModel } from '@domain/models/document-comment';
 import { commentContentSchema } from '@utils/comment-schemas';
-import { type Id, id } from '@utils/validators';
+import { date, type Id, id } from '@utils/validators';
 import { z } from 'zod';
 
 const editDocumentCommentPayloadSchema = z.object({
@@ -12,6 +12,7 @@ const editDocumentCommentPayloadSchema = z.object({
     id,
     content: commentContentSchema,
     authorId: id,
+    mdate: date,
   }),
 });
 
