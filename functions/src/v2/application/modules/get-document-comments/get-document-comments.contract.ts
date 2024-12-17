@@ -1,5 +1,5 @@
-import { DocumentCommentModel } from '@domain/models/document-comment';
-import { id } from '@utils/validators';
+import { type DocumentCommentModel } from '@domain/models/document-comment';
+import { type Id, id } from '@utils/validators';
 import { z } from 'zod';
 
 const getDocumentCommentsPayloadSchema = z.object({
@@ -12,7 +12,7 @@ const getDocumentCommentsPayloadSchema = z.object({
 type GetDocumentCommentsPayload = z.infer<
   typeof getDocumentCommentsPayloadSchema
 >;
-type GetDocumentCommentsDto = DocumentCommentModel[];
+type GetDocumentCommentsDto = (DocumentCommentModel & { id: Id })[];
 
 export { getDocumentCommentsPayloadSchema };
 export type { GetDocumentCommentsPayload, GetDocumentCommentsDto };

@@ -26,7 +26,11 @@ const getDocumentCommentsHandler = async ({
 
   for (const documentComment of documentCommentsSnap.docs) {
     const comment = documentComment.data() as DocumentCommentModel;
-    comments.push(comment);
+
+    comments.push({
+      ...comment,
+      id: documentComment.id,
+    });
   }
 
   return comments;
