@@ -34,7 +34,7 @@ const editDocumentCommentHandler = async ({
     throw errors.badRequest(`Cannot find document comment`);
   }
 
-  if (documentComment.authorId !== payload.comment.authorId) {
+  if (documentComment.authorId !== context.uid) {
     throw errors.badRequest(`You're not allowed to change this comment`);
   }
 

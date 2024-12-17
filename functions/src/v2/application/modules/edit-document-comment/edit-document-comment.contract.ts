@@ -11,7 +11,6 @@ const editDocumentCommentPayloadSchema = z.object({
   comment: z.object({
     id,
     content: commentContentSchema,
-    authorId: id,
     mdate: date,
   }),
 });
