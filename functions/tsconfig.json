@@ -15,7 +15,7 @@
       "@libs/*": ["src/v2/libs/*"],
       "@models/*": ["src/v2/domain/models/*"],
       "@modules/*": ["src/v2/application/modules/*"],
-      "@utils/*": ["src/v2/application/utils/*"]
+      "@utils/*": ["src/v2/application/utils/*"],
     }
   },
   "compileOnSave": true,
