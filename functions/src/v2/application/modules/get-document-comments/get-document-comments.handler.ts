@@ -17,8 +17,7 @@ const getDocumentCommentsHandler = async ({
     findAccessibleDocument({ db: context.db, payload }),
     context.db
       .collection(`documents-comments`)
-      .doc(payload.document.id)
-      .collection(`comments`)
+      .where(`documentId`, `==`, payload.document.id)
       .get(),
   ]);
 
