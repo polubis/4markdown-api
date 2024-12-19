@@ -23,6 +23,7 @@ import { uploadImageController } from '@modules/upload-image/upload-image.contro
 import { addDocumentCommentController } from '@modules/add-document-comment/add-document-comment.controller';
 import { getDocumentCommentsController } from '@modules/get-document-comments/get-document-comments.controller';
 import { editDocumentCommentController } from '@modules/edit-document-comment/edit-document-comment.controller';
+import { deleteDocumentCommentController } from '@modules/delete-document-comment/delete-document-comment.controller';
 
 const app = admin.initializeApp();
 const db = app.firestore();
@@ -80,7 +81,7 @@ export const autoCreateBackup = onSchedule(
   },
 );
 
-export const deleteDocumentComment = deleteDocumentController({
+export const deleteDocumentComment = deleteDocumentCommentController({
   db,
   projectId,
 });
