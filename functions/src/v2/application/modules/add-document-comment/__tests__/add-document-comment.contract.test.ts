@@ -4,7 +4,9 @@ describe(`Add document comment contract works when`, () => {
   it(`it accepts a valid payload`, () => {
     const validPayload = {
       document: { id: `some-string-id`, authorId: `some-string-id` },
-      content: `a`,
+      comment: {
+        content: `a`,
+      },
     };
 
     expect(() =>
@@ -23,12 +25,19 @@ describe(`Add document comment contract works when`, () => {
       description: `a field has invalid data`,
       payload: {
         document: { id: null, authorId: `some-string-id` },
-        content: `a`,
+        comment: {
+          content: `a`,
+        },
       },
     },
     {
       description: `a required field is empty`,
-      payload: { document: { id: `some-string-id` }, content: `` },
+      payload: {
+        document: { id: `some-string-id` },
+        comment: {
+          content: ``,
+        },
+      },
     },
     {
       description: `unexpected fields are included`,

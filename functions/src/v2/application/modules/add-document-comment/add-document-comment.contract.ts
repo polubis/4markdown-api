@@ -8,7 +8,9 @@ const addDocumentCommentPayloadSchema = z.object({
     id,
     authorId: id,
   }),
-  content: commentContentSchema,
+  comment: z.object({
+    content: commentContentSchema,
+  }),
 });
 
 type AddDocumentCommentPayload = z.infer<

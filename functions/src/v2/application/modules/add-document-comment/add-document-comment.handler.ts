@@ -20,18 +20,16 @@ const addDocumentCommentHandler = async ({
     payload,
   });
 
-  const documentCommentsRef = context.db
-    .collection(`documents-comments`)
-    .doc(payload.document.id)
-    .collection(`comments`);
+  const documentCommentsRef = context.db.collection(`documents-comments`);
 
   const cdate = nowISO();
 
   const documentCommentModel: DocumentCommentModel = {
     authorId: context.uid,
+    documentId: payload.document.id,
     cdate,
     mdate: cdate,
-    content: payload.content,
+    content: payload.comment.content,
     rating: createRating(),
     replies: [],
   };
