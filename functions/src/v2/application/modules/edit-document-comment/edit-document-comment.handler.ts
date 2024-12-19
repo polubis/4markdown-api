@@ -16,7 +16,7 @@ const editDocumentCommentHandler = async ({
   context: ProtectedControllerHandlerContext;
 }): Promise<EditDocumentCommentDto> => {
   const documentCommentRef = context.db
-    .collection(`documents-comments`)
+    .collection(`document-comments`)
     .doc(payload.comment.id);
 
   const [, documentCommentSnap] = await Promise.all([

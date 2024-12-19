@@ -20,7 +20,7 @@ const addDocumentCommentHandler = async ({
     payload,
   });
 
-  const documentCommentsRef = context.db.collection(`documents-comments`);
+  const documentCommentsRef = context.db.collection(`document-comments`);
 
   const cdate = nowISO();
 

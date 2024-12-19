@@ -80,6 +80,10 @@ export const autoCreateBackup = onSchedule(
   },
 );
 
+export const deleteDocumentComment = deleteDocumentController({
+  db,
+  projectId,
+});
 export const editDocumentComment = editDocumentCommentController({
   db,
   projectId,

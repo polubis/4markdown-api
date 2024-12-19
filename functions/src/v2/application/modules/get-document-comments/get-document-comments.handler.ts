@@ -16,7 +16,7 @@ const getDocumentCommentsHandler = async ({
   const [, documentCommentsSnap] = await Promise.all([
     findAccessibleDocument({ db: context.db, payload }),
     context.db
-      .collection(`documents-comments`)
+      .collection(`document-comments`)
       .where(`documentId`, `==`, payload.document.id)
       .get(),
   ]);
