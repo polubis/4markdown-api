@@ -34,9 +34,12 @@ const addDocumentCommentHandler = async ({
     replies: [],
   };
 
-  await documentCommentsRef.add(documentCommentModel);
+  const { id } = await documentCommentsRef.add(documentCommentModel);
 
-  return documentCommentModel;
+  return {
+    ...documentCommentModel,
+    id,
+  };
 };
 
 export { addDocumentCommentHandler };
