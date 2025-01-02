@@ -56,6 +56,7 @@ const updateDocumentVisibilityHandler = async ({
       ...model[payload.id],
       authorId: uid,
       id: payload.id,
+      commentsCount: 0,
     };
 
     await userDocumentsRef.update(model);
@@ -103,6 +104,7 @@ const updateDocumentVisibilityHandler = async ({
       ...model[payload.id],
       authorId: uid,
       id: payload.id,
+      commentsCount: 0,
     };
 
     await userDocumentsRef.update(model);

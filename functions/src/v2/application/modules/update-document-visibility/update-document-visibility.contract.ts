@@ -37,7 +37,11 @@ const updateDocumentVisibilityPayloadSchema = z.union([
 type UpdateDocumentVisibilityPayload = z.infer<
   typeof updateDocumentVisibilityPayloadSchema
 >;
-type UpdateDocumentVisibilityDto = DocumentModel & { id: Id; authorId: Id };
+type UpdateDocumentVisibilityDto = DocumentModel & {
+  id: Id;
+  authorId: Id;
+  commentsCount: number;
+};
 
 export { updateDocumentVisibilityPayloadSchema };
 export type { UpdateDocumentVisibilityDto, UpdateDocumentVisibilityPayload };

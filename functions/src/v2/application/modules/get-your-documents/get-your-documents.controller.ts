@@ -11,7 +11,7 @@ type Dto = ((
   | PrivateDocumentModel
   | PublicDocumentModel
   | PermanentDocumentModel
-) & { id: Id })[];
+) & { id: Id; authorId: Id; commentsCount: number })[];
 
 const getYourDocumentsController = protectedController<Dto>(
   async (_, { uid, db }) => {
@@ -27,6 +27,8 @@ const getYourDocumentsController = protectedController<Dto>(
             id: documentId,
             name: document.name,
             cdate: document.cdate,
+            commentsCount: 0,
+            authorId: uid,
             mdate: document.mdate,
             visibility: document.visibility,
             description: document.description,
@@ -40,6 +42,8 @@ const getYourDocumentsController = protectedController<Dto>(
           id: documentId,
           name: document.name,
           cdate: document.cdate,
+          authorId: uid,
+          commentsCount: 0,
           mdate: document.mdate,
           path: document.path,
           visibility: document.visibility,

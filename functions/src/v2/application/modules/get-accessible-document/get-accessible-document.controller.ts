@@ -19,6 +19,7 @@ const payloadSchema = z.object({
 type SharedDtoPart = {
   author: UserProfileModel | null;
   authorId: Id;
+  commentsCount: number;
   rating: RateModel['rating'];
 };
 
@@ -59,10 +60,15 @@ const getAccessibleDocumentController = controller<Dto>(
 
     if (!foundDocumentEntry) throw errors.notFound(`Cannot find document`);
 
-    const [usersProfilesSnap, documentRateSnap] = await Promise.all([
-      db.collection(`users-profiles`).doc(foundDocumentEntry.authorId).get(),
-      db.collection(`documents-rates`).doc(documentId).get(),
-    ]);
+    const [usersProfilesSnap, documentRateSnap, documentCommentsSnap] =
+      await Promise.all([
+        db.collection(`users-profiles`).doc(foundDocumentEntry.authorId).get(),
+        db.collection(`documents-rates`).doc(documentId).get(),
+        db
+          .collection(`document-comments`)
+          .where(`documentId`, `==`, documentId)
+          .get(),
+      ]);
 
     const userProfile = usersProfilesSnap.data() as
       | UserProfileModel
@@ -78,6 +84,7 @@ const getAccessibleDocumentController = controller<Dto>(
       const dto: Extract<Dto, { visibility: 'permanent' }> = {
         ...foundDocument,
         author,
+        commentsCount: documentCommentsSnap.size,
         authorId: foundDocumentEntry.authorId,
         tags: foundDocument.tags ?? [],
         rating,
@@ -89,6 +96,7 @@ const getAccessibleDocumentController = controller<Dto>(
     const dto: Extract<Dto, { visibility: 'public' }> = {
       ...foundDocument,
       author,
+      commentsCount: documentCommentsSnap.size,
       authorId: foundDocumentEntry.authorId,
       rating,
     };
