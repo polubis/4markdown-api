@@ -67,6 +67,7 @@ const getAccessibleDocumentController = controller<Dto>(
         db
           .collection(`document-comments`)
           .where(`documentId`, `==`, documentId)
+          .count()
           .get(),
       ]);
 
@@ -74,6 +75,7 @@ const getAccessibleDocumentController = controller<Dto>(
       | UserProfileModel
       | undefined;
     const documentRate = documentRateSnap.data() as RateModel | undefined;
+    const commentsCount = documentCommentsSnap.data().count;
 
     const foundDocument = foundDocumentEntry.document;
     const author = userProfile ?? null;
@@ -84,7 +86,7 @@ const getAccessibleDocumentController = controller<Dto>(
       const dto: Extract<Dto, { visibility: 'permanent' }> = {
         ...foundDocument,
         author,
-        commentsCount: documentCommentsSnap.size,
+        commentsCount,
         authorId: foundDocumentEntry.authorId,
         tags: foundDocument.tags ?? [],
         rating,
@@ -96,7 +98,7 @@ const getAccessibleDocumentController = controller<Dto>(
     const dto: Extract<Dto, { visibility: 'public' }> = {
       ...foundDocument,
       author,
-      commentsCount: documentCommentsSnap.size,
+      commentsCount,
       authorId: foundDocumentEntry.authorId,
       rating,
     };
