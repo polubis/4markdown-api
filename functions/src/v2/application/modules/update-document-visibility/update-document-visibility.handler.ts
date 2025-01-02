@@ -54,6 +54,7 @@ const updateDocumentVisibilityHandler = async ({
     };
     const dto: UpdateDocumentVisibilityDto = {
       ...model[payload.id],
+      authorId: uid,
       id: payload.id,
     };
 
@@ -100,6 +101,7 @@ const updateDocumentVisibilityHandler = async ({
     };
     const dto: UpdateDocumentVisibilityDto = {
       ...model[payload.id],
+      authorId: uid,
       id: payload.id,
     };
 

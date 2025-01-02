@@ -42,6 +42,7 @@ const createDocumentHandler = async ({
   const dto: CreateDocumentDto = {
     ...documentModel,
     id,
+    authorId: uid,
   };
 
   if (!documents) {

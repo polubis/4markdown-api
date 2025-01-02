@@ -110,6 +110,7 @@ describe(`Document visibility change works when`, () => {
     const expectedDto: UpdateDocumentVisibilityDto = {
       ...expectedUpdatePayload[yourDocumentId],
       id: yourDocumentId,
+      authorId: uid,
     };
 
     expect(updateSpy).toHaveBeenCalledTimes(1);
@@ -169,6 +170,7 @@ describe(`Document visibility change works when`, () => {
     const expectedDto: UpdateDocumentVisibilityDto = {
       ...expectedUpdatePayload[id],
       id,
+      authorId: uid,
     };
 
     expect(updateSpy).toHaveBeenCalledTimes(1);
@@ -228,6 +230,7 @@ describe(`Document visibility change works when`, () => {
     const expectedDto: UpdateDocumentVisibilityDto = {
       ...expectedUpdatePayload[id],
       id,
+      authorId: uid,
     };
 
     expect(updateSpy).toHaveBeenCalledTimes(1);

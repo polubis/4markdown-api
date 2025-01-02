@@ -18,6 +18,7 @@ const payloadSchema = z.object({
 
 type SharedDtoPart = {
   author: UserProfileModel | null;
+  authorId: Id;
   rating: RateModel['rating'];
 };
 
@@ -77,6 +78,7 @@ const getAccessibleDocumentController = controller<Dto>(
       const dto: Extract<Dto, { visibility: 'permanent' }> = {
         ...foundDocument,
         author,
+        authorId: foundDocumentEntry.authorId,
         tags: foundDocument.tags ?? [],
         rating,
       };
@@ -87,6 +89,7 @@ const getAccessibleDocumentController = controller<Dto>(
     const dto: Extract<Dto, { visibility: 'public' }> = {
       ...foundDocument,
       author,
+      authorId: foundDocumentEntry.authorId,
       rating,
     };
 

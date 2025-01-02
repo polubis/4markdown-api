@@ -11,6 +11,7 @@ import type { Id } from '@utils/validators';
 type Dto = (Required<PermanentDocumentModel> & {
   id: Id;
   author: UserProfileModel | null;
+  authorId: Id;
   rating: RateModel['rating'];
 })[];
 
@@ -66,6 +67,7 @@ const getPermanentDocumentsController = controller<Dto>(async (_, { db }) => {
             permanentDocuments.push({
               ...document,
               id: documentId,
+              authorId: userId,
               author: usersProfiles[userId] ?? null,
               rating: documentsRates[documentId] ?? defaultRate,
             });

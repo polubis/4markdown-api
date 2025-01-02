@@ -12,7 +12,7 @@ const createDocumentPayloadSchema = z.object({
 });
 
 type CreateDocumentPayload = z.infer<typeof createDocumentPayloadSchema>;
-type CreateDocumentDto = PrivateDocumentModel & { id: Id };
+type CreateDocumentDto = PrivateDocumentModel & { id: Id; authorId: Id };
 
 export { createDocumentPayloadSchema };
 export type { CreateDocumentDto, CreateDocumentPayload };

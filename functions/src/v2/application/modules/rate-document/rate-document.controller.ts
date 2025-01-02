@@ -3,10 +3,7 @@ import { z } from 'zod';
 import { id } from '@utils/validators';
 import { parse } from '@utils/parse';
 import { nowISO } from '@libs/helpers/stamps';
-import {
-  RATING_CATEGORIES,
-  RateModel,
-} from '@domain/models/rate';
+import { RATING_CATEGORIES, RateModel } from '@domain/models/rate';
 import { createRating } from '@utils/create-rating';
 
 const payloadSchema = z.object({
@@ -24,9 +21,7 @@ const rateDocumentController = controller<Dto>(async (rawPayload, { db }) => {
   return await db.runTransaction(async (transaction) => {
     const [documentRateSnap] = await transaction.getAll(documentRateRef);
 
-    const documentRateData = documentRateSnap.data() as
-      | RateModel
-      | undefined;
+    const documentRateData = documentRateSnap.data() as RateModel | undefined;
 
     if (!documentRateData) {
       const model: RateModel = {

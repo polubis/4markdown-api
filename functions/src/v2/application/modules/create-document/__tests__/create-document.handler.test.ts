@@ -28,6 +28,7 @@ describe(`Document creation works when`, () => {
 
   const validDto: CreateDocumentDto = {
     id: `mock-id`,
+    authorId: uid,
     cdate: `2024-01-01T00:00:00Z`,
     mdate: `2024-01-01T00:00:00Z`,
     name: validPayload.name.raw,
@@ -59,7 +60,8 @@ describe(`Document creation works when`, () => {
       },
     });
 
-    const { id, ...documentModel } = validDto;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id, authorId, ...documentModel } = validDto;
     const documentsModel: DocumentsModel = {
       [id]: documentModel,
     };
@@ -130,7 +132,8 @@ describe(`Document creation works when`, () => {
       },
     });
 
-    const { id, ...documentModel } = validDto;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id, authorId, ...documentModel } = validDto;
     const documentsModel: DocumentsModel = {
       [id]: documentModel,
     };
