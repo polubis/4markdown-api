@@ -5,6 +5,7 @@ import {
   type DeleteDocumentCommentDto,
   type DeleteDocumentCommentPayload,
 } from './delete-document-comment.contract';
+import { findAccessibleDocument } from '@utils/find-documents';
 
 const deleteDocumentCommentHandler = async ({
   payload,
@@ -15,16 +16,21 @@ const deleteDocumentCommentHandler = async ({
 }): Promise<DeleteDocumentCommentDto> => {
   const documentCommentRef = context.db
     .collection(`document-comments`)
+    .doc(payload.document.id)
+    .collection(`comments`)
     .doc(payload.comment.id);
 
-  const [documentCommentSnap] = await Promise.all([documentCommentRef.get()]);
+  const [, documentCommentSnap] = await Promise.all([
+    findAccessibleDocument({ db: context.db, payload }),
+    documentCommentRef.get(),
+  ]);
 
   const documentComment = documentCommentSnap.data() as
     | DocumentCommentModel
     | undefined;
 
   if (!documentComment) {
-    throw errors.badRequest(`Cannot find document comment`);
+    throw errors.badRequest(`Cannot find document comment to delete`);
   }
 
   if (documentComment.authorId !== context.uid) {
@@ -32,7 +38,9 @@ const deleteDocumentCommentHandler = async ({
   }
 
   if (documentComment.mdate !== payload.comment.mdate) {
-    throw errors.outOfDate(`The comment has been already changed`);
+    throw errors.outOfDate(
+      `The comment has been already changed. You cannot delete it now`,
+    );
   }
 
   await documentCommentRef.delete();
