@@ -52,9 +52,13 @@ const editDocumentCommentHandler = async ({
   await documentCommentRef.update(updateDocumentData);
 
   return {
-    ...documentComment,
-    ...updateDocumentData,
+    mdate: updateDocumentData.mdate,
+    content: updateDocumentData.content,
     id: payload.comment.id,
+    rating: documentComment.rating,
+    authorId: documentComment.authorId,
+    cdate: documentComment.cdate,
+    replies: documentComment.replies,
   };
 };
 
