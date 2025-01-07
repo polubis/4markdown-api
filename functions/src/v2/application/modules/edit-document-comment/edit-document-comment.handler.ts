@@ -34,12 +34,6 @@ const editDocumentCommentHandler = async ({
     throw errors.badRequest(`Cannot find document comment`);
   }
 
-  if (documentCommentSnap.id !== payload.document.id) {
-    throw errors.badRequest(
-      `You're not allowed to change comment in this document`,
-    );
-  }
-
   if (documentComment.authorId !== context.uid) {
     throw errors.badRequest(`You're not allowed to change this comment`);
   }
