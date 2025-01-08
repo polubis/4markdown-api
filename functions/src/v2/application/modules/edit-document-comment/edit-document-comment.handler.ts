@@ -17,6 +17,8 @@ const editDocumentCommentHandler = async ({
 }): Promise<EditDocumentCommentDto> => {
   const documentCommentRef = context.db
     .collection(`document-comments`)
+    .doc(payload.document.id)
+    .collection(`comments`)
     .doc(payload.comment.id);
 
   const [, documentCommentSnap] = await Promise.all([
@@ -30,12 +32,6 @@ const editDocumentCommentHandler = async ({
 
   if (!documentComment) {
     throw errors.badRequest(`Cannot find document comment`);
-  }
-
-  if (documentComment.documentId !== payload.document.id) {
-    throw errors.badRequest(
-      `You're not allowed to change comment in this document`,
-    );
   }
 
   if (documentComment.authorId !== context.uid) {
@@ -56,9 +52,13 @@ const editDocumentCommentHandler = async ({
   await documentCommentRef.update(updateDocumentData);
 
   return {
-    ...documentComment,
-    ...updateDocumentData,
+    mdate: updateDocumentData.mdate,
+    content: updateDocumentData.content,
     id: payload.comment.id,
+    rating: documentComment.rating,
+    authorId: documentComment.authorId,
+    cdate: documentComment.cdate,
+    replies: documentComment.replies,
   };
 };
 

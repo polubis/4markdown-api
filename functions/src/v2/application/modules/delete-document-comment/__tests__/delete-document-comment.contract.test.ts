@@ -7,6 +7,10 @@ describe(`Delete document comment contract works when`, () => {
         id: `some-string-id`,
         mdate: `2024-06-17T12:34:56.789Z`,
       },
+      document: {
+        id: `some-id`,
+        authorId: `some-author-id`,
+      },
     };
 
     expect(() =>
