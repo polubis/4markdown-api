@@ -5,6 +5,7 @@ const COLLECTIONS_KEYS = [
   `docs`,
   `images`,
   `documents-rates`,
+  `comments`,
   `users-profiles`,
   `account-permissions`,
   `document-comments`,
