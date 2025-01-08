@@ -20,13 +20,14 @@ const addDocumentCommentHandler = async ({
     payload,
   });
 
-  const documentCommentsRef = context.db.collection(`document-comments`);
+  const documentCommentsRef = context.db
+    .collection(`document-comments`)
+    .doc(payload.document.id)
+    .collection(`comments`);
 
   const cdate = nowISO();
-
   const documentCommentModel: DocumentCommentModel = {
     authorId: context.uid,
-    documentId: payload.document.id,
     cdate,
     mdate: cdate,
     content: payload.comment.content,
