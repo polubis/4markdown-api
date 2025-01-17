@@ -71,7 +71,7 @@ export const autoCreateBackup = onSchedule(
   },
 );
 
-export const getYourUserProfile = getYourUserProfileController({
+export const getYourUserProfileV2 = getYourUserProfileController({
   db,
   projectId,
 });
