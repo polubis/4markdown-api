@@ -24,6 +24,7 @@ import { addDocumentCommentController } from '@modules/add-document-comment/add-
 import { getDocumentCommentsController } from '@modules/get-document-comments/get-document-comments.controller';
 import { editDocumentCommentController } from '@modules/edit-document-comment/edit-document-comment.controller';
 import { deleteDocumentCommentController } from '@modules/delete-document-comment/delete-document-comment.controller';
+import { getYourUserProfileController } from '@modules/get-your-user-profile/get-your-user-profile.controller';
 
 const app = admin.initializeApp();
 const db = app.firestore();
@@ -34,17 +35,6 @@ export const updateYourUserProfile = onCall<unknown>(
   async (request) => {
     return await UsersProfilesService.updateYour({
       payload: request.data,
-      context: {
-        auth: request.auth,
-      },
-    });
-  },
-);
-
-export const getYourUserProfile = onCall<unknown>(
-  { maxInstances: 2 },
-  async (request) => {
-    return await UsersProfilesService.getYour({
       context: {
         auth: request.auth,
       },
@@ -80,6 +70,11 @@ export const autoCreateBackup = onSchedule(
     );
   },
 );
+
+export const getYourUserProfile = getYourUserProfileController({
+  db,
+  projectId,
+});
 
 export const deleteDocumentComment = deleteDocumentCommentController({
   db,

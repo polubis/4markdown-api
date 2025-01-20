@@ -147,26 +147,6 @@ const checkIfDisplayNameIsTaken = async (
 };
 
 const UsersProfilesService = {
-  getYour: async ({
-    context,
-  }: {
-    context: Pick<CallableRequest<unknown>, 'auth'>;
-  }): Promise<IUserProfileDto | null> => {
-    const auth = AuthService.authorize(context);
-    const userProfilesCollection = admin
-      .firestore()
-      .collection(`users-profiles`);
-    const userProfileDocument = await userProfilesCollection.doc(auth.uid);
-    const userProfile = await userProfileDocument.get();
-
-    if (!userProfile.exists) {
-      return null;
-    }
-
-    const userProfileEntity = userProfile.data() as IUserProfileEntity;
-
-    return createProfileDtoShape(userProfileEntity);
-  },
   updateYour: async ({
     payload,
     context,
