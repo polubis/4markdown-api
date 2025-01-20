@@ -17,6 +17,7 @@ const payloadSchema = z.object({
 });
 
 type SharedDtoPart = {
+  id: Id;
   author: UserProfileModel | null;
   rating: RateModel['rating'];
 };
@@ -79,6 +80,7 @@ const getAccessibleDocumentController = controller<Dto>(
         author,
         tags: foundDocument.tags ?? [],
         rating,
+        id: documentId,
       };
 
       return dto;
@@ -88,6 +90,7 @@ const getAccessibleDocumentController = controller<Dto>(
       ...foundDocument,
       author,
       rating,
+      id: documentId,
     };
 
     return dto;
