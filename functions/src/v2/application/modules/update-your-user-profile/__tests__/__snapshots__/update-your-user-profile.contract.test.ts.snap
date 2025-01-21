@@ -51,6 +51,28 @@ exports[`Update user profile contract works when it accepts a valid payload with
 }
 `;
 
+exports[`Update user profile contract works when it accepts nullish displayName 1`] = `
+{
+  "data": {
+    "mdate": "2025-01-21T10:04:27.719Z",
+    "profile": {
+      "avatar": {
+        "data": "data:image/jpeg;base64,dGVzdGluZyBjb250ZW50",
+        "type": "update",
+      },
+      "bio": "This is a valid biography that meets the minimum length requirement of twenty characters",
+      "blogUrl": "https://blog.johndoe.com",
+      "displayName": null,
+      "fbUrl": "https://facebook.com/johndoe",
+      "githubUrl": "https://github.com/johndoe",
+      "linkedInUrl": "https://linkedin.com/in/johndoe",
+      "twitterUrl": "https://twitter.com/johndoe",
+    },
+  },
+  "success": true,
+}
+`;
+
 exports[`Update user profile contract works when it rejects the payload if { description: 'URLs are invalid', payload: [Object] } 1`] = `
 {
   "error": [ZodError: [

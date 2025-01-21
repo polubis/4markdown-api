@@ -25,6 +25,18 @@ describe(`Update user profile contract works when`, () => {
     ).toMatchSnapshot();
   });
 
+  it(`it accepts nullish displayName`, () => {
+    expect(
+      updateYourUserProfilePayloadSchema.safeParse({
+        mdate,
+        profile: {
+          ...payload.profile,
+          displayName: null,
+        },
+      }),
+    ).toMatchSnapshot();
+  });
+
   it(`it accepts a valid payload with null optional fields`, () => {
     expect(
       updateYourUserProfilePayloadSchema.safeParse({
