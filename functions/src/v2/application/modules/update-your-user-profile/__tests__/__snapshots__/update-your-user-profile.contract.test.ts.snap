@@ -11,15 +11,7 @@ exports[`Update user profile contract works when it accepts a valid complete pay
       },
       "bio": "This is a valid biography that meets the minimum length requirement of twenty characters",
       "blogUrl": "https://blog.johndoe.com",
-      "displayName": {
-        "path": "/john-doe/",
-        "raw": "John Doe",
-        "segments": [
-          "john",
-          "doe",
-        ],
-        "slug": "john-doe",
-      },
+      "displayName": "John Doe",
       "fbUrl": "https://facebook.com/johndoe",
       "githubUrl": "https://github.com/johndoe",
       "linkedInUrl": "https://linkedin.com/in/johndoe",

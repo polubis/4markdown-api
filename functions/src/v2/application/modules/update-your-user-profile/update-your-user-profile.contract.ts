@@ -9,16 +9,6 @@ const updateYourUserProfilePayloadSchema = z.object({
     displayName: text
       .min(2, `Display name must be at least 2 characters long`)
       .max(30, `Display name can be up to 30 characters long`)
-      .transform((displayName) => {
-        const slug = createSlug(displayName);
-
-        return {
-          raw: displayName,
-          path: `/${slug}/`,
-          slug,
-          segments: slug === `` ? [] : slug.split(`-`),
-        };
-      })
       .nullable(),
     avatar: z.union([
       z.object({
