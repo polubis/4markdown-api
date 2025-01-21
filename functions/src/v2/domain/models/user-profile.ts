@@ -10,6 +10,7 @@ type AvatarVariant = {
 
 type UserProfileModel = {
   displayName: string | null;
+  displayNameSlug: string | null;
   avatar: {
     tn: AvatarVariant;
     sm: AvatarVariant;
