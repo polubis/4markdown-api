@@ -208,4 +208,25 @@ describe(`Update user profile contract works when`, () => {
       ).toMatchSnapshot();
     },
   );
+
+  it(`it trims payload properties`, () => {
+    expect(
+      updateYourUserProfilePayloadSchema.safeParse({
+        mdate: `  2025-01-21T10:04:27.719Z `,
+        profile: {
+          displayName: ` John Doe `,
+          avatar: {
+            type: `update`,
+            data: `  data:image/jpeg;base64,dGVzdGluZyBjb250ZW50 `,
+          },
+          bio: `  This is a valid biography that meets the minimum length requirement of twenty characters `,
+          githubUrl: ` https://github.com/johndoe `,
+          fbUrl: ` https://facebook.com/johndoe `,
+          linkedInUrl: ` https://linkedin.com/in/johndoe `,
+          blogUrl: ` https://blog.johndoe.com `,
+          twitterUrl: ` https://twitter.com/johndoe `,
+        },
+      }),
+    ).toMatchSnapshot();
+  });
 });

@@ -8,7 +8,7 @@ const email = z
   .regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
 const base64 = (message: string) =>
   z.string().trim().min(1, message).regex(regexes.base64, message);
-const date = z.string().regex(regexes.date);
+const date = z.string().trim().regex(regexes.date);
 const url = (message: string) => z.string().trim().url(message);
 const text = z.string().trim();
 
