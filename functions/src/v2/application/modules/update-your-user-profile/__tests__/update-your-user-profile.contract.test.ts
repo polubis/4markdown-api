@@ -187,6 +187,16 @@ describe(`Update user profile contract works when`, () => {
         },
       },
     },
+    {
+      description: `is empty non-base64 format string`,
+      payload: {
+        mdate,
+        profile: {
+          ...payload.profile,
+          avatar: { type: `update`, data: `` },
+        },
+      },
+    },
   ];
 
   test.each(payloadsWithInvalidAvatar)(

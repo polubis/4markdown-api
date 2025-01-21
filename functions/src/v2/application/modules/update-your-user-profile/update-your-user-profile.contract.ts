@@ -1,5 +1,4 @@
 import { type UserProfileModel } from '@domain/models/user-profile';
-import { createSlug } from '@utils/create-slug';
 import { base64, date, text, url } from '@utils/validators';
 import { z } from 'zod';
 

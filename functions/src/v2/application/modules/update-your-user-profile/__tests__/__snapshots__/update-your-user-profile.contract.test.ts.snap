@@ -807,6 +807,37 @@ exports[`Update user profile contract works when it rejects the payload if { des
 }
 `;
 
+exports[`Update user profile contract works when it rejects the payload when avatar { description: 'is empty non-base64 format string', payload: [Object] } 1`] = `
+{
+  "error": [ZodError: [
+  {
+    "code": "too_small",
+    "minimum": 1,
+    "type": "string",
+    "inclusive": true,
+    "exact": false,
+    "message": "Avatar must be in base64 format",
+    "path": [
+      "profile",
+      "avatar",
+      "data"
+    ]
+  },
+  {
+    "validation": "regex",
+    "code": "invalid_string",
+    "message": "Avatar must be in base64 format",
+    "path": [
+      "profile",
+      "avatar",
+      "data"
+    ]
+  }
+]],
+  "success": false,
+}
+`;
+
 exports[`Update user profile contract works when it rejects the payload when avatar { description: 'is nullish', payload: [Object] } 1`] = `
 {
   "error": [ZodError: [
