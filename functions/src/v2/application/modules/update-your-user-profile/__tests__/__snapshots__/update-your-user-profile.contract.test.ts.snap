@@ -6,7 +6,7 @@ exports[`Update user profile contract works when it rejects the payload if { des
   {
     "validation": "url",
     "code": "invalid_string",
-    "message": "Invalid url",
+    "message": "The GitHub URL format is invalid",
     "path": [
       "profile",
       "githubUrl"
@@ -15,7 +15,7 @@ exports[`Update user profile contract works when it rejects the payload if { des
   {
     "validation": "url",
     "code": "invalid_string",
-    "message": "Invalid url",
+    "message": "The Facebook URL format is invalid",
     "path": [
       "profile",
       "fbUrl"
@@ -308,7 +308,7 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "type": "string",
     "inclusive": true,
     "exact": false,
-    "message": "String must contain at least 20 character(s)",
+    "message": "Bio must be at least 20 characters long",
     "path": [
       "profile",
       "bio"
@@ -378,7 +378,7 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "type": "string",
     "inclusive": true,
     "exact": false,
-    "message": "Display name may have maximum 30 characters",
+    "message": "Display name can be up to 30 characters long",
     "path": [
       "profile",
       "displayName"
@@ -448,7 +448,7 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "type": "string",
     "inclusive": true,
     "exact": false,
-    "message": "Display name may have maximum 30 characters",
+    "message": "Display name can be up to 30 characters long",
     "path": [
       "profile",
       "displayName"
@@ -518,7 +518,7 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "type": "string",
     "inclusive": true,
     "exact": false,
-    "message": "Display name must have at least 2 characters",
+    "message": "Display name must be at least 2 characters long",
     "path": [
       "profile",
       "displayName"

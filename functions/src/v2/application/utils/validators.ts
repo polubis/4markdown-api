@@ -9,13 +9,13 @@ const email = z
 const base64 = (message: string) =>
   z.string().trim().min(1, message).regex(regexes.base64, message);
 const date = z.string().regex(regexes.date);
-const url = z.string().trim().url();
+const url = (message: string) => z.string().trim().url(message);
 const text = z.string().trim();
 
 type Id = z.infer<typeof id>;
 type Date = z.infer<typeof date>;
 type Email = z.infer<typeof email>;
-type Url = z.infer<typeof url>;
+type Url = z.infer<ReturnType<typeof url>>;
 type Base64 = z.infer<ReturnType<typeof base64>>;
 type Text = z.infer<typeof text>;
 
