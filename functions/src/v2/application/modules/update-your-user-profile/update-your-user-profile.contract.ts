@@ -26,7 +26,7 @@ const updateYourUserProfilePayloadSchema = z.object({
       }),
       z.object({
         type: z.literal(`update`),
-        data: base64(`Avatar must be in base64 format.`),
+        data: base64(`Avatar must be in base64 format`),
       }),
       z.object({
         type: z.literal(`remove`),

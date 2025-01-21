@@ -814,3 +814,69 @@ exports[`Update user profile contract works when it rejects the payload if { des
   "success": false,
 }
 `;
+
+exports[`Update user profile contract works when it rejects the payload when avatar { description: 'is nullish', payload: [Object] } 1`] = `
+{
+  "error": [ZodError: [
+  {
+    "code": "invalid_union",
+    "unionErrors": [
+      {
+        "issues": [
+          {
+            "received": "update",
+            "code": "invalid_literal",
+            "expected": "noop",
+            "path": [
+              "profile",
+              "avatar",
+              "type"
+            ],
+            "message": "Invalid literal value, expected \\"noop\\""
+          }
+        ],
+        "name": "ZodError"
+      },
+      {
+        "issues": [
+          {
+            "code": "invalid_type",
+            "expected": "string",
+            "received": "null",
+            "path": [
+              "profile",
+              "avatar",
+              "data"
+            ],
+            "message": "Expected string, received null"
+          }
+        ],
+        "name": "ZodError"
+      },
+      {
+        "issues": [
+          {
+            "received": "update",
+            "code": "invalid_literal",
+            "expected": "remove",
+            "path": [
+              "profile",
+              "avatar",
+              "type"
+            ],
+            "message": "Invalid literal value, expected \\"remove\\""
+          }
+        ],
+        "name": "ZodError"
+      }
+    ],
+    "path": [
+      "profile",
+      "avatar"
+    ],
+    "message": "Invalid input"
+  }
+]],
+  "success": false,
+}
+`;

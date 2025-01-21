@@ -175,4 +175,27 @@ describe(`Update user profile contract works when`, () => {
       updateYourUserProfilePayloadSchema.safeParse(payload),
     ).toMatchSnapshot();
   });
+
+  const payloadsWithInvalidAvatar = [
+    {
+      description: `is nullish`,
+      payload: {
+        mdate,
+        profile: {
+          ...payload.profile,
+          avatar: { type: `update`, data: null },
+        },
+      },
+    },
+  ];
+
+  test.each(payloadsWithInvalidAvatar)(
+    `it rejects the payload when avatar %s`,
+    ({ payload }) => {
+      expect(() => updateYourUserProfilePayloadSchema.parse(payload)).toThrow();
+      expect(
+        updateYourUserProfilePayloadSchema.safeParse(payload),
+      ).toMatchSnapshot();
+    },
+  );
 });
