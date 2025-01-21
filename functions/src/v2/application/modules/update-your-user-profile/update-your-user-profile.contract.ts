@@ -5,14 +5,17 @@ import { z } from 'zod';
 const updateYourUserProfilePayloadSchema = z.object({
   mdate: date,
   profile: z.object({
-    displayName: text.min(2).max(30).nullable(),
+    displayName: text
+      .min(2, `Display name must have at least 2 characters`)
+      .max(30, `Display name may have maximum 30 characters`)
+      .nullable(),
     avatar: z.union([
       z.object({
         type: z.literal(`noop`),
       }),
       z.object({
         type: z.literal(`update`),
-        data: base64,
+        data: base64(`Avatar must have base64 format`),
       }),
       z.object({
         type: z.literal(`remove`),

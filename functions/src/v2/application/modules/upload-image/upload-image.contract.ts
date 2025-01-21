@@ -3,7 +3,7 @@ import { base64, Id } from '@utils/validators';
 import { z } from 'zod';
 
 const uploadImagePayloadSchema = z.object({
-  image: base64,
+  image: base64(`Image format is not encoded in base64`),
 });
 
 type UploadImagePayload = z.infer<typeof uploadImagePayloadSchema>;
