@@ -1,0 +1,687 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Update user profile contract works when it rejects the payload if { description: 'URLs are invalid', payload: [Object] } 1`] = `
+{
+  "error": [ZodError: [
+  {
+    "validation": "url",
+    "code": "invalid_string",
+    "message": "Invalid url",
+    "path": [
+      "profile",
+      "githubUrl"
+    ]
+  },
+  {
+    "validation": "url",
+    "code": "invalid_string",
+    "message": "Invalid url",
+    "path": [
+      "profile",
+      "fbUrl"
+    ]
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "linkedInUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "blogUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "twitterUrl"
+    ],
+    "message": "Required"
+  }
+]],
+  "success": false,
+}
+`;
+
+exports[`Update user profile contract works when it rejects the payload if { description: 'avatar has invalid type', payload: [Object] } 1`] = `
+{
+  "error": [ZodError: [
+  {
+    "code": "invalid_union",
+    "unionErrors": [
+      {
+        "issues": [
+          {
+            "received": "invalid",
+            "code": "invalid_literal",
+            "expected": "noop",
+            "path": [
+              "profile",
+              "avatar",
+              "type"
+            ],
+            "message": "Invalid literal value, expected \\"noop\\""
+          }
+        ],
+        "name": "ZodError"
+      },
+      {
+        "issues": [
+          {
+            "received": "invalid",
+            "code": "invalid_literal",
+            "expected": "update",
+            "path": [
+              "profile",
+              "avatar",
+              "type"
+            ],
+            "message": "Invalid literal value, expected \\"update\\""
+          },
+          {
+            "code": "invalid_type",
+            "expected": "string",
+            "received": "undefined",
+            "path": [
+              "profile",
+              "avatar",
+              "data"
+            ],
+            "message": "Required"
+          }
+        ],
+        "name": "ZodError"
+      },
+      {
+        "issues": [
+          {
+            "received": "invalid",
+            "code": "invalid_literal",
+            "expected": "remove",
+            "path": [
+              "profile",
+              "avatar",
+              "type"
+            ],
+            "message": "Invalid literal value, expected \\"remove\\""
+          }
+        ],
+        "name": "ZodError"
+      }
+    ],
+    "path": [
+      "profile",
+      "avatar"
+    ],
+    "message": "Invalid input"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "githubUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "fbUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "linkedInUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "blogUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "twitterUrl"
+    ],
+    "message": "Required"
+  }
+]],
+  "success": false,
+}
+`;
+
+exports[`Update user profile contract works when it rejects the payload if { description: 'avatar update missing base64 data', payload: [Object] } 1`] = `
+{
+  "error": [ZodError: [
+  {
+    "code": "invalid_union",
+    "unionErrors": [
+      {
+        "issues": [
+          {
+            "received": "update",
+            "code": "invalid_literal",
+            "expected": "noop",
+            "path": [
+              "profile",
+              "avatar",
+              "type"
+            ],
+            "message": "Invalid literal value, expected \\"noop\\""
+          }
+        ],
+        "name": "ZodError"
+      },
+      {
+        "issues": [
+          {
+            "code": "invalid_type",
+            "expected": "string",
+            "received": "undefined",
+            "path": [
+              "profile",
+              "avatar",
+              "data"
+            ],
+            "message": "Required"
+          }
+        ],
+        "name": "ZodError"
+      },
+      {
+        "issues": [
+          {
+            "received": "update",
+            "code": "invalid_literal",
+            "expected": "remove",
+            "path": [
+              "profile",
+              "avatar",
+              "type"
+            ],
+            "message": "Invalid literal value, expected \\"remove\\""
+          }
+        ],
+        "name": "ZodError"
+      }
+    ],
+    "path": [
+      "profile",
+      "avatar"
+    ],
+    "message": "Invalid input"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "githubUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "fbUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "linkedInUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "blogUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "twitterUrl"
+    ],
+    "message": "Required"
+  }
+]],
+  "success": false,
+}
+`;
+
+exports[`Update user profile contract works when it rejects the payload if { description: 'bio is too short', payload: [Object] } 1`] = `
+{
+  "error": [ZodError: [
+  {
+    "code": "too_small",
+    "minimum": 20,
+    "type": "string",
+    "inclusive": true,
+    "exact": false,
+    "message": "String must contain at least 20 character(s)",
+    "path": [
+      "profile",
+      "bio"
+    ]
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "githubUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "fbUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "linkedInUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "blogUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "twitterUrl"
+    ],
+    "message": "Required"
+  }
+]],
+  "success": false,
+}
+`;
+
+exports[`Update user profile contract works when it rejects the payload if { description: 'displayName is too long', payload: [Object] } 1`] = `
+{
+  "error": [ZodError: [
+  {
+    "code": "too_big",
+    "maximum": 30,
+    "type": "string",
+    "inclusive": true,
+    "exact": false,
+    "message": "Display name may have maximum 30 characters",
+    "path": [
+      "profile",
+      "displayName"
+    ]
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "githubUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "fbUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "linkedInUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "blogUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "twitterUrl"
+    ],
+    "message": "Required"
+  }
+]],
+  "success": false,
+}
+`;
+
+exports[`Update user profile contract works when it rejects the payload if { description: 'displayName is too long', payload: [Object] } 2`] = `
+{
+  "error": [ZodError: [
+  {
+    "code": "too_big",
+    "maximum": 30,
+    "type": "string",
+    "inclusive": true,
+    "exact": false,
+    "message": "Display name may have maximum 30 characters",
+    "path": [
+      "profile",
+      "displayName"
+    ]
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "githubUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "fbUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "linkedInUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "blogUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "twitterUrl"
+    ],
+    "message": "Required"
+  }
+]],
+  "success": false,
+}
+`;
+
+exports[`Update user profile contract works when it rejects the payload if { description: 'displayName is too short', payload: [Object] } 1`] = `
+{
+  "error": [ZodError: [
+  {
+    "code": "too_small",
+    "minimum": 2,
+    "type": "string",
+    "inclusive": true,
+    "exact": false,
+    "message": "Display name must have at least 2 characters",
+    "path": [
+      "profile",
+      "displayName"
+    ]
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "githubUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "fbUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "linkedInUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "blogUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "twitterUrl"
+    ],
+    "message": "Required"
+  }
+]],
+  "success": false,
+}
+`;
+
+exports[`Update user profile contract works when it rejects the payload if { description: 'mdate is invalid', payload: [Object] } 1`] = `
+{
+  "error": [ZodError: [
+  {
+    "validation": "regex",
+    "code": "invalid_string",
+    "message": "Invalid",
+    "path": [
+      "mdate"
+    ]
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "githubUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "fbUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "linkedInUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "blogUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "profile",
+      "twitterUrl"
+    ],
+    "message": "Required"
+  }
+]],
+  "success": false,
+}
+`;
+
+exports[`Update user profile contract works when it rejects the payload if { description: 'required fields are missing', payload: {} } 1`] = `
+{
+  "error": [ZodError: [
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "mdate"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "object",
+    "received": "undefined",
+    "path": [
+      "profile"
+    ],
+    "message": "Required"
+  }
+]],
+  "success": false,
+}
+`;
+
+exports[`Update user profile contract works when it rejects the payload if { description: 'the data is null', payload: null } 1`] = `
+{
+  "error": [ZodError: [
+  {
+    "code": "invalid_type",
+    "expected": "object",
+    "received": "null",
+    "path": [],
+    "message": "Expected object, received null"
+  }
+]],
+  "success": false,
+}
+`;

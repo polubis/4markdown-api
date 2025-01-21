@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Upload image contract works when rejects an empty image field 1`] = `
+{
+  "error": [ZodError: [
+  {
+    "code": "too_small",
+    "minimum": 1,
+    "type": "string",
+    "inclusive": true,
+    "exact": false,
+    "message": "Image format is not encoded in base64",
+    "path": [
+      "image"
+    ]
+  },
+  {
+    "validation": "regex",
+    "code": "invalid_string",
+    "message": "Image format is not encoded in base64",
+    "path": [
+      "image"
+    ]
+  }
+]],
+  "success": false,
+}
+`;
