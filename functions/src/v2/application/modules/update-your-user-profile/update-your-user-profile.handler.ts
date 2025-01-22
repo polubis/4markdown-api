@@ -36,6 +36,10 @@ const avatarVariants = [
   },
 ] as const;
 
+// 1. Refactor.
+// 2. Seed do bazy.
+// 3. Update UX profilu.
+
 const updateYourUserProfileHandler = async ({
   context,
   payload,

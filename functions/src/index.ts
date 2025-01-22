@@ -63,7 +63,7 @@ export const getYourUserProfile = getYourUserProfileController({
   db,
   projectId,
 });
-export const updateYourUserProfile = updateYourUserProfileController({
+export const updateYourUserProfileV2 = updateYourUserProfileController({
   db,
   projectId,
   memory: `512MiB`,
