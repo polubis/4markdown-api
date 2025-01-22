@@ -11,11 +11,16 @@ const migrateDatabaseController = adminController<Dto>(async (_, { db }) => {
 
     userProfilesSnapshot.docs.forEach((doc) => {
       const docData = doc.data();
-      const slug = createSlug(docData.displayName);
+
+      const slug =
+        docData.displayName === null ? null : createSlug(docData.displayName);
       transaction.update(doc.ref, { displayNameSlug: slug });
-      transaction.set(userDisplayNamesRef.doc(slug), {
-        userId: doc.id,
-      });
+
+      if (slug !== null) {
+        transaction.create(userDisplayNamesRef.doc(slug), {
+          userId: doc.id,
+        });
+      }
     });
   });
 
