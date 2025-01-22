@@ -13,6 +13,11 @@ import { decodeBase64Asset } from '@utils/decode-base64-asset';
 import { storage } from 'firebase-admin';
 import * as sharp from 'sharp';
 
+type UpdateYourUserProfileHandlerConfig = {
+  payload: UpdateYourUserProfilePayload;
+  context: ProtectedControllerHandlerContext;
+};
+
 const avatarVariants = [
   {
     size: `lg`,
@@ -36,141 +41,165 @@ const avatarVariants = [
   },
 ] as const;
 
-// 1. Refactor.
-// 3. Update UX profilu.
+const verifyDisplayNamesDuplication = async ({
+  transaction,
+  context,
+  payload,
+}: UpdateYourUserProfileHandlerConfig & {
+  transaction: Transaction;
+}): Promise<void> => {
+  if (payload.profile.displayName === null) return;
+
+  const userDisplayNamesSnap = await transaction.get(
+    context.db
+      .collection(`user-display-names`)
+      .where(`__name__`, `==`, payload.profile.displayName)
+      .where(`userId`, `!=`, context.uid)
+      .count(),
+  );
+
+  if (userDisplayNamesSnap.data().count > 0)
+    throw errors.exists(`User with given display name already exists`);
+};
+
+const uploadAvatar = async ({
+  base64Avatar,
+  context,
+}: {
+  context: ProtectedControllerHandlerContext;
+  base64Avatar: Base64;
+}): Promise<UserProfileModel['avatar']> => {
+  const allowedExtensions = [`png`, `jpeg`, `webp`, `jpg`];
+  const allowedMaxSize = 4;
+
+  const avatar = decodeBase64Asset(base64Avatar);
+
+  if (!allowedExtensions.includes(avatar.extension)) {
+    throw errors.badRequest(
+      `Invalid extension of avatar. Only ${allowedExtensions.join(
+        `, `,
+      )} are supported`,
+    );
+  }
+
+  if (avatar.size > allowedMaxSize) {
+    throw errors.badRequest(
+      `Invalid avatar size. Maximum allowed is ${allowedMaxSize} MB`,
+    );
+  }
+
+  const bucket = await storage().bucket();
+
+  const rescalePromises: Promise<Buffer>[] = [];
+
+  avatarVariants.forEach(({ h, w }) => {
+    rescalePromises.push(
+      sharp(avatar.buffer).resize(w, h).webp({ quality: 60 }).toBuffer(),
+    );
+  });
+
+  const rescaleBuffers = await Promise.all(rescalePromises);
+  const savePromises: Promise<void>[] = [];
+  const paths: string[] = [];
+
+  avatarVariants.forEach(({ size }, idx) => {
+    const path = `${context.uid}/avatars/${size}`;
+    const file = bucket.file(path);
+    const buffer = rescaleBuffers[idx];
+
+    savePromises.push(
+      file.save(buffer, {
+        contentType: `webp`,
+      }),
+    );
+    paths.push(path);
+  });
+
+  await Promise.all(savePromises);
+
+  return avatarVariants.reduce<NonNullable<UserProfileModel['avatar']>>(
+    (acc, { size, w, h }, idx) => ({
+      ...acc,
+      [size]: {
+        h,
+        w,
+        ext: `webp`,
+        src: `https://firebasestorage.googleapis.com/v0/b/${
+          bucket.name
+        }/o/${encodeURIComponent(paths[idx])}?alt=media`,
+        id: uuid(),
+      },
+    }),
+    {} as NonNullable<UserProfileModel['avatar']>,
+  );
+};
+
+const removeAvatar = async ({
+  context,
+}: {
+  context: ProtectedControllerHandlerContext;
+}) => {
+  const bucket = await storage().bucket();
+
+  await Promise.all(
+    avatarVariants.map(({ size }) =>
+      bucket.file(`${context.uid}/avatars/${size}`).delete(),
+    ),
+  );
+};
 
 const updateYourUserProfileHandler = async ({
   context,
   payload,
-}: {
-  payload: UpdateYourUserProfilePayload;
-  context: ProtectedControllerHandlerContext;
-}): Promise<UpdateYourUserProfileDto> => {
-  const userDisplayNamesRef = context.db.collection(`user-display-names`);
-  const userProfilesRef = context.db.collection(`users-profiles`);
-  const yourUserProfileRef = userProfilesRef.doc(context.uid);
-
-  const uploadAvatar = async ({
-    base64Avatar,
-  }: {
-    base64Avatar: Base64;
-  }): Promise<UserProfileModel['avatar']> => {
-    const allowedExtensions = [`png`, `jpeg`, `webp`, `jpg`];
-    const allowedMaxSize = 4;
-
-    const avatar = decodeBase64Asset(base64Avatar);
-
-    if (!allowedExtensions.includes(avatar.extension)) {
-      throw errors.badRequest(
-        `Invalid extension of avatar. Only ${allowedExtensions.join(
-          `, `,
-        )} are supported`,
-      );
-    }
-
-    if (avatar.size > allowedMaxSize) {
-      throw errors.badRequest(
-        `Invalid avatar size. Maximum allowed is ${allowedMaxSize} MB`,
-      );
-    }
-
-    const bucket = await storage().bucket();
-
-    const rescalePromises: Promise<Buffer>[] = [];
-
-    avatarVariants.forEach(({ h, w }) => {
-      rescalePromises.push(
-        sharp(avatar.buffer).resize(w, h).webp({ quality: 60 }).toBuffer(),
-      );
-    });
-
-    const rescaleBuffers = await Promise.all(rescalePromises);
-    const savePromises: Promise<void>[] = [];
-    const paths: string[] = [];
-
-    avatarVariants.forEach(({ size }, idx) => {
-      const path = `${context.uid}/avatars/${size}`;
-      const file = bucket.file(path);
-      const buffer = rescaleBuffers[idx];
-
-      savePromises.push(
-        file.save(buffer, {
-          contentType: `webp`,
-        }),
-      );
-      paths.push(path);
-    });
-
-    await Promise.all(savePromises);
-
-    return avatarVariants.reduce<NonNullable<UserProfileModel['avatar']>>(
-      (acc, { size, w, h }, idx) => ({
-        ...acc,
-        [size]: {
-          h,
-          w,
-          ext: `webp`,
-          src: `https://firebasestorage.googleapis.com/v0/b/${
-            bucket.name
-          }/o/${encodeURIComponent(paths[idx])}?alt=media`,
-          id: uuid(),
-        },
-      }),
-      {} as NonNullable<UserProfileModel['avatar']>,
-    );
-  };
-
-  const checkForNamesDuplication = async (
-    transaction: Transaction,
-  ): Promise<void> => {
-    if (payload.profile.displayName === null) return;
-
-    const userDisplayNamesSnap = await transaction.get(
-      userDisplayNamesRef
-        .where(`__name__`, `==`, payload.profile.displayName)
-        .where(`userId`, `!=`, context.uid)
-        .count(),
-    );
-
-    if (userDisplayNamesSnap.data().count > 0)
-      throw errors.exists(`User with given display name already exists`);
-  };
+}: UpdateYourUserProfileHandlerConfig): Promise<UpdateYourUserProfileDto> => {
+  const yourUserProfileRef = context.db
+    .collection(`users-profiles`)
+    .doc(context.uid);
 
   return await context.db.runTransaction(async (transaction) => {
-    await checkForNamesDuplication(transaction);
+    const [yourUserProfileSnap] = await Promise.all([
+      transaction.get(yourUserProfileRef),
+      verifyDisplayNamesDuplication({ transaction, payload, context }),
+    ]);
 
-    const yourUserProfileSnap = await yourUserProfileRef.get();
+    const userProfilePartial: Omit<
+      UserProfileModel,
+      'id' | 'cdate' | 'mdate' | 'avatar'
+    > = {
+      displayNameSlug:
+        payload.profile.displayName !== null
+          ? createSlug(payload.profile.displayName)
+          : null,
+      displayName: payload.profile.displayName,
+      bio: payload.profile.bio,
+      linkedInUrl: payload.profile.linkedInUrl,
+      githubUrl: payload.profile.githubUrl,
+      fbUrl: payload.profile.fbUrl,
+      blogUrl: payload.profile.blogUrl,
+      twitterUrl: payload.profile.twitterUrl,
+    };
+    const now = nowISO();
+
     const yourUserProfile = yourUserProfileSnap.data() as
       | UserProfileModel
       | undefined;
-    const displayNameSlug =
-      payload.profile.displayName !== null
-        ? createSlug(payload.profile.displayName)
-        : null;
-    const cdate = nowISO();
 
     if (!yourUserProfile) {
       const newUserProfile: UserProfileModel = {
+        ...userProfilePartial,
         id: uuid(),
-        cdate,
-        mdate: cdate,
-        displayName: payload.profile.displayName,
-        displayNameSlug,
-        bio: payload.profile.bio,
-        blogUrl: payload.profile.blogUrl,
-        fbUrl: payload.profile.fbUrl,
-        githubUrl: payload.profile.githubUrl,
-        twitterUrl: payload.profile.twitterUrl,
-        linkedInUrl: payload.profile.linkedInUrl,
+        cdate: now,
+        mdate: now,
         avatar:
           payload.profile.avatar.type === `update`
             ? await uploadAvatar({
                 base64Avatar: payload.profile.avatar.data,
+                context,
               })
             : null,
       };
 
-      await yourUserProfileRef.set(newUserProfile);
+      await transaction.create(yourUserProfileRef, newUserProfile);
 
       return {
         mdate: newUserProfile.mdate,
@@ -180,47 +209,35 @@ const updateYourUserProfileHandler = async ({
 
     if (payload.mdate !== yourUserProfile.mdate) {
       throw errors.outOfDate(
-        `You cannot edit profile. You've changed it on another device.`,
+        `Profile cannot be updated. Please refresh and try again (the profile may have been modified on another device or session)`,
       );
     }
 
     if (payload.profile.avatar.type === `remove`) {
-      const bucket = await storage().bucket();
-
-      await Promise.all(
-        avatarVariants.map(({ size }) =>
-          bucket.file(`${context.uid}/avatars/${size}`).delete(),
-        ),
-      );
+      await removeAvatar({ context });
     }
 
-    const updatedUserProfile: Omit<UserProfileModel, `id` | `cdate`> = {
-      mdate: nowISO(),
-      displayName: payload.profile.displayName,
-      displayNameSlug,
-      bio: payload.profile.bio,
-      blogUrl: payload.profile.blogUrl,
-      fbUrl: payload.profile.fbUrl,
-      githubUrl: payload.profile.githubUrl,
-      twitterUrl: payload.profile.twitterUrl,
-      linkedInUrl: payload.profile.linkedInUrl,
+    const updatedYourUserProfile: UserProfileModel = {
+      ...userProfilePartial,
+      id: yourUserProfile.id,
+      cdate: yourUserProfile.cdate,
+      mdate: now,
       avatar:
         payload.profile.avatar.type === `noop`
           ? yourUserProfile.avatar
           : payload.profile.avatar.type === `remove`
           ? null
-          : await uploadAvatar({ base64Avatar: payload.profile.avatar.data }),
+          : await uploadAvatar({
+              base64Avatar: payload.profile.avatar.data,
+              context,
+            }),
     };
 
-    await yourUserProfileRef.update(updatedUserProfile);
+    await transaction.update(yourUserProfileRef, updatedYourUserProfile);
 
     return {
-      mdate: updatedUserProfile.mdate,
-      profile: {
-        ...updatedUserProfile,
-        id: yourUserProfile.id,
-        cdate: yourUserProfile.cdate,
-      },
+      mdate: now,
+      profile: updatedYourUserProfile,
     };
   });
 };
