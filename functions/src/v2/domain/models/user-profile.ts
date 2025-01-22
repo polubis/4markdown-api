@@ -1,4 +1,4 @@
-import type { Id, Date } from '@utils/validators';
+import type { Id, Date, Slug } from '@utils/validators';
 
 type AvatarVariant = {
   id: Id;
@@ -10,7 +10,7 @@ type AvatarVariant = {
 
 type UserProfileModel = {
   displayName: string | null;
-  displayNameSlug: string | null;
+  displayNameSlug: Slug | null;
   avatar: {
     tn: AvatarVariant;
     sm: AvatarVariant;

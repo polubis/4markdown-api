@@ -18,6 +18,7 @@ type Email = z.infer<typeof email>;
 type Url = z.infer<ReturnType<typeof url>>;
 type Base64 = z.infer<ReturnType<typeof base64>>;
 type Text = z.infer<typeof text>;
+type Slug = string;
 
-export type { Id, Date, Email, Url, Base64, Text };
+export type { Id, Date, Email, Url, Base64, Text, Slug };
 export { id, date, email, base64, url, text };
