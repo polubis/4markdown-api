@@ -12,6 +12,7 @@ import { type Base64 } from '@utils/validators';
 import { decodeBase64Asset } from '@utils/decode-base64-asset';
 import { storage } from 'firebase-admin';
 import * as sharp from 'sharp';
+import { toUnit } from '@libs/helpers/to-unit';
 
 type UpdateYourUserProfileHandlerConfig = {
   payload: UpdateYourUserProfilePayload;
@@ -83,7 +84,7 @@ const uploadAvatar = async ({
     );
   }
 
-  if (avatar.size > allowedMaxSize) {
+  if (toUnit(avatar.size, `mb`) > allowedMaxSize) {
     throw errors.badRequest(
       `Invalid avatar size. Maximum allowed is ${allowedMaxSize} MB`,
     );
