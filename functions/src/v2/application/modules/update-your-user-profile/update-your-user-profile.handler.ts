@@ -160,10 +160,8 @@ const updateYourUserProfileHandler = async ({
     .doc(context.uid);
 
   return await context.db.runTransaction(async (transaction) => {
-    const [yourUserProfileSnap] = await Promise.all([
-      transaction.get(yourUserProfileRef),
-      verifyDisplayNamesDuplication({ transaction, payload, context }),
-    ]);
+    await verifyDisplayNamesDuplication({ transaction, payload, context });
+    const yourUserProfileSnap = await transaction.get(yourUserProfileRef);
 
     const userProfilePartial: Omit<
       UserProfileModel,
