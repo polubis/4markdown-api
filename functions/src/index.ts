@@ -1,6 +1,5 @@
 import 'module-alias/register';
 import * as admin from 'firebase-admin';
-import { UsersProfilesService } from './services/users-profiles.service';
 import { updateDocumentCodeController } from './v2/application/modules/update-document-code/update-document-code.controller';
 import { rateDocumentController } from './v2/application/modules/rate-document/rate-document.controller';
 import { deleteDocumentController } from './v2/application/modules/delete-document/delete-document.controller';
@@ -25,22 +24,11 @@ import { getDocumentCommentsController } from '@modules/get-document-comments/ge
 import { editDocumentCommentController } from '@modules/edit-document-comment/edit-document-comment.controller';
 import { deleteDocumentCommentController } from '@modules/delete-document-comment/delete-document-comment.controller';
 import { getYourUserProfileController } from '@modules/get-your-user-profile/get-your-user-profile.controller';
+import { updateYourUserProfileController } from '@modules/update-your-user-profile/update-your-user-profile.controller';
 
 const app = admin.initializeApp();
 const db = app.firestore();
 const projectId = app.options.projectId!;
-
-export const updateYourUserProfile = onCall<unknown>(
-  { maxInstances: 2 },
-  async (request) => {
-    return await UsersProfilesService.updateYour({
-      payload: request.data,
-      context: {
-        auth: request.auth,
-      },
-    });
-  },
-);
 
 export const useBackup = onCall<unknown>(
   { maxInstances: 2 },
@@ -74,6 +62,11 @@ export const autoCreateBackup = onSchedule(
 export const getYourUserProfile = getYourUserProfileController({
   db,
   projectId,
+});
+export const updateYourUserProfileV2 = updateYourUserProfileController({
+  db,
+  projectId,
+  memory: `512MiB`,
 });
 
 export const deleteDocumentComment = deleteDocumentCommentController({

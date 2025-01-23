@@ -42,9 +42,7 @@ describe(`Upload image contract works when`, () => {
       image: ``,
     };
 
-    expect(() => uploadImagePayloadSchema.parse(payload)).toThrowError(
-      `String must contain at least 1 character(s)`,
-    );
+    expect(uploadImagePayloadSchema.safeParse(payload)).toMatchSnapshot();
   });
 
   it(`rejects base64 data with invalid characters`, () => {
