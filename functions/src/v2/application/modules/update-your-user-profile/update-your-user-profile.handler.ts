@@ -212,7 +212,7 @@ const updateYourUserProfileHandler = async ({
       };
     }
 
-    if (payload.mdate !== yourUserProfile.mdate) {
+    if (payload.mdate !== null && payload.mdate !== yourUserProfile.mdate) {
       throw errors.outOfDate(
         `Profile cannot be updated. Please refresh and try again (the profile may have been modified on another device or session)`,
       );

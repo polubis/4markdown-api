@@ -3,7 +3,7 @@ import { base64, date, text, url } from '@utils/validators';
 import { z } from 'zod';
 
 const updateYourUserProfilePayloadSchema = z.object({
-  mdate: date,
+  mdate: date.nullable(),
   displayName: text
     .min(2, `Display name must be at least 2 characters long`)
     .max(30, `Display name can be up to 30 characters long`)

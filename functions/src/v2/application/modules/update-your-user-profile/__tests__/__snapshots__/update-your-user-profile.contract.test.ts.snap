@@ -37,6 +37,26 @@ exports[`Update user profile contract works when it accepts a valid payload with
 }
 `;
 
+exports[`Update user profile contract works when it accepts brand new profile creation setup when modification date is null 1`] = `
+{
+  "data": {
+    "avatar": {
+      "data": "data:image/jpeg;base64,dGVzdGluZyBjb250ZW50",
+      "type": "update",
+    },
+    "bio": "This is a valid biography that meets the minimum length requirement of twenty characters",
+    "blogUrl": "https://blog.johndoe.com",
+    "displayName": "John Doe",
+    "fbUrl": "https://facebook.com/johndoe",
+    "githubUrl": "https://github.com/johndoe",
+    "linkedInUrl": "https://linkedin.com/in/johndoe",
+    "mdate": null,
+    "twitterUrl": "https://twitter.com/johndoe",
+  },
+  "success": true,
+}
+`;
+
 exports[`Update user profile contract works when it accepts nullish displayName 1`] = `
 {
   "error": [ZodError: [

@@ -19,6 +19,15 @@ describe(`Update user profile contract works when`, () => {
     twitterUrl: `https://twitter.com/johndoe`,
   };
 
+  it(`it accepts brand new profile creation setup when modification date is null`, () => {
+    expect(
+      updateYourUserProfilePayloadSchema.safeParse({
+        ...payload,
+        mdate: null,
+      }),
+    ).toMatchSnapshot();
+  });
+
   it(`it accepts a valid complete payload`, () => {
     expect(
       updateYourUserProfilePayloadSchema.safeParse(payload),
