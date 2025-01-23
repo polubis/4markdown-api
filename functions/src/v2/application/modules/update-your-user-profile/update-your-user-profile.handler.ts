@@ -12,6 +12,7 @@ import { type Base64 } from '@utils/validators';
 import { decodeBase64Asset } from '@utils/decode-base64-asset';
 import { storage } from 'firebase-admin';
 import * as sharp from 'sharp';
+import { UserDisplayNameModel } from '@domain/models/user-display-name';
 
 type UpdateYourUserProfileHandlerConfig = {
   payload: UpdateYourUserProfilePayload;
@@ -51,14 +52,16 @@ const verifyDisplayNamesDuplication = async ({
   if (payload.displayName === null) return;
 
   const userDisplayNamesSnap = await transaction.get(
-    context.db
-      .collection(`user-display-names`)
-      .where(`__name__`, `==`, payload.displayName)
-      .where(`userId`, `!=`, context.uid)
-      .count(),
+    context.db.collection(`user-display-names`).doc(payload.displayName),
   );
 
-  if (userDisplayNamesSnap.data().count > 0)
+  const userDisplayName = userDisplayNamesSnap.data() as
+    | UserDisplayNameModel
+    | undefined;
+
+  if (!userDisplayName) return;
+
+  if (userDisplayName.userId !== context.uid)
     throw errors.exists(`User with given display name already exists`);
 };
 
