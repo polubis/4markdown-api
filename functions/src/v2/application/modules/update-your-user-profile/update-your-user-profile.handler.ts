@@ -48,12 +48,12 @@ const verifyDisplayNamesDuplication = async ({
 }: UpdateYourUserProfileHandlerConfig & {
   transaction: Transaction;
 }): Promise<void> => {
-  if (payload.profile.displayName === null) return;
+  if (payload.displayName === null) return;
 
   const userDisplayNamesSnap = await transaction.get(
     context.db
       .collection(`user-display-names`)
-      .where(`__name__`, `==`, payload.profile.displayName)
+      .where(`__name__`, `==`, payload.displayName)
       .where(`userId`, `!=`, context.uid)
       .count(),
   );
@@ -167,16 +167,14 @@ const updateYourUserProfileHandler = async ({
       'id' | 'cdate' | 'mdate' | 'avatar'
     > = {
       displayNameSlug:
-        payload.profile.displayName !== null
-          ? createSlug(payload.profile.displayName)
-          : null,
-      displayName: payload.profile.displayName,
-      bio: payload.profile.bio,
-      linkedInUrl: payload.profile.linkedInUrl,
-      githubUrl: payload.profile.githubUrl,
-      fbUrl: payload.profile.fbUrl,
-      blogUrl: payload.profile.blogUrl,
-      twitterUrl: payload.profile.twitterUrl,
+        payload.displayName !== null ? createSlug(payload.displayName) : null,
+      displayName: payload.displayName,
+      bio: payload.bio,
+      linkedInUrl: payload.linkedInUrl,
+      githubUrl: payload.githubUrl,
+      fbUrl: payload.fbUrl,
+      blogUrl: payload.blogUrl,
+      twitterUrl: payload.twitterUrl,
     };
     const now = nowISO();
 
@@ -191,9 +189,9 @@ const updateYourUserProfileHandler = async ({
         cdate: now,
         mdate: now,
         avatar:
-          payload.profile.avatar.type === `update`
+          payload.avatar.type === `update`
             ? await uploadAvatar({
-                base64Avatar: payload.profile.avatar.data,
+                base64Avatar: payload.avatar.data,
                 context,
               })
             : null,
@@ -213,7 +211,7 @@ const updateYourUserProfileHandler = async ({
       );
     }
 
-    if (payload.profile.avatar.type === `remove`) {
+    if (payload.avatar.type === `remove`) {
       await removeAvatar({ context });
     }
 
@@ -223,12 +221,12 @@ const updateYourUserProfileHandler = async ({
       cdate: yourUserProfile.cdate,
       mdate: now,
       avatar:
-        payload.profile.avatar.type === `noop`
+        payload.avatar.type === `noop`
           ? yourUserProfile.avatar
-          : payload.profile.avatar.type === `remove`
+          : payload.avatar.type === `remove`
           ? null
           : await uploadAvatar({
-              base64Avatar: payload.profile.avatar.data,
+              base64Avatar: payload.avatar.data,
               context,
             }),
     };

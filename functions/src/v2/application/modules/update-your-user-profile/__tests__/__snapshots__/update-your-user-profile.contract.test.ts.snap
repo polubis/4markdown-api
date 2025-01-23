@@ -3,20 +3,18 @@
 exports[`Update user profile contract works when it accepts a valid complete payload 1`] = `
 {
   "data": {
-    "mdate": "2025-01-21T10:04:27.719Z",
-    "profile": {
-      "avatar": {
-        "data": "data:image/jpeg;base64,dGVzdGluZyBjb250ZW50",
-        "type": "update",
-      },
-      "bio": "This is a valid biography that meets the minimum length requirement of twenty characters",
-      "blogUrl": "https://blog.johndoe.com",
-      "displayName": "John Doe",
-      "fbUrl": "https://facebook.com/johndoe",
-      "githubUrl": "https://github.com/johndoe",
-      "linkedInUrl": "https://linkedin.com/in/johndoe",
-      "twitterUrl": "https://twitter.com/johndoe",
+    "avatar": {
+      "data": "data:image/jpeg;base64,dGVzdGluZyBjb250ZW50",
+      "type": "update",
     },
+    "bio": "This is a valid biography that meets the minimum length requirement of twenty characters",
+    "blogUrl": "https://blog.johndoe.com",
+    "displayName": "John Doe",
+    "fbUrl": "https://facebook.com/johndoe",
+    "githubUrl": "https://github.com/johndoe",
+    "linkedInUrl": "https://linkedin.com/in/johndoe",
+    "mdate": "2025-01-21T10:04:27.719Z",
+    "twitterUrl": "https://twitter.com/johndoe",
   },
   "success": true,
 }
@@ -24,74 +22,125 @@ exports[`Update user profile contract works when it accepts a valid complete pay
 
 exports[`Update user profile contract works when it accepts a valid payload with null optional fields 1`] = `
 {
-  "data": {
-    "mdate": "2025-01-21T10:04:27.719Z",
-    "profile": {
-      "avatar": {
-        "type": "noop",
-      },
-      "bio": null,
-      "blogUrl": null,
-      "displayName": null,
-      "fbUrl": null,
-      "githubUrl": null,
-      "linkedInUrl": null,
-      "twitterUrl": null,
-    },
-  },
-  "success": true,
+  "error": [ZodError: [
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "mdate"
+    ],
+    "message": "Required"
+  }
+]],
+  "success": false,
 }
 `;
 
 exports[`Update user profile contract works when it accepts nullish displayName 1`] = `
 {
-  "data": {
-    "mdate": "2025-01-21T10:04:27.719Z",
-    "profile": {
-      "avatar": {
-        "data": "data:image/jpeg;base64,dGVzdGluZyBjb250ZW50",
-        "type": "update",
-      },
-      "bio": "This is a valid biography that meets the minimum length requirement of twenty characters",
-      "blogUrl": "https://blog.johndoe.com",
-      "displayName": null,
-      "fbUrl": "https://facebook.com/johndoe",
-      "githubUrl": "https://github.com/johndoe",
-      "linkedInUrl": "https://linkedin.com/in/johndoe",
-      "twitterUrl": "https://twitter.com/johndoe",
-    },
-  },
-  "success": true,
-}
-`;
-
-exports[`Update user profile contract works when it rejects the payload if { description: 'URLs are invalid', payload: [Object] } 1`] = `
-{
   "error": [ZodError: [
   {
-    "validation": "url",
-    "code": "invalid_string",
-    "message": "The GitHub URL format is invalid",
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
     "path": [
-      "profile",
-      "githubUrl"
-    ]
-  },
-  {
-    "validation": "url",
-    "code": "invalid_string",
-    "message": "The Facebook URL format is invalid",
-    "path": [
-      "profile",
-      "fbUrl"
-    ]
+      "mdate"
+    ],
+    "message": "Required"
   },
   {
     "code": "invalid_type",
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
+      "displayName"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_union",
+    "unionErrors": [
+      {
+        "issues": [
+          {
+            "code": "invalid_type",
+            "expected": "object",
+            "received": "undefined",
+            "path": [
+              "avatar"
+            ],
+            "message": "Required"
+          }
+        ],
+        "name": "ZodError"
+      },
+      {
+        "issues": [
+          {
+            "code": "invalid_type",
+            "expected": "object",
+            "received": "undefined",
+            "path": [
+              "avatar"
+            ],
+            "message": "Required"
+          }
+        ],
+        "name": "ZodError"
+      },
+      {
+        "issues": [
+          {
+            "code": "invalid_type",
+            "expected": "object",
+            "received": "undefined",
+            "path": [
+              "avatar"
+            ],
+            "message": "Required"
+          }
+        ],
+        "name": "ZodError"
+      }
+    ],
+    "path": [
+      "avatar"
+    ],
+    "message": "Invalid input"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "bio"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "githubUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "fbUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
       "linkedInUrl"
     ],
     "message": "Required"
@@ -101,7 +150,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "blogUrl"
     ],
     "message": "Required"
@@ -111,7 +159,66 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
+      "twitterUrl"
+    ],
+    "message": "Required"
+  }
+]],
+  "success": false,
+}
+`;
+
+exports[`Update user profile contract works when it rejects the payload if { description: 'URLs are invalid', payload: [Object] } 1`] = `
+{
+  "error": [ZodError: [
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "mdate"
+    ],
+    "message": "Required"
+  },
+  {
+    "validation": "url",
+    "code": "invalid_string",
+    "message": "The GitHub URL format is invalid",
+    "path": [
+      "githubUrl"
+    ]
+  },
+  {
+    "validation": "url",
+    "code": "invalid_string",
+    "message": "The Facebook URL format is invalid",
+    "path": [
+      "fbUrl"
+    ]
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "linkedInUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "blogUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
       "twitterUrl"
     ],
     "message": "Required"
@@ -125,11 +232,19 @@ exports[`Update user profile contract works when it rejects the payload if { des
 {
   "error": [ZodError: [
   {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "mdate"
+    ],
+    "message": "Required"
+  },
+  {
     "validation": "url",
     "code": "invalid_string",
     "message": "The GitHub URL format is invalid",
     "path": [
-      "profile",
       "githubUrl"
     ]
   },
@@ -138,7 +253,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "code": "invalid_string",
     "message": "The Facebook URL format is invalid",
     "path": [
-      "profile",
       "fbUrl"
     ]
   },
@@ -147,7 +261,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "linkedInUrl"
     ],
     "message": "Required"
@@ -157,7 +270,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "blogUrl"
     ],
     "message": "Required"
@@ -167,7 +279,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "twitterUrl"
     ],
     "message": "Required"
@@ -181,6 +292,15 @@ exports[`Update user profile contract works when it rejects the payload if { des
 {
   "error": [ZodError: [
   {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "mdate"
+    ],
+    "message": "Required"
+  },
+  {
     "code": "invalid_union",
     "unionErrors": [
       {
@@ -190,7 +310,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
             "code": "invalid_literal",
             "expected": "noop",
             "path": [
-              "profile",
               "avatar",
               "type"
             ],
@@ -206,7 +325,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
             "code": "invalid_literal",
             "expected": "update",
             "path": [
-              "profile",
               "avatar",
               "type"
             ],
@@ -217,7 +335,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
             "expected": "string",
             "received": "undefined",
             "path": [
-              "profile",
               "avatar",
               "data"
             ],
@@ -233,7 +350,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
             "code": "invalid_literal",
             "expected": "remove",
             "path": [
-              "profile",
               "avatar",
               "type"
             ],
@@ -244,7 +360,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
       }
     ],
     "path": [
-      "profile",
       "avatar"
     ],
     "message": "Invalid input"
@@ -254,7 +369,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "githubUrl"
     ],
     "message": "Required"
@@ -264,7 +378,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "fbUrl"
     ],
     "message": "Required"
@@ -274,7 +387,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "linkedInUrl"
     ],
     "message": "Required"
@@ -284,7 +396,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "blogUrl"
     ],
     "message": "Required"
@@ -294,7 +405,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "twitterUrl"
     ],
     "message": "Required"
@@ -308,6 +418,15 @@ exports[`Update user profile contract works when it rejects the payload if { des
 {
   "error": [ZodError: [
   {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "mdate"
+    ],
+    "message": "Required"
+  },
+  {
     "code": "invalid_union",
     "unionErrors": [
       {
@@ -317,7 +436,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
             "code": "invalid_literal",
             "expected": "noop",
             "path": [
-              "profile",
               "avatar",
               "type"
             ],
@@ -333,7 +451,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
             "expected": "string",
             "received": "undefined",
             "path": [
-              "profile",
               "avatar",
               "data"
             ],
@@ -349,7 +466,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
             "code": "invalid_literal",
             "expected": "remove",
             "path": [
-              "profile",
               "avatar",
               "type"
             ],
@@ -360,7 +476,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
       }
     ],
     "path": [
-      "profile",
       "avatar"
     ],
     "message": "Invalid input"
@@ -370,7 +485,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "githubUrl"
     ],
     "message": "Required"
@@ -380,7 +494,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "fbUrl"
     ],
     "message": "Required"
@@ -390,7 +503,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "linkedInUrl"
     ],
     "message": "Required"
@@ -400,7 +512,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "blogUrl"
     ],
     "message": "Required"
@@ -410,7 +521,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "twitterUrl"
     ],
     "message": "Required"
@@ -424,6 +534,15 @@ exports[`Update user profile contract works when it rejects the payload if { des
 {
   "error": [ZodError: [
   {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "mdate"
+    ],
+    "message": "Required"
+  },
+  {
     "code": "too_small",
     "minimum": 20,
     "type": "string",
@@ -431,7 +550,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "exact": false,
     "message": "Bio must be at least 20 characters long",
     "path": [
-      "profile",
       "bio"
     ]
   },
@@ -440,7 +558,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "githubUrl"
     ],
     "message": "Required"
@@ -450,7 +567,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "fbUrl"
     ],
     "message": "Required"
@@ -460,7 +576,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "linkedInUrl"
     ],
     "message": "Required"
@@ -470,7 +585,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "blogUrl"
     ],
     "message": "Required"
@@ -480,7 +594,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "twitterUrl"
     ],
     "message": "Required"
@@ -494,6 +607,15 @@ exports[`Update user profile contract works when it rejects the payload if { des
 {
   "error": [ZodError: [
   {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "mdate"
+    ],
+    "message": "Required"
+  },
+  {
     "code": "too_big",
     "maximum": 30,
     "type": "string",
@@ -501,7 +623,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "exact": false,
     "message": "Display name can be up to 30 characters long",
     "path": [
-      "profile",
       "displayName"
     ]
   },
@@ -510,7 +631,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "githubUrl"
     ],
     "message": "Required"
@@ -520,7 +640,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "fbUrl"
     ],
     "message": "Required"
@@ -530,7 +649,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "linkedInUrl"
     ],
     "message": "Required"
@@ -540,7 +658,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "blogUrl"
     ],
     "message": "Required"
@@ -550,7 +667,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "twitterUrl"
     ],
     "message": "Required"
@@ -564,6 +680,15 @@ exports[`Update user profile contract works when it rejects the payload if { des
 {
   "error": [ZodError: [
   {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "mdate"
+    ],
+    "message": "Required"
+  },
+  {
     "code": "too_big",
     "maximum": 30,
     "type": "string",
@@ -571,7 +696,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "exact": false,
     "message": "Display name can be up to 30 characters long",
     "path": [
-      "profile",
       "displayName"
     ]
   },
@@ -580,7 +704,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "githubUrl"
     ],
     "message": "Required"
@@ -590,7 +713,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "fbUrl"
     ],
     "message": "Required"
@@ -600,7 +722,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "linkedInUrl"
     ],
     "message": "Required"
@@ -610,7 +731,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "blogUrl"
     ],
     "message": "Required"
@@ -620,7 +740,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "twitterUrl"
     ],
     "message": "Required"
@@ -634,6 +753,15 @@ exports[`Update user profile contract works when it rejects the payload if { des
 {
   "error": [ZodError: [
   {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "mdate"
+    ],
+    "message": "Required"
+  },
+  {
     "code": "too_small",
     "minimum": 2,
     "type": "string",
@@ -641,7 +769,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "exact": false,
     "message": "Display name must be at least 2 characters long",
     "path": [
-      "profile",
       "displayName"
     ]
   },
@@ -650,7 +777,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "githubUrl"
     ],
     "message": "Required"
@@ -660,7 +786,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "fbUrl"
     ],
     "message": "Required"
@@ -670,7 +795,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "linkedInUrl"
     ],
     "message": "Required"
@@ -680,7 +804,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "blogUrl"
     ],
     "message": "Required"
@@ -690,7 +813,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "twitterUrl"
     ],
     "message": "Required"
@@ -716,7 +838,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "githubUrl"
     ],
     "message": "Required"
@@ -726,7 +847,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "fbUrl"
     ],
     "message": "Required"
@@ -736,7 +856,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "linkedInUrl"
     ],
     "message": "Required"
@@ -746,7 +865,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "blogUrl"
     ],
     "message": "Required"
@@ -756,7 +874,6 @@ exports[`Update user profile contract works when it rejects the payload if { des
     "expected": "string",
     "received": "undefined",
     "path": [
-      "profile",
       "twitterUrl"
     ],
     "message": "Required"
@@ -780,10 +897,115 @@ exports[`Update user profile contract works when it rejects the payload if { des
   },
   {
     "code": "invalid_type",
-    "expected": "object",
+    "expected": "string",
     "received": "undefined",
     "path": [
-      "profile"
+      "displayName"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_union",
+    "unionErrors": [
+      {
+        "issues": [
+          {
+            "code": "invalid_type",
+            "expected": "object",
+            "received": "undefined",
+            "path": [
+              "avatar"
+            ],
+            "message": "Required"
+          }
+        ],
+        "name": "ZodError"
+      },
+      {
+        "issues": [
+          {
+            "code": "invalid_type",
+            "expected": "object",
+            "received": "undefined",
+            "path": [
+              "avatar"
+            ],
+            "message": "Required"
+          }
+        ],
+        "name": "ZodError"
+      },
+      {
+        "issues": [
+          {
+            "code": "invalid_type",
+            "expected": "object",
+            "received": "undefined",
+            "path": [
+              "avatar"
+            ],
+            "message": "Required"
+          }
+        ],
+        "name": "ZodError"
+      }
+    ],
+    "path": [
+      "avatar"
+    ],
+    "message": "Invalid input"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "bio"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "githubUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "fbUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "linkedInUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "blogUrl"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "twitterUrl"
     ],
     "message": "Required"
   }
@@ -818,7 +1040,6 @@ exports[`Update user profile contract works when it rejects the payload when ava
     "exact": false,
     "message": "Avatar must be in base64 format",
     "path": [
-      "profile",
       "avatar",
       "data"
     ]
@@ -828,7 +1049,6 @@ exports[`Update user profile contract works when it rejects the payload when ava
     "code": "invalid_string",
     "message": "Avatar must be in base64 format",
     "path": [
-      "profile",
       "avatar",
       "data"
     ]
@@ -851,7 +1071,6 @@ exports[`Update user profile contract works when it rejects the payload when ava
             "code": "invalid_literal",
             "expected": "noop",
             "path": [
-              "profile",
               "avatar",
               "type"
             ],
@@ -867,7 +1086,6 @@ exports[`Update user profile contract works when it rejects the payload when ava
             "expected": "string",
             "received": "null",
             "path": [
-              "profile",
               "avatar",
               "data"
             ],
@@ -883,7 +1101,6 @@ exports[`Update user profile contract works when it rejects the payload when ava
             "code": "invalid_literal",
             "expected": "remove",
             "path": [
-              "profile",
               "avatar",
               "type"
             ],
@@ -894,7 +1111,6 @@ exports[`Update user profile contract works when it rejects the payload when ava
       }
     ],
     "path": [
-      "profile",
       "avatar"
     ],
     "message": "Invalid input"
@@ -907,20 +1123,18 @@ exports[`Update user profile contract works when it rejects the payload when ava
 exports[`Update user profile contract works when it trims payload properties 1`] = `
 {
   "data": {
-    "mdate": "2025-01-21T10:04:27.719Z",
-    "profile": {
-      "avatar": {
-        "data": "data:image/jpeg;base64,dGVzdGluZyBjb250ZW50",
-        "type": "update",
-      },
-      "bio": "This is a valid biography that meets the minimum length requirement of twenty characters",
-      "blogUrl": "https://blog.johndoe.com",
-      "displayName": "John Doe",
-      "fbUrl": "https://facebook.com/johndoe",
-      "githubUrl": "https://github.com/johndoe",
-      "linkedInUrl": "https://linkedin.com/in/johndoe",
-      "twitterUrl": "https://twitter.com/johndoe",
+    "avatar": {
+      "data": "data:image/jpeg;base64,dGVzdGluZyBjb250ZW50",
+      "type": "update",
     },
+    "bio": "This is a valid biography that meets the minimum length requirement of twenty characters",
+    "blogUrl": "https://blog.johndoe.com",
+    "displayName": "John Doe",
+    "fbUrl": "https://facebook.com/johndoe",
+    "githubUrl": "https://github.com/johndoe",
+    "linkedInUrl": "https://linkedin.com/in/johndoe",
+    "mdate": "2025-01-21T10:04:27.719Z",
+    "twitterUrl": "https://twitter.com/johndoe",
   },
   "success": true,
 }
