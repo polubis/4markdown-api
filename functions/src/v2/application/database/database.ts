@@ -9,7 +9,6 @@ const COLLECTIONS_KEYS = [
   `users-profiles`,
   `account-permissions`,
   `document-comments`,
-  `user-display-names`,
 ] as const;
 type DBCollectionKey = (typeof COLLECTIONS_KEYS)[number];
 

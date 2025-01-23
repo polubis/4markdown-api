@@ -12,7 +12,6 @@ import { type Base64 } from '@utils/validators';
 import { decodeBase64Asset } from '@utils/decode-base64-asset';
 import { storage } from 'firebase-admin';
 import * as sharp from 'sharp';
-import { UserDisplayNameModel } from '@domain/models/user-display-name';
 
 type UpdateYourUserProfileHandlerConfig = {
   payload: UpdateYourUserProfilePayload;
@@ -45,23 +44,22 @@ const avatarVariants = [
 const verifyDisplayNamesDuplication = async ({
   transaction,
   context,
-  payload,
-}: UpdateYourUserProfileHandlerConfig & {
+  displayNameSlug,
+}: {
+  context: ProtectedControllerHandlerContext;
   transaction: Transaction;
+  displayNameSlug: UserProfileModel['displayNameSlug'];
 }): Promise<void> => {
-  if (payload.displayName === null) return;
+  if (displayNameSlug === null) return;
 
   const userDisplayNamesSnap = await transaction.get(
-    context.db.collection(`user-display-names`).doc(payload.displayName),
+    context.db
+      .collection(`users-profiles`)
+      .where(`displayNameSlug`, `==`, displayNameSlug)
+      .where(`__name__`, `!=`, context.uid),
   );
 
-  const userDisplayName = userDisplayNamesSnap.data() as
-    | UserDisplayNameModel
-    | undefined;
-
-  if (!userDisplayName) return;
-
-  if (userDisplayName.userId !== context.uid)
+  if (userDisplayNamesSnap.size > 0)
     throw errors.exists(`User with given display name already exists`);
 };
 
@@ -160,15 +158,22 @@ const updateYourUserProfileHandler = async ({
     .doc(context.uid);
 
   return await context.db.runTransaction(async (transaction) => {
-    await verifyDisplayNamesDuplication({ transaction, payload, context });
+    const displayNameSlug =
+      payload.displayName !== null ? createSlug(payload.displayName) : null;
+
+    await verifyDisplayNamesDuplication({
+      transaction,
+      displayNameSlug,
+      context,
+    });
+
     const yourUserProfileSnap = await transaction.get(yourUserProfileRef);
 
     const userProfilePartial: Omit<
       UserProfileModel,
       'id' | 'cdate' | 'mdate' | 'avatar'
     > = {
-      displayNameSlug:
-        payload.displayName !== null ? createSlug(payload.displayName) : null,
+      displayNameSlug,
       displayName: payload.displayName,
       bio: payload.bio,
       linkedInUrl: payload.linkedInUrl,
