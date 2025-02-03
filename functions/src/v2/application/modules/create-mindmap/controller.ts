@@ -76,7 +76,7 @@ const createMindmapController = protectedController<Dto>(
 
       const hasDuplicate = hasDuplicateSnapshot.data().count > 0;
 
-      if (!hasDuplicate) {
+      if (hasDuplicate) {
         throw errors.exists(`Mindmap with ${payload.name.raw} already exists`);
       }
 
@@ -99,7 +99,7 @@ const createMindmapController = protectedController<Dto>(
         userMindmapsRef.collection(`mindmaps`).doc(mindmapId),
         newMindmap,
       );
-      await t.set(userMindmapsRef.collection(`mindmaps`).doc(mindmapId), {
+      await t.update(userMindmapsRef, {
         mindmapsCount: FieldValue.increment(1),
       });
 
