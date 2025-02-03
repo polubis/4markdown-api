@@ -48,7 +48,7 @@ const schema = z
 
 type Payload = z.infer<typeof schema>;
 
-type Dto = MindmapDto;
+type Dto = MindmapDto & { id: MindmapId };
 
 const validate = async (rawPayload: unknown): Promise<Payload> => {
   try {
@@ -99,11 +99,18 @@ const createMindmapController = protectedController<Dto>(
         userMindmapsRef.collection(`mindmaps`).doc(mindmapId),
         newMindmap,
       );
-      await t.update(userMindmapsRef, {
-        mindmapsCount: FieldValue.increment(1),
-      });
+      await t.set(
+        userMindmapsRef,
+        {
+          mindmapsCount: FieldValue.increment(1),
+        },
+        { merge: true },
+      );
 
-      return newMindmap;
+      return {
+        ...newMindmap,
+        id: mindmapId,
+      };
     });
   },
 );
