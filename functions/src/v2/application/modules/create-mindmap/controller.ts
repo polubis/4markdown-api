@@ -77,7 +77,9 @@ const createMindmapController = protectedController<Dto>(
       const hasDuplicate = hasDuplicateSnapshot.data().count > 0;
 
       if (hasDuplicate) {
-        throw errors.exists(`Mindmap with ${payload.name.raw} already exists`);
+        throw errors.exists(
+          `Mindmap with name ${payload.name.raw} is reserved`,
+        );
       }
 
       const mindmapId = uuid() as MindmapId;
