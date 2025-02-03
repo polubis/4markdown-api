@@ -6,7 +6,7 @@ import type {
   Tags,
   Visibility,
 } from '@domain/atoms/general';
-import type { Path, Url } from '@utils/validators';
+import type { Date, Path, Url } from '@utils/validators';
 
 type MakeNode<TType extends string, TData extends Record<string, any>> = {
   id: MindmapNodeId;
@@ -46,6 +46,7 @@ type MakeMindmap<
   id: MindmapId;
   cdate: Date;
   mdate: Date;
+  path: Path;
   name: string;
   orientation: `x` | `y`;
   nodes: MindmapNode[];
@@ -66,7 +67,6 @@ type PublicMindmapDto = MakeMindmap<
 type PermanentMindmapDto = MakeMindmap<
   Visibility.Permanent,
   {
-    path: Path;
     description: string;
     tags: Tags;
   }
