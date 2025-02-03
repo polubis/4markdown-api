@@ -25,6 +25,7 @@ import { editDocumentCommentController } from '@modules/edit-document-comment/ed
 import { deleteDocumentCommentController } from '@modules/delete-document-comment/delete-document-comment.controller';
 import { getYourUserProfileController } from '@modules/get-your-user-profile/get-your-user-profile.controller';
 import { updateYourUserProfileController } from '@modules/update-your-user-profile/update-your-user-profile.controller';
+import { createMindmapController } from '@modules/create-mindmap/controller';
 
 const app = admin.initializeApp();
 const db = app.firestore();
@@ -122,4 +123,9 @@ export const migrateDatabase = migrateDatabaseController({
   db,
   projectId,
   secrets: [`ADMIN_LIST`],
+});
+
+export const createMindmap = createMindmapController({
+  db,
+  projectId,
 });
