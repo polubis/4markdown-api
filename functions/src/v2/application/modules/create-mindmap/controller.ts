@@ -40,7 +40,8 @@ const schema = z
       .string()
       .trim()
       .min(110, `Description must be at least 110 characters`)
-      .max(160, `Description must be fewer than 160 characters`),
+      .max(160, `Description must be fewer than 160 characters`)
+      .optional(),
   })
   .brand(`payload`);
 
@@ -84,7 +85,7 @@ const createMindmapController = protectedController<Dto>(
       mdate: now,
       name: payload.name.raw,
       path: payload.name.path,
-      description: payload.description,
+      description: payload.description ?? null,
       edges: [],
       nodes: [],
       visibility: Visibility.Private,
