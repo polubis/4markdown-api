@@ -42,7 +42,7 @@ const schema = z
       .trim()
       .min(110, `Description must be at least 110 characters`)
       .max(160, `Description must be fewer than 160 characters`)
-      .optional(),
+      .nullable(),
   })
   .brand(`payload`);
 
