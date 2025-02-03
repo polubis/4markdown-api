@@ -1,5 +1,5 @@
 import { MindmapId, Visibility } from '@domain/atoms/general';
-import { MindmapDto } from '@domain/models/mindmap';
+import { PrivateMindmapDto } from '@domain/models/mindmap';
 import { nowISO, uuid } from '@libs/helpers/stamps';
 import { protectedController } from '@utils/controller';
 import { createSlug } from '@utils/create-slug';
@@ -48,7 +48,7 @@ const schema = z
 
 type Payload = z.infer<typeof schema>;
 
-type Dto = MindmapDto & { id: MindmapId };
+type Dto = PrivateMindmapDto & { id: MindmapId };
 
 const validate = async (rawPayload: unknown): Promise<Payload> => {
   try {
@@ -83,7 +83,7 @@ const createMindmapController = protectedController<Dto>(
       const mindmapId = uuid() as MindmapId;
       const now = nowISO();
 
-      const newMindmap: MindmapDto = {
+      const newMindmap: PrivateMindmapDto = {
         cdate: now,
         mdate: now,
         name: payload.name.raw,

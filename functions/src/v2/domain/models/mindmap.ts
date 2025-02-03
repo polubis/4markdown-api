@@ -53,17 +53,17 @@ type MakeMindmap<
   visibility: TVisibility;
 };
 
-type PrivateMindmapDto = MakeMindmap<
+export type PrivateMindmapDto = MakeMindmap<
   Visibility.Private,
   { description: string | null }
 >;
 
-type PublicMindmapDto = MakeMindmap<
+export type PublicMindmapDto = MakeMindmap<
   Visibility.Public,
   { description: string | null }
 >;
 
-type PermanentMindmapDto = MakeMindmap<
+export type PermanentMindmapDto = MakeMindmap<
   Visibility.Permanent,
   {
     description: string;
