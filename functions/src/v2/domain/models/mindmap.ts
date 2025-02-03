@@ -43,7 +43,6 @@ type MakeMindmap<
   TVisibility extends Visibility,
   TData extends Record<string, any> = {},
 > = TData & {
-  id: MindmapId;
   cdate: Date;
   mdate: Date;
   path: Path;

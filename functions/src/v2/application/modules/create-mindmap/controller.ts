@@ -4,6 +4,7 @@ import { nowISO, uuid } from '@libs/helpers/stamps';
 import { protectedController } from '@utils/controller';
 import { createSlug } from '@utils/create-slug';
 import { errors } from '@utils/errors';
+import { FieldValue } from 'firebase-admin/firestore';
 import { z } from 'zod';
 
 const schema = z
@@ -60,41 +61,50 @@ const validate = async (rawPayload: unknown): Promise<Payload> => {
 const createMindmapController = protectedController<Dto>(
   async (rawPayload, context) => {
     const payload = await validate(rawPayload);
-    const userMindmapsRef = context.db
-      .collection(`user-mindmaps`)
-      .doc(context.uid);
 
-    const hasDuplicateSnapshot = await userMindmapsRef
-      .collection(`mindmaps`)
-      .where(`path`, `==`, payload.name.path)
-      .count()
-      .get();
+    return context.db.runTransaction(async (t) => {
+      const userMindmapsRef = context.db
+        .collection(`user-mindmaps`)
+        .doc(context.uid);
 
-    const hasDuplicate = hasDuplicateSnapshot.data().count > 0;
+      const hasDuplicateSnapshot = await t.get(
+        userMindmapsRef
+          .collection(`mindmaps`)
+          .where(`path`, `==`, payload.name.path)
+          .count(),
+      );
 
-    if (!hasDuplicate) {
-      throw errors.exists(`Mindmap with ${payload.name.raw} already exists`);
-    }
+      const hasDuplicate = hasDuplicateSnapshot.data().count > 0;
 
-    const mindmapId = uuid() as MindmapId;
-    const now = nowISO();
+      if (!hasDuplicate) {
+        throw errors.exists(`Mindmap with ${payload.name.raw} already exists`);
+      }
 
-    const newMindmap: MindmapDto = {
-      id: mindmapId,
-      cdate: now,
-      mdate: now,
-      name: payload.name.raw,
-      path: payload.name.path,
-      description: payload.description ?? null,
-      edges: [],
-      nodes: [],
-      visibility: Visibility.Private,
-      orientation: `y`,
-    };
+      const mindmapId = uuid() as MindmapId;
+      const now = nowISO();
 
-    await userMindmapsRef.collection(`mindmaps`).add(newMindmap);
+      const newMindmap: MindmapDto = {
+        cdate: now,
+        mdate: now,
+        name: payload.name.raw,
+        path: payload.name.path,
+        description: payload.description ?? null,
+        edges: [],
+        nodes: [],
+        visibility: Visibility.Private,
+        orientation: `y`,
+      };
 
-    return newMindmap;
+      await t.set(
+        userMindmapsRef.collection(`mindmaps`).doc(mindmapId),
+        newMindmap,
+      );
+      await t.set(userMindmapsRef.collection(`mindmaps`).doc(mindmapId), {
+        mindmapsCount: FieldValue.increment(1),
+      });
+
+      return newMindmap;
+    });
   },
 );
 
