@@ -39,10 +39,7 @@ type VisitedEdge = MakeEdge<`visited`>;
 type DoneEdge = MakeEdge<`done`>;
 type MindmapEdge = UnvisitedEdge | VisitedEdge | DoneEdge;
 
-type MakeMindmap<
-  TVisibility extends Visibility,
-  TData extends Record<string, any> = {},
-> = TData & {
+export type MindmapModel = {
   cdate: Date;
   mdate: Date;
   path: Path;
@@ -50,28 +47,7 @@ type MakeMindmap<
   orientation: `x` | `y`;
   nodes: MindmapNode[];
   edges: MindmapEdge[];
-  visibility: TVisibility;
+  visibility: Visibility;
+  description: string | null;
+  tags: Tags | null;
 };
-
-export type PrivateMindmapDto = MakeMindmap<
-  Visibility.Private,
-  { description: string | null }
->;
-
-export type PublicMindmapDto = MakeMindmap<
-  Visibility.Public,
-  { description: string | null }
->;
-
-export type PermanentMindmapDto = MakeMindmap<
-  Visibility.Permanent,
-  {
-    description: string;
-    tags: Tags;
-  }
->;
-
-export type MindmapDto =
-  | PrivateMindmapDto
-  | PublicMindmapDto
-  | PermanentMindmapDto;

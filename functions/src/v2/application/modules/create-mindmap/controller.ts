@@ -1,5 +1,5 @@
-import { MindmapId, Visibility } from '@domain/atoms/general';
-import { PrivateMindmapDto } from '@domain/models/mindmap';
+import { type MindmapId, Visibility } from '@domain/atoms/general';
+import { type MindmapModel } from '@domain/models/mindmap';
 import { nowISO, uuid } from '@libs/helpers/stamps';
 import { protectedController } from '@utils/controller';
 import { createSlug } from '@utils/create-slug';
@@ -7,48 +7,46 @@ import { errors } from '@utils/errors';
 import { FieldValue } from 'firebase-admin/firestore';
 import { z } from 'zod';
 
-const schema = z
-  .object({
-    name: z
-      .string()
-      .trim()
-      .transform((name) => {
-        const slug = createSlug(name);
+const schema = z.object({
+  name: z
+    .string()
+    .trim()
+    .transform((name) => {
+      const slug = createSlug(name);
 
-        return {
-          raw: name,
-          path: `/${slug}/`,
-          slug,
-          segments: slug === `` ? [] : slug.split(`-`),
-        };
-      })
-      .superRefine(({ segments, raw }, { addIssue }) => {
-        if (!(raw.length >= 1 && raw.length <= 70)) {
-          addIssue({
-            code: `custom`,
-            message: `Mindmap name must be between 1-70 characters`,
-          });
-        }
+      return {
+        raw: name,
+        path: `/${slug}/`,
+        slug,
+        segments: slug === `` ? [] : slug.split(`-`),
+      };
+    })
+    .superRefine(({ segments, raw }, { addIssue }) => {
+      if (!(raw.length >= 1 && raw.length <= 70)) {
+        addIssue({
+          code: `custom`,
+          message: `Mindmap name must be between 1-70 characters`,
+        });
+      }
 
-        if (!(segments.length >= 1 && segments.length <= 15)) {
-          addIssue({
-            code: `custom`,
-            message: `Generated path from mindmap name must be between 1-15`,
-          });
-        }
-      }),
-    description: z
-      .string()
-      .trim()
-      .min(110, `Description must be at least 110 characters`)
-      .max(160, `Description must be fewer than 160 characters`)
-      .nullable(),
-  })
-  .brand(`payload`);
+      if (!(segments.length >= 1 && segments.length <= 15)) {
+        addIssue({
+          code: `custom`,
+          message: `Generated path from mindmap name must be between 1-15`,
+        });
+      }
+    }),
+  description: z
+    .string()
+    .trim()
+    .min(110, `Description must be at least 110 characters`)
+    .max(160, `Description must be fewer than 160 characters`)
+    .nullable(),
+});
 
 type Payload = z.infer<typeof schema>;
 
-type Dto = PrivateMindmapDto & { id: MindmapId };
+type Dto = MindmapModel & { id: MindmapId };
 
 const validate = async (rawPayload: unknown): Promise<Payload> => {
   try {
@@ -85,7 +83,7 @@ const createMindmapController = protectedController<Dto>(
       const mindmapId = uuid() as MindmapId;
       const now = nowISO();
 
-      const newMindmap: PrivateMindmapDto = {
+      const newMindmap: MindmapModel = {
         cdate: now,
         mdate: now,
         name: payload.name.raw,
@@ -95,6 +93,7 @@ const createMindmapController = protectedController<Dto>(
         nodes: [],
         visibility: Visibility.Private,
         orientation: `y`,
+        tags: null,
       };
 
       await t.set(
