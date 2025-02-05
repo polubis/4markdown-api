@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { regexes } from './regexes';
+import { createSlug } from './create-slug';
 
 const id = z.string().trim().min(1);
 const email = z
@@ -12,6 +13,34 @@ const date = z.string().trim().regex(regexes.date);
 const url = (message: string) => z.string().trim().url(message);
 const text = z.string().trim();
 
+const tagsWhiteList: Record<string, boolean> = {
+  'c++': true,
+  'c#': true,
+  'f#': true,
+};
+
+const tags = () =>
+  z
+    .array(
+      z
+        .string()
+        .trim()
+        .toLowerCase()
+        .min(1, `Tag must be at least 1 character`)
+        .max(40, `Tag must be fewer than 40 characters`)
+        .transform((tag) => (tagsWhiteList[tag] ? tag : createSlug(tag)))
+        .refine(
+          (tag) => tag.length >= 1 && tag.length <= 40,
+          `One of the tags has an invalid format`,
+        ),
+    )
+    .min(1, `At least 1 tag is required`)
+    .max(10, `No more than 10 tags are allowed`)
+    .refine(
+      (tags) => tags.length === new Set([...tags]).size,
+      `Tags contain duplicates`,
+    );
+
 type Id = z.infer<typeof id>;
 type Date = z.infer<typeof date>;
 type Email = z.infer<typeof email>;
@@ -22,4 +51,4 @@ type Slug = string;
 type Path = string;
 
 export type { Id, Date, Email, Url, Base64, Text, Slug, Path };
-export { id, date, email, base64, url, text };
+export { id, date, email, base64, url, text, tags };

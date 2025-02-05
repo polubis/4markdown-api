@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { createSlug } from './create-slug';
+import { tags } from './validators';
 
 const documentNameSchema = z
   .string()
@@ -40,32 +41,7 @@ const documentDescriptionSchema = z
 
 const documentCodeSchema = z.string();
 
-const documentTagsWhiteList: Record<string, boolean> = {
-  'c++': true,
-  'c#': true,
-  'f#': true,
-};
-
-const documentTagsSchema = z
-  .array(
-    z
-      .string()
-      .trim()
-      .toLowerCase()
-      .min(1, `Tag must be at least 1 character`)
-      .max(40, `Tag must be fewer than 40 characters`)
-      .transform((tag) => (documentTagsWhiteList[tag] ? tag : createSlug(tag)))
-      .refine(
-        (tag) => tag.length >= 1 && tag.length <= 40,
-        `One of the tags has an invalid format`,
-      ),
-  )
-  .min(1, `At least 1 tag is required`)
-  .max(10, `No more than 10 tags are allowed`)
-  .refine(
-    (tags) => tags.length === new Set([...tags]).size,
-    `Tags contain duplicates`,
-  );
+const documentTagsSchema = tags();
 
 export {
   documentNameSchema,

@@ -4,6 +4,7 @@ import { nowISO, uuid } from '@libs/helpers/stamps';
 import { protectedController } from '@utils/controller';
 import { createSlug } from '@utils/create-slug';
 import { errors } from '@utils/errors';
+import { tags } from '@utils/validators';
 import { FieldValue } from 'firebase-admin/firestore';
 import { z } from 'zod';
 
@@ -42,6 +43,7 @@ const schema = z.object({
     .min(110, `Description must be at least 110 characters`)
     .max(160, `Description must be fewer than 160 characters`)
     .nullable(),
+  tags: tags().nullable(),
 });
 
 type Payload = z.infer<typeof schema>;
