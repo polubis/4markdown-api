@@ -30,10 +30,7 @@ type MakeEdge<TType extends string> = {
 
 type DocumentNode = MakeNode<`document`, { documentId: DocumentId }>;
 type ExternalNode = MakeNode<`external`, { url: Url }>;
-type EmbeddedNode = MakeNode<
-  `embedded`,
-  { content: string; tags: Tags | null }
->;
+type EmbeddedNode = MakeNode<`embedded`, { content: string }>;
 type NestedNode = MakeNode<`nested`, { mindmapId: MindmapId }>;
 type MindmapNode = DocumentNode | ExternalNode | EmbeddedNode | NestedNode;
 
