@@ -26,6 +26,7 @@ import { deleteDocumentCommentController } from '@modules/delete-document-commen
 import { getYourUserProfileController } from '@modules/get-your-user-profile/get-your-user-profile.controller';
 import { updateYourUserProfileController } from '@modules/update-your-user-profile/update-your-user-profile.controller';
 import { createMindmapController } from '@modules/create-mindmap/controller';
+import { updateMindmapShapeController } from '@modules/update-mindmap-shape/controller';
 
 const app = admin.initializeApp();
 const db = app.firestore();
@@ -126,6 +127,11 @@ export const migrateDatabase = migrateDatabaseController({
 });
 
 export const createMindmap = createMindmapController({
+  db,
+  projectId,
+});
+
+export const updateMindmapShape = updateMindmapShapeController({
   db,
   projectId,
 });
