@@ -8,18 +8,16 @@ import type {
 } from '@domain/atoms/general';
 import type { Date, Path, Url } from '@utils/validators';
 
-const enum MindmapNodeType {
-  Document = `document`,
-  External = `external`,
-  Embedded = `embedded`,
-  Nested = `nested`,
-}
+const MINDMAP_EDGE_TYPES = [`unvisited`, `visited`, `done`] as const;
+const MINDMAP_NODE_TYPES = [
+  `document`,
+  `external`,
+  `embedded`,
+  `nested`,
+] as const;
 
-const enum MindmapEdgeType {
-  Unvisited = `unvisited`,
-  Visited = `visited`,
-  Done = `done`,
-}
+type MindmapEdgeType = (typeof MINDMAP_EDGE_TYPES)[number];
+type MindmapNodeType = (typeof MINDMAP_NODE_TYPES)[number];
 
 type MakeNode<
   TType extends MindmapNodeType,
@@ -44,18 +42,15 @@ type MakeEdge<TType extends MindmapEdgeType> = {
   target: MindmapNodeId;
 };
 
-type DocumentNode = MakeNode<
-  MindmapNodeType.Document,
-  { documentId: DocumentId }
->;
-type ExternalNode = MakeNode<MindmapNodeType.External, { url: Url }>;
-type EmbeddedNode = MakeNode<MindmapNodeType.Embedded, { content: string }>;
-type NestedNode = MakeNode<MindmapNodeType.Nested, { mindmapId: MindmapId }>;
+type DocumentNode = MakeNode<`document`, { documentId: DocumentId }>;
+type ExternalNode = MakeNode<`external`, { url: Url }>;
+type EmbeddedNode = MakeNode<`embedded`, { content: string }>;
+type NestedNode = MakeNode<`nested`, { mindmapId: MindmapId }>;
 type MindmapNode = DocumentNode | ExternalNode | EmbeddedNode | NestedNode;
 
-type UnvisitedEdge = MakeEdge<MindmapEdgeType.Unvisited>;
-type VisitedEdge = MakeEdge<MindmapEdgeType.Visited>;
-type DoneEdge = MakeEdge<MindmapEdgeType.Done>;
+type UnvisitedEdge = MakeEdge<`unvisited`>;
+type VisitedEdge = MakeEdge<`visited`>;
+type DoneEdge = MakeEdge<`done`>;
 type MindmapEdge = UnvisitedEdge | VisitedEdge | DoneEdge;
 
 type MindmapModel = {
@@ -71,5 +66,5 @@ type MindmapModel = {
   tags: Tags | null;
 };
 
-export { MindmapEdgeType, MindmapNodeType };
+export { MINDMAP_EDGE_TYPES, MINDMAP_NODE_TYPES };
 export type { MindmapModel };
