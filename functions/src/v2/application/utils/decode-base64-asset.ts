@@ -8,15 +8,10 @@ const decodeBase64Asset = (
   size: number;
 } => {
   const [meta, data] = asset.split(`,`);
-
   const contentType = meta.split(`:`)[1].split(`;`)[0];
-
   const extension = contentType.split(`/`)[1] || ``;
-
   const blob = data.replace(/^data:[^;]+;base64,/, ``);
-
   const buffer = Buffer.from(blob, `base64`);
-
   const size = Buffer.byteLength(buffer);
 
   return {
