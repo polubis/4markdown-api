@@ -3,7 +3,7 @@ import type {
   MindmapEdgeId,
   MindmapId,
   MindmapNodeId,
-  Tags,
+  MindmapTags,
   Visibility,
 } from '@domain/atoms/general';
 import type { Date, Path, Url } from '@utils/validators';
@@ -63,7 +63,7 @@ type MindmapModel = {
   edges: MindmapEdge[];
   visibility: Visibility;
   description: string | null;
-  tags: Tags | null;
+  tags: MindmapTags | null;
 };
 
 export { MINDMAP_EDGE_TYPES, MINDMAP_NODE_TYPES };

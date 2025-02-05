@@ -1,10 +1,11 @@
-import { type MindmapId, Visibility } from '@domain/atoms/general';
+import { type MindmapId, MindmapTags, Visibility } from '@domain/atoms/general';
 import { type MindmapModel } from '@domain/models/mindmap';
 import { nowISO, uuid } from '@libs/helpers/stamps';
 import { protectedController } from '@utils/controller';
 import { createSlug } from '@utils/create-slug';
 import { errors } from '@utils/errors';
-import { tags } from '@utils/validators';
+import { parse } from '@utils/parse';
+import { description, tags } from '@utils/validators';
 import { FieldValue } from 'firebase-admin/firestore';
 import { z } from 'zod';
 
@@ -37,31 +38,15 @@ const schema = z.object({
         });
       }
     }),
-  description: z
-    .string()
-    .trim()
-    .min(110, `Description must be at least 110 characters`)
-    .max(160, `Description must be fewer than 160 characters`)
-    .nullable(),
+  description: description().nullable(),
   tags: tags().nullable(),
 });
 
-type Payload = z.infer<typeof schema>;
-
 type Dto = MindmapModel & { id: MindmapId };
 
-const validate = async (rawPayload: unknown): Promise<Payload> => {
-  try {
-    return await schema.parseAsync(rawPayload);
-  } catch (error: unknown) {
-    throw errors.schema(error);
-  }
-};
-
-const createMindmapController = protectedController<Dto>(
+export const createMindmapController = protectedController<Dto>(
   async (rawPayload, context) => {
-    const payload = await validate(rawPayload);
-
+    const payload = await parse(schema, rawPayload);
     return context.db.runTransaction(async (t) => {
       const userMindmapsRef = context.db
         .collection(`user-mindmaps`)
@@ -83,6 +68,7 @@ const createMindmapController = protectedController<Dto>(
       }
 
       const mindmapId = uuid() as MindmapId;
+      const tags = payload.tags as MindmapTags;
       const now = nowISO();
 
       const newMindmap: MindmapModel = {
@@ -95,7 +81,7 @@ const createMindmapController = protectedController<Dto>(
         nodes: [],
         visibility: Visibility.Private,
         orientation: `y`,
-        tags: null,
+        tags: tags ?? null,
       };
 
       await t.set(
@@ -117,5 +103,3 @@ const createMindmapController = protectedController<Dto>(
     });
   },
 );
-
-export { createMindmapController };

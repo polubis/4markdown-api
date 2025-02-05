@@ -41,6 +41,13 @@ const tags = () =>
       `Tags contain duplicates`,
     );
 
+const description = () =>
+  z
+    .string()
+    .trim()
+    .min(110, `Description must be at least 110 characters`)
+    .max(160, `Description must be fewer than 160 characters`);
+
 type Id = z.infer<typeof id>;
 type Date = z.infer<typeof date>;
 type Email = z.infer<typeof email>;
@@ -51,4 +58,4 @@ type Slug = string;
 type Path = string;
 
 export type { Id, Date, Email, Url, Base64, Text, Slug, Path };
-export { id, date, email, base64, url, text, tags };
+export { id, date, email, base64, url, text, tags, description };
