@@ -6,11 +6,13 @@ import {
 import { nowISO } from '@libs/helpers/stamps';
 import { protectedController } from '@utils/controller';
 import { errors } from '@utils/errors';
-import { date, id, text, url } from '@utils/validators';
+import { cords, date, id, text, url } from '@utils/validators';
 import { z } from 'zod';
 
 const [documentType, externalType, embeddedType, nestedType] =
   MINDMAP_NODE_TYPES;
+
+const position = cords();
 
 const schema = z.object({
   id,
@@ -19,18 +21,22 @@ const schema = z.object({
     z.union([
       z.object({
         type: z.literal(documentType),
+        position,
         documentId: id,
       }),
       z.object({
         type: z.literal(externalType),
+        position,
         url: url(`Wrong url format in node`),
       }),
       z.object({
         type: z.literal(embeddedType),
+        position,
         content: text,
       }),
       z.object({
         type: z.literal(nestedType),
+        position,
         mindmapId: id,
       }),
     ]),

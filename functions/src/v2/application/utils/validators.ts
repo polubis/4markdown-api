@@ -13,6 +13,12 @@ const date = z.string().trim().regex(regexes.date);
 const url = (message: string) => z.string().trim().url(message);
 const text = z.string().trim();
 
+const cords = () =>
+  z.object({
+    x: z.number(),
+    y: z.number(),
+  });
+
 const tagsWhiteList: Record<string, boolean> = {
   'c++': true,
   'c#': true,
@@ -58,4 +64,4 @@ type Slug = string;
 type Path = string;
 
 export type { Id, Date, Email, Url, Base64, Text, Slug, Path };
-export { id, date, email, base64, url, text, tags, description };
+export { id, date, email, base64, url, text, tags, description, cords };
