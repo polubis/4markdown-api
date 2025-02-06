@@ -8,6 +8,7 @@ import { protectedController } from '@utils/controller';
 import { errors } from '@utils/errors';
 import { parse } from '@utils/parse';
 import {
+  clientGeneratedId,
   cords,
   date,
   description,
@@ -24,6 +25,7 @@ const [documentType, externalType, embeddedType, nestedType] =
 const position = cords();
 const nodeDescription = description().nullable();
 const nodeName = name();
+const clientGenId = clientGeneratedId()
 
 const schema = z.object({
   id,
@@ -31,7 +33,7 @@ const schema = z.object({
   nodes: z.array(
     z.union([
       z.object({
-        id: date,
+        id: clientGenId,
         type: z.literal(documentType),
         position,
         data: z.object({
@@ -41,7 +43,7 @@ const schema = z.object({
         }),
       }),
       z.object({
-        id: date,
+        id: clientGenId,
         type: z.literal(externalType),
         position,
         data: z.object({
@@ -51,7 +53,7 @@ const schema = z.object({
         }),
       }),
       z.object({
-        id: date,
+        id: clientGenId,
         type: z.literal(embeddedType),
         position,
         data: z.object({
@@ -61,7 +63,7 @@ const schema = z.object({
         }),
       }),
       z.object({
-        id: date,
+        id: clientGenId,
         type: z.literal(nestedType),
         position,
         data: z.object({
@@ -74,9 +76,9 @@ const schema = z.object({
   ),
   edges: z.array(
     z.object({
-      id: date,
-      source: id,
-      target: id,
+      id: clientGenId,
+      source: clientGenId,
+      target: clientGenId,
       type: z.enum(MINDMAP_EDGE_TYPES),
     }),
   ),

@@ -2,42 +2,14 @@ import { Visibility } from '@domain/atoms/general';
 import { type MindmapModel } from '@domain/models/mindmap';
 import { nowISO, uuid } from '@libs/helpers/stamps';
 import { protectedController } from '@utils/controller';
-import { createSlug } from '@utils/create-slug';
 import { errors } from '@utils/errors';
 import { parse } from '@utils/parse';
-import { description, tags } from '@utils/validators';
+import { description, name, tags } from '@utils/validators';
 import { FieldValue } from 'firebase-admin/firestore';
 import { z } from 'zod';
 
 const schema = z.object({
-  name: z
-    .string()
-    .trim()
-    .transform((name) => {
-      const slug = createSlug(name);
-
-      return {
-        raw: name,
-        path: `/${slug}/`,
-        slug,
-        segments: slug === `` ? [] : slug.split(`-`),
-      };
-    })
-    .superRefine(({ segments, raw }, { addIssue }) => {
-      if (!(raw.length >= 1 && raw.length <= 70)) {
-        addIssue({
-          code: `custom`,
-          message: `Mindmap name must be between 1-70 characters`,
-        });
-      }
-
-      if (!(segments.length >= 1 && segments.length <= 15)) {
-        addIssue({
-          code: `custom`,
-          message: `Generated path from mindmap name must be between 1-15`,
-        });
-      }
-    }),
+  name: name(),
   description: description().nullable(),
   tags: tags().nullable(),
 });

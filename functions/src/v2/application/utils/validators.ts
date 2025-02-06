@@ -3,6 +3,11 @@ import { regexes } from './regexes';
 import { createSlug } from './create-slug';
 
 const id = z.string().trim().min(1);
+const clientGeneratedId = () =>
+  z.string().regex(/^[0-9]+\.[0-9]+:[0-9]+\.[0-9]+$/, {
+    message: `Invalid unique client ID format`,
+  });
+
 const email = z
   .string()
   .trim()
@@ -94,4 +99,16 @@ type Slug = string;
 type Path = string;
 
 export type { Id, Date, Email, Url, Base64, Text, Slug, Path };
-export { id, date, email, base64, url, text, tags, description, cords, name };
+export {
+  id,
+  date,
+  email,
+  base64,
+  url,
+  text,
+  tags,
+  description,
+  cords,
+  name,
+  clientGeneratedId,
+};
