@@ -1,11 +1,4 @@
-import type {
-  DocumentId,
-  MindmapEdgeId,
-  MindmapId,
-  MindmapNodeId,
-  MindmapTags,
-  Visibility,
-} from '@domain/atoms/general';
+import type { Visibility } from '@domain/atoms/general';
 import type { Date, Path, Url } from '@utils/validators';
 
 const MINDMAP_EDGE_TYPES = [`unvisited`, `visited`, `done`] as const;
@@ -23,7 +16,7 @@ type MakeNode<
   TType extends MindmapNodeType,
   TData extends Record<string, any>,
 > = {
-  id: MindmapNodeId;
+  id: string;
   position: {
     x: number;
     y: number;
@@ -36,16 +29,16 @@ type MakeNode<
 };
 
 type MakeEdge<TType extends MindmapEdgeType> = {
-  id: MindmapEdgeId;
+  id: string;
   type: TType;
-  source: MindmapNodeId;
-  target: MindmapNodeId;
+  source: string;
+  target: string;
 };
 
-type DocumentNode = MakeNode<`document`, { documentId: DocumentId }>;
+type DocumentNode = MakeNode<`document`, { documentId: string }>;
 type ExternalNode = MakeNode<`external`, { url: Url }>;
 type EmbeddedNode = MakeNode<`embedded`, { content: string }>;
-type NestedNode = MakeNode<`nested`, { mindmapId: MindmapId }>;
+type NestedNode = MakeNode<`nested`, { mindmapId: string }>;
 type MindmapNode = DocumentNode | ExternalNode | EmbeddedNode | NestedNode;
 
 type UnvisitedEdge = MakeEdge<`unvisited`>;
@@ -63,7 +56,7 @@ type MindmapModel = {
   edges: MindmapEdge[];
   visibility: Visibility;
   description: string | null;
-  tags: MindmapTags | null;
+  tags: string[] | null;
 };
 
 export { MINDMAP_EDGE_TYPES, MINDMAP_NODE_TYPES };

@@ -6,8 +6,6 @@ export const enum Visibility {
   Permanent = `permanent`,
 }
 
-export type MindmapTags = Brand<string[], 'tags'>;
-export type MindmapId = Brand<string, `mindmapId`>;
 export type DocumentId = Brand<string, `documentId`>;
 export type MindmapNodeId = Brand<string, `mindmapNodeId`>;
 export type MindmapEdgeId = Brand<string, `mindmapEdgeId`>;

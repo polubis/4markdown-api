@@ -1,4 +1,4 @@
-import { type MindmapId, MindmapTags, Visibility } from '@domain/atoms/general';
+import { Visibility } from '@domain/atoms/general';
 import { type MindmapModel } from '@domain/models/mindmap';
 import { nowISO, uuid } from '@libs/helpers/stamps';
 import { protectedController } from '@utils/controller';
@@ -42,7 +42,7 @@ const schema = z.object({
   tags: tags().nullable(),
 });
 
-type Dto = MindmapModel & { id: MindmapId };
+type Dto = MindmapModel & { id: string };
 
 export const createMindmapController = protectedController<Dto>(
   async (rawPayload, context) => {
@@ -67,8 +67,8 @@ export const createMindmapController = protectedController<Dto>(
         );
       }
 
-      const mindmapId = uuid() as MindmapId;
-      const tags = payload.tags as MindmapTags;
+      const mindmapId = uuid();
+      const tags = payload.tags;
       const now = nowISO();
 
       const newMindmap: MindmapModel = {

@@ -6,6 +6,7 @@ import {
 import { nowISO } from '@libs/helpers/stamps';
 import { protectedController } from '@utils/controller';
 import { errors } from '@utils/errors';
+import { parse } from '@utils/parse';
 import {
   cords,
   date,
@@ -30,6 +31,7 @@ const schema = z.object({
   nodes: z.array(
     z.union([
       z.object({
+        id: date,
         type: z.literal(documentType),
         position,
         data: z.object({
@@ -39,6 +41,7 @@ const schema = z.object({
         }),
       }),
       z.object({
+        id: date,
         type: z.literal(externalType),
         position,
         data: z.object({
@@ -48,6 +51,7 @@ const schema = z.object({
         }),
       }),
       z.object({
+        id: date,
         type: z.literal(embeddedType),
         position,
         data: z.object({
@@ -57,6 +61,7 @@ const schema = z.object({
         }),
       }),
       z.object({
+        id: date,
         type: z.literal(nestedType),
         position,
         data: z.object({
@@ -77,21 +82,11 @@ const schema = z.object({
   ),
 });
 
-type Payload = z.infer<typeof schema>;
-
 type Dto = Pick<MindmapModel, 'mdate'>;
-
-const validate = async (rawPayload: unknown): Promise<Payload> => {
-  try {
-    return await schema.parseAsync(rawPayload);
-  } catch (error: unknown) {
-    throw errors.schema(error);
-  }
-};
 
 const updateMindmapShapeController = protectedController<Dto>(
   async (rawPayload, context) => {
-    const payload = await validate(rawPayload);
+    const payload = await parse(schema, rawPayload);
 
     return context.db.runTransaction(async (t) => {
       const userMindmapRef = context.db
