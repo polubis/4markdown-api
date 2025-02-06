@@ -6,13 +6,23 @@ import {
 import { nowISO } from '@libs/helpers/stamps';
 import { protectedController } from '@utils/controller';
 import { errors } from '@utils/errors';
-import { cords, date, id, text, url } from '@utils/validators';
+import {
+  cords,
+  date,
+  description,
+  id,
+  name,
+  text,
+  url,
+} from '@utils/validators';
 import { z } from 'zod';
 
 const [documentType, externalType, embeddedType, nestedType] =
   MINDMAP_NODE_TYPES;
 
 const position = cords();
+const nodeDescription = description().nullable();
+const nodeName = name();
 
 const schema = z.object({
   id,
@@ -22,22 +32,38 @@ const schema = z.object({
       z.object({
         type: z.literal(documentType),
         position,
-        documentId: id,
+        data: z.object({
+          description: nodeDescription,
+          name: nodeName,
+          documentId: id,
+        }),
       }),
       z.object({
         type: z.literal(externalType),
         position,
-        url: url(`Wrong url format in node`),
+        data: z.object({
+          url: url(`Wrong url format in node`),
+          description: nodeDescription,
+          name: nodeName,
+        }),
       }),
       z.object({
         type: z.literal(embeddedType),
         position,
-        content: text,
+        data: z.object({
+          content: text,
+          description: nodeDescription,
+          name: nodeName,
+        }),
       }),
       z.object({
         type: z.literal(nestedType),
         position,
-        mindmapId: id,
+        data: z.object({
+          mindmapId: id,
+          description: nodeDescription,
+          name: nodeName,
+        }),
       }),
     ]),
   ),

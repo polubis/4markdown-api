@@ -54,6 +54,36 @@ const description = () =>
     .min(110, `Description must be at least 110 characters`)
     .max(160, `Description must be fewer than 160 characters`);
 
+const name = () =>
+  z
+    .string()
+    .trim()
+    .transform((name) => {
+      const slug = createSlug(name);
+
+      return {
+        raw: name,
+        path: `/${slug}/`,
+        slug,
+        segments: slug === `` ? [] : slug.split(`-`),
+      };
+    })
+    .superRefine(({ segments, raw }, { addIssue }) => {
+      if (!(raw.length >= 1 && raw.length <= 70)) {
+        addIssue({
+          code: `custom`,
+          message: `Name must be between 1-70 characters`,
+        });
+      }
+
+      if (!(segments.length >= 1 && segments.length <= 15)) {
+        addIssue({
+          code: `custom`,
+          message: `Generated path from document name must be between 1-15`,
+        });
+      }
+    });
+
 type Id = z.infer<typeof id>;
 type Date = z.infer<typeof date>;
 type Email = z.infer<typeof email>;
@@ -64,4 +94,4 @@ type Slug = string;
 type Path = string;
 
 export type { Id, Date, Email, Url, Base64, Text, Slug, Path };
-export { id, date, email, base64, url, text, tags, description, cords };
+export { id, date, email, base64, url, text, tags, description, cords, name };
