@@ -25,7 +25,7 @@ const [documentType, externalType, embeddedType, nestedType] =
 const position = cords();
 const nodeDescription = description().nullable();
 const nodeName = name();
-const clientGenId = clientGeneratedId()
+const clientGenId = clientGeneratedId();
 
 const schema = z.object({
   id,
