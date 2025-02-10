@@ -59,5 +59,9 @@ type MindmapModel = {
   tags: string[] | null;
 };
 
+type MindmapMetaModel = {
+  mindmapsCount: number;
+};
+
 export { MINDMAP_EDGE_TYPES, MINDMAP_NODE_TYPES };
-export type { MindmapModel };
+export type { MindmapModel, MindmapMetaModel };
