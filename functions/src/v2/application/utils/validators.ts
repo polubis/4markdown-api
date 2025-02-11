@@ -4,7 +4,7 @@ import { createSlug } from './create-slug';
 
 const id = z.string().trim().min(1);
 const clientGeneratedId = () =>
-  z.string().regex(/^[0-9]+\.[0-9]+:[0-9]+\.[0-9]+$/, {
+  z.string().regex(/^[0-9]+(\.[0-9]+)?:[0-9]+(\.[0-9]+)?$/, {
     message: `Invalid unique client ID format`,
   });
 
