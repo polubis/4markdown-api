@@ -1,6 +1,7 @@
 import {
   MINDMAP_EDGE_TYPES,
   MINDMAP_NODE_TYPES,
+  MINDMAP_ORIENTATIONS,
   type MindmapModel,
 } from '@domain/models/mindmap';
 import { nowISO } from '@libs/helpers/stamps';
@@ -23,6 +24,7 @@ import { z } from 'zod';
 const [documentType, externalType, embeddedType, nestedType] =
   MINDMAP_NODE_TYPES;
 
+const orientation = z.enum(MINDMAP_ORIENTATIONS);
 const position = cords();
 const nodeDescription = description().nullable();
 const nodeName = name();
@@ -31,6 +33,7 @@ const clientGenId = clientGeneratedId();
 const schema = z.object({
   id,
   mdate: date,
+  orientation,
   nodes: z.array(
     z.union([
       z.object({
@@ -130,6 +133,7 @@ const updateMindmapShapeController = protectedController<Dto>(
         ...userMindmap,
         mdate: nowISO(),
         nodes,
+        orientation: payload.orientation,
         edges: payload.edges,
       };
 

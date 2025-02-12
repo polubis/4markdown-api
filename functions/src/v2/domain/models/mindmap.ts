@@ -8,9 +8,11 @@ const MINDMAP_NODE_TYPES = [
   `embedded`,
   `nested`,
 ] as const;
+const MINDMAP_ORIENTATIONS = [`x`, `y`] as const;
 
 type MindmapEdgeType = (typeof MINDMAP_EDGE_TYPES)[number];
 type MindmapNodeType = (typeof MINDMAP_NODE_TYPES)[number];
+type MindmapOrientation = (typeof MINDMAP_ORIENTATIONS)[number];
 
 type MakeNode<
   TType extends MindmapNodeType,
@@ -52,7 +54,7 @@ type MindmapModel = {
   mdate: Date;
   path: Path;
   name: string;
-  orientation: `x` | `y`;
+  orientation: MindmapOrientation;
   nodes: MindmapNode[];
   edges: MindmapEdge[];
   visibility: Visibility;
@@ -64,5 +66,5 @@ type MindmapMetaModel = {
   mindmapsCount: number;
 };
 
-export { MINDMAP_EDGE_TYPES, MINDMAP_NODE_TYPES };
+export { MINDMAP_EDGE_TYPES, MINDMAP_NODE_TYPES, MINDMAP_ORIENTATIONS };
 export type { MindmapModel, MindmapMetaModel };
