@@ -19,6 +19,7 @@ type Dto = MindmapModel & { id: string };
 export const createMindmapController = protectedController<Dto>(
   async (rawPayload, context) => {
     const payload = await parse(schema, rawPayload);
+
     return context.db.runTransaction(async (t) => {
       const userMindmapsRef = context.db
         .collection(`user-mindmaps`)
