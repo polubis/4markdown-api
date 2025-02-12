@@ -113,9 +113,23 @@ const updateMindmapShapeController = protectedController<Dto>(
 
       const mdate = nowISO();
 
+      const nodes = payload.nodes.map<MindmapModel['nodes'][number]>(
+        (node) =>
+          ({
+            id: node.id,
+            position: node.position,
+            type: node.type,
+            data: {
+              ...node.data,
+              name: node.data.name.raw,
+              path: node.data.name.path,
+            },
+          }) as MindmapModel['nodes'][number],
+      );
+
       await t.update(userMindmapRef, {
         mdate,
-        nodes: payload.nodes,
+        nodes,
         edges: payload.edges,
       });
 

@@ -25,6 +25,7 @@ type MakeNode<
   data: TData & {
     name: string;
     description: string | null;
+    path: Path;
   };
 };
 
