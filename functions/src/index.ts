@@ -29,6 +29,7 @@ import { createMindmapController } from '@modules/create-mindmap/controller';
 import { updateMindmapShapeController } from '@modules/update-mindmap-shape/controller';
 import { getYourMindmapsController } from '@modules/get-your-mindmaps/controller';
 import { getAccessibleMindmapController } from '@modules/get-mindmap/controller';
+import { updateMindmapNameController } from '@modules/update-mindmap-name/controller';
 
 const app = admin.initializeApp();
 const db = app.firestore();
@@ -144,6 +145,11 @@ export const getYourMindmaps = getYourMindmapsController({
 });
 
 export const getAccessibleMindmap = getAccessibleMindmapController({
+  db,
+  projectId,
+});
+
+export const updateMindmapName = updateMindmapNameController({
   db,
   projectId,
 });
