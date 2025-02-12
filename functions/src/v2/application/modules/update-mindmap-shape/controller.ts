@@ -12,6 +12,7 @@ import {
   cords,
   date,
   description,
+  Id,
   id,
   name,
   text,
@@ -84,7 +85,7 @@ const schema = z.object({
   ),
 });
 
-type Dto = Pick<MindmapModel, 'mdate'>;
+type Dto = MindmapModel & { id: Id };
 
 const updateMindmapShapeController = protectedController<Dto>(
   async (rawPayload, context) => {
@@ -111,8 +112,6 @@ const updateMindmapShapeController = protectedController<Dto>(
         );
       }
 
-      const mdate = nowISO();
-
       const nodes = payload.nodes.map<MindmapModel['nodes'][number]>(
         (node) =>
           ({
@@ -127,13 +126,19 @@ const updateMindmapShapeController = protectedController<Dto>(
           }) as MindmapModel['nodes'][number],
       );
 
-      await t.update(userMindmapRef, {
-        mdate,
+      const mindmapToUpdate: MindmapModel = {
+        ...userMindmap,
+        mdate: nowISO(),
         nodes,
         edges: payload.edges,
-      });
+      };
 
-      return { mdate };
+      await t.update(userMindmapRef, mindmapToUpdate);
+
+      return {
+        ...mindmapToUpdate,
+        id: payload.id,
+      };
     });
   },
 );
