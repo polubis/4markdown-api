@@ -9,6 +9,12 @@ type MindmapEdgeType = (typeof MINDMAP_EDGE_TYPES)[number];
 type MindmapNodeType = (typeof MINDMAP_NODE_TYPES)[number];
 type MindmapOrientation = (typeof MINDMAP_ORIENTATIONS)[number];
 
+type NodeBase = {
+  name: string;
+  description: string | null;
+  path: Path;
+};
+
 type MakeNode<
   TType extends MindmapNodeType,
   TData extends Record<string, any>,
@@ -19,11 +25,7 @@ type MakeNode<
     y: number;
   };
   type: TType;
-  data: TData & {
-    name: string;
-    description: string | null;
-    path: Path;
-  };
+  data: TData;
 };
 
 type MakeEdge<TType extends MindmapEdgeType> = {
@@ -33,8 +35,8 @@ type MakeEdge<TType extends MindmapEdgeType> = {
   target: string;
 };
 
-type ExternalNode = MakeNode<`external`, { url: Url }>;
-type EmbeddedNode = MakeNode<`embedded`, { content: string }>;
+type ExternalNode = MakeNode<`external`, NodeBase & { url: Url }>;
+type EmbeddedNode = MakeNode<`embedded`, NodeBase & { content: string | null }>;
 type MindmapNode = ExternalNode | EmbeddedNode;
 
 type SolidEdge = MakeEdge<`solid`>;
