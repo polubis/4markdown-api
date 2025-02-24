@@ -1,5 +1,9 @@
 import { type MindmapModel } from '@domain/models/mindmap';
-import { mindmapEdges, mindmapNodes } from '@utils/mindmap-schemas';
+import {
+  mindmapEdges,
+  mindmapNodes,
+  mindmapOrientation,
+} from '@utils/mindmap-schemas';
 import { description, name, tags } from '@utils/validators';
 import { z } from 'zod';
 
@@ -10,6 +14,7 @@ const createMindmapPayloadSchema = () =>
     tags: tags().nullable(),
     nodes: mindmapNodes(),
     edges: mindmapEdges(),
+    orientation: mindmapOrientation(),
   });
 
 type CreateMindmapDto = MindmapModel & { id: string };

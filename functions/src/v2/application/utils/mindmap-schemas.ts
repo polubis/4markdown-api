@@ -7,7 +7,11 @@ import {
   text,
   url,
 } from './validators';
-import { MINDMAP_EDGE_TYPES, MINDMAP_NODE_TYPES } from '@domain/models/mindmap';
+import {
+  MINDMAP_EDGE_TYPES,
+  MINDMAP_NODE_TYPES,
+  MINDMAP_ORIENTATIONS,
+} from '@domain/models/mindmap';
 
 const mindmapEdges = () => {
   const id = clientGeneratedId();
@@ -55,4 +59,6 @@ const mindmapNodes = () => {
   );
 };
 
-export { mindmapEdges, mindmapNodes };
+const mindmapOrientation = () => z.enum(MINDMAP_ORIENTATIONS);
+
+export { mindmapEdges, mindmapNodes, mindmapOrientation };
