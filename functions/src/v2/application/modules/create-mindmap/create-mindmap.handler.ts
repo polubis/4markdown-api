@@ -6,8 +6,8 @@ import type {
 } from './create-mindmap.contract';
 import { type ProtectedControllerHandlerContext } from '@utils/controller';
 import { type MindmapModel } from '@domain/models/mindmap';
-import { Visibility } from '@domain/atoms/general';
 import { FieldValue } from 'firebase-admin/firestore';
+import { Visibility } from '@domain/atoms/general';
 
 const createMindmapHandler = async ({
   payload,
@@ -44,8 +44,8 @@ const createMindmapHandler = async ({
       name: payload.name.raw,
       path: payload.name.path,
       description: payload.description ?? null,
-      edges: [],
-      nodes: [],
+      edges: payload.edges,
+      nodes: payload.nodes,
       visibility: Visibility.Private,
       orientation: `y`,
       tags: tags ?? null,
@@ -55,6 +55,7 @@ const createMindmapHandler = async ({
       userMindmapsRef.collection(`mindmaps`).doc(mindmapId),
       newMindmap,
     );
+
     await t.set(
       userMindmapsRef,
       {
