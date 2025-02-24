@@ -97,19 +97,8 @@ type Base64 = z.infer<ReturnType<typeof base64>>;
 type Text = z.infer<typeof text>;
 type Slug = string;
 type Path = string;
-type ClientGeneratedId = z.infer<ReturnType<typeof clientGeneratedId>>;
 
-export type {
-  Id,
-  Date,
-  Email,
-  Url,
-  Base64,
-  Text,
-  Slug,
-  Path,
-  ClientGeneratedId,
-};
+export type { Id, Date, Email, Url, Base64, Text, Slug, Path };
 export {
   id,
   date,

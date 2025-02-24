@@ -1,5 +1,5 @@
-import { Visibility } from '@domain/atoms/general';
-import type { ClientGeneratedId, Date, Path, Url } from '@utils/validators';
+import { type ClientGeneratedId, Visibility } from '@domain/atoms/general';
+import type { Date, Path, Url } from '@utils/validators';
 
 const MINDMAP_EDGE_TYPES = [`solid`] as const;
 const MINDMAP_NODE_TYPES = [`external`, `embedded`] as const;
@@ -29,10 +29,10 @@ type MakeNode<
 };
 
 type MakeEdge<TType extends MindmapEdgeType> = {
-  id: string;
+  id: ClientGeneratedId;
   type: TType;
-  source: string;
-  target: string;
+  source: ClientGeneratedId;
+  target: ClientGeneratedId;
 };
 
 type ExternalNode = MakeNode<`external`, NodeBase & { url: Url }>;
