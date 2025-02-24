@@ -4,9 +4,12 @@ import { createSlug } from './create-slug';
 
 const id = z.string().trim().min(1);
 const clientGeneratedId = () =>
-  z.string().regex(/^[0-9]+(\.[0-9]+)?:[0-9]+(\.[0-9]+)?$/, {
-    message: `Invalid unique client ID format`,
-  });
+  z
+    .string()
+    .regex(/^[0-9]+(\.[0-9]+)?:[0-9]+(\.[0-9]+)?$/, {
+      message: `Invalid unique client ID format`,
+    })
+    .transform((value) => value as `${number}:${number}`);
 
 const email = z
   .string()
