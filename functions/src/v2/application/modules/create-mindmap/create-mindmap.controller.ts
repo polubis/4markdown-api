@@ -11,7 +11,7 @@ const createMindmapController = protectedController<CreateMindmapDto>(
   async (rawPayload, context) => {
     return await createMindmapHandler({
       context,
-      payload: await parse(createMindmapPayloadSchema, rawPayload),
+      payload: await parse(createMindmapPayloadSchema(), rawPayload),
     });
   },
 );
