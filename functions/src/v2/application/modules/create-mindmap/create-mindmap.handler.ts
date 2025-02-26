@@ -35,36 +35,7 @@ const createMindmapHandler = async ({
     }
 
     const mindmapId = uuid();
-    const tags = payload.tags;
     const now = nowISO();
-
-    const newNodes = payload.nodes.map<MindmapNode>((node) => {
-      if (node.type === `embedded`) {
-        return {
-          id: node.id,
-          position: node.position,
-          type: node.type,
-          data: {
-            name: node.data.name.raw,
-            path: node.data.name.path,
-            description: node.data.description,
-            content: node.data.content,
-          },
-        };
-      }
-
-      return {
-        id: node.id,
-        position: node.position,
-        type: node.type,
-        data: {
-          name: node.data.name.raw,
-          path: node.data.name.path,
-          description: node.data.description,
-          url: node.data.url,
-        },
-      };
-    });
 
     const newMindmap: MindmapModel = {
       cdate: now,
@@ -73,10 +44,36 @@ const createMindmapHandler = async ({
       path: payload.name.path,
       description: payload.description ?? null,
       edges: payload.edges,
-      nodes: newNodes,
+      nodes: payload.nodes.map<MindmapNode>((node) => {
+        if (node.type === `embedded`) {
+          return {
+            id: node.id,
+            position: node.position,
+            type: node.type,
+            data: {
+              name: node.data.name.raw,
+              path: node.data.name.path,
+              description: node.data.description,
+              content: node.data.content,
+            },
+          };
+        }
+
+        return {
+          id: node.id,
+          position: node.position,
+          type: node.type,
+          data: {
+            name: node.data.name.raw,
+            path: node.data.name.path,
+            description: node.data.description,
+            url: node.data.url,
+          },
+        };
+      }),
       visibility: Visibility.Private,
       orientation: `y`,
-      tags: tags ?? null,
+      tags: payload.tags ?? null,
     };
 
     await t.set(
