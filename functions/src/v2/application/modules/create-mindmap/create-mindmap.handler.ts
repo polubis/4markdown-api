@@ -72,7 +72,7 @@ const createMindmapHandler = async ({
         };
       }),
       visibility: Visibility.Private,
-      orientation: `y`,
+      orientation: payload.orientation,
       tags: payload.tags ?? null,
     };
 
