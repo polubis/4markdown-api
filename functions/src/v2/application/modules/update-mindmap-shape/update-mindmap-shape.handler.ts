@@ -16,43 +16,29 @@ const updateMindmapShapeHandler = async ({
   payload: UpdateMindmapShapePayload;
   context: ProtectedControllerHandlerContext;
 }): Promise<UpdateMindmapShapeDto> => {
-  return context.db.runTransaction(
-    async (t) => {
-      const userMindmapsRef = context.db
-        .collection(`user-mindmaps`)
-        .doc(context.uid);
-      const mindmapRef = userMindmapsRef.collection(`mindmaps`).doc(payload.id);
+  return context.db.runTransaction(async (t) => {
+    const userMindmapsRef = context.db
+      .collection(`user-mindmaps`)
+      .doc(context.uid);
+    const mindmapRef = userMindmapsRef.collection(`mindmaps`).doc(payload.id);
 
-      const mindmapSnap = await t.get(mindmapRef);
+    const mindmapSnap = await t.get(mindmapRef);
 
-      const mindmapData = mindmapSnap.data() as MindmapModel | undefined;
+    const mindmapData = mindmapSnap.data() as MindmapModel | undefined;
 
-      if (!mindmapData) {
-        throw errors.notFound(`Cannot find mindmap`);
-      }
+    if (!mindmapData) {
+      throw errors.notFound(`Cannot find mindmap`);
+    }
 
-      if (mindmapData.mdate !== payload.mdate) {
-        throw errors.outOfDate(`Mindmap has been already changed`);
-      }
+    if (mindmapData.mdate !== payload.mdate) {
+      throw errors.outOfDate(`Mindmap has been already changed`);
+    }
 
-      const updatedMindmap: MindmapModel = {
-        ...mindmapData,
-        orientation: payload.orientation,
-        nodes: payload.nodes.map<MindmapNode>((node) => {
-          if (node.type === `embedded`) {
-            return {
-              id: node.id,
-              position: node.position,
-              type: node.type,
-              data: {
-                name: node.data.name.raw,
-                path: node.data.name.path,
-                description: node.data.description,
-                content: node.data.content,
-              },
-            };
-          }
-
+    const updatedMindmap: MindmapModel = {
+      ...mindmapData,
+      orientation: payload.orientation,
+      nodes: payload.nodes.map<MindmapNode>((node) => {
+        if (node.type === `embedded`) {
           return {
             id: node.id,
             position: node.position,
@@ -61,28 +47,39 @@ const updateMindmapShapeHandler = async ({
               name: node.data.name.raw,
               path: node.data.name.path,
               description: node.data.description,
-              url: node.data.url,
+              content: node.data.content,
             },
           };
-        }),
-        edges: payload.edges,
-        mdate: nowISO(),
-      };
+        }
 
-      t.update(mindmapRef, {
-        mdate: updatedMindmap.mdate,
-        nodes: updatedMindmap.nodes,
-        edges: updatedMindmap.edges,
-        orientation: updatedMindmap.orientation,
-      });
+        return {
+          id: node.id,
+          position: node.position,
+          type: node.type,
+          data: {
+            name: node.data.name.raw,
+            path: node.data.name.path,
+            description: node.data.description,
+            url: node.data.url,
+          },
+        };
+      }),
+      edges: payload.edges,
+      mdate: nowISO(),
+    };
 
-      return {
-        id: payload.id,
-        ...updatedMindmap,
-      };
-    },
-    { maxAttempts: 1 },
-  );
+    t.update(mindmapRef, {
+      mdate: updatedMindmap.mdate,
+      nodes: updatedMindmap.nodes,
+      edges: updatedMindmap.edges,
+      orientation: updatedMindmap.orientation,
+    });
+
+    return {
+      id: payload.id,
+      ...updatedMindmap,
+    };
+  });
 };
 
 export { updateMindmapShapeHandler };

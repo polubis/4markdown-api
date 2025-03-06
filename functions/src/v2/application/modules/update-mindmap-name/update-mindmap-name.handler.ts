@@ -15,62 +15,59 @@ const updateMindmapNameHandler = async ({
   payload: UpdateMindmapNamePayload;
   context: ProtectedControllerHandlerContext;
 }): Promise<UpdateMindmapNameDto> => {
-  return context.db.runTransaction(
-    async (t) => {
-      const userMindmapsRef = context.db
-        .collection(`user-mindmaps`)
-        .doc(context.uid);
-      const mindmapRef = userMindmapsRef.collection(`mindmaps`).doc(payload.id);
+  return context.db.runTransaction(async (t) => {
+    const userMindmapsRef = context.db
+      .collection(`user-mindmaps`)
+      .doc(context.uid);
+    const mindmapRef = userMindmapsRef.collection(`mindmaps`).doc(payload.id);
 
-      const [hasDuplicateSnap, mindmapSnap] = await Promise.all([
-        t.get(
-          userMindmapsRef
-            .collection(`mindmaps`)
-            .where(`path`, `==`, payload.name.path)
-            .where(`__name__`, `!=`, payload.id)
-            .count(),
-        ),
-        t.get(mindmapRef),
-      ]);
+    const [hasDuplicateSnap, mindmapSnap] = await Promise.all([
+      t.get(
+        userMindmapsRef
+          .collection(`mindmaps`)
+          .where(`path`, `==`, payload.name.path)
+          .where(`__name__`, `!=`, payload.id)
+          .count(),
+      ),
+      t.get(mindmapRef),
+    ]);
 
-      const mindmapData = mindmapSnap.data() as MindmapModel | undefined;
+    const mindmapData = mindmapSnap.data() as MindmapModel | undefined;
 
-      if (!mindmapData) {
-        throw errors.notFound(`Cannot find mindmap`);
-      }
+    if (!mindmapData) {
+      throw errors.notFound(`Cannot find mindmap`);
+    }
 
-      if (mindmapData.mdate !== payload.mdate) {
-        throw errors.outOfDate(`Mindmap has been already changed`);
-      }
+    if (mindmapData.mdate !== payload.mdate) {
+      throw errors.outOfDate(`Mindmap has been already changed`);
+    }
 
-      const hasDuplicate = hasDuplicateSnap.data().count > 0;
+    const hasDuplicate = hasDuplicateSnap.data().count > 0;
 
-      if (hasDuplicate) {
-        throw errors.exists(
-          `Mindmap with name ${payload.name.raw} is already taken`,
-        );
-      }
+    if (hasDuplicate) {
+      throw errors.exists(
+        `Mindmap with name ${payload.name.raw} is already taken`,
+      );
+    }
 
-      const updatedMindmap: MindmapModel = {
-        ...mindmapData,
-        name: payload.name.raw,
-        path: payload.name.path,
-        mdate: nowISO(),
-      };
+    const updatedMindmap: MindmapModel = {
+      ...mindmapData,
+      name: payload.name.raw,
+      path: payload.name.path,
+      mdate: nowISO(),
+    };
 
-      t.update(mindmapRef, {
-        name: updatedMindmap.name,
-        path: updatedMindmap.path,
-        mdate: updatedMindmap.mdate,
-      });
+    t.update(mindmapRef, {
+      name: updatedMindmap.name,
+      path: updatedMindmap.path,
+      mdate: updatedMindmap.mdate,
+    });
 
-      return {
-        id: payload.id,
-        ...updatedMindmap,
-      };
-    },
-    { maxAttempts: 1 },
-  );
+    return {
+      id: payload.id,
+      ...updatedMindmap,
+    };
+  });
 };
 
 export { updateMindmapNameHandler };
