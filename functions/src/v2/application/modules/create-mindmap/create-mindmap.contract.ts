@@ -4,7 +4,7 @@ import {
   mindmapNodes,
   mindmapOrientation,
 } from '@utils/mindmap-schemas';
-import { description, name, tags } from '@utils/validators';
+import { description, type Id, name, tags } from '@utils/validators';
 import { z } from 'zod';
 
 const createMindmapPayloadSchema = () =>
@@ -17,7 +17,7 @@ const createMindmapPayloadSchema = () =>
     orientation: mindmapOrientation(),
   });
 
-type CreateMindmapDto = MindmapModel & { id: string };
+type CreateMindmapDto = MindmapModel & { id: Id };
 type CreateMindmapPayload = z.infer<
   ReturnType<typeof createMindmapPayloadSchema>
 >;

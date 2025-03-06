@@ -21,17 +21,19 @@ const createMindmapHandler = async ({
       .collection(`user-mindmaps`)
       .doc(context.uid);
 
-    const hasDuplicateSnapshot = await t.get(
+    const hasDuplicateSnap = await t.get(
       userMindmapsRef
         .collection(`mindmaps`)
         .where(`path`, `==`, payload.name.path)
         .count(),
     );
 
-    const hasDuplicate = hasDuplicateSnapshot.data().count > 0;
+    const hasDuplicate = hasDuplicateSnap.data().count > 0;
 
     if (hasDuplicate) {
-      throw errors.exists(`Mindmap with name ${payload.name.raw} is reserved`);
+      throw errors.exists(
+        `Mindmap with name ${payload.name.raw} is already taken`,
+      );
     }
 
     const mindmapId = uuid();
