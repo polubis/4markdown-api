@@ -51,7 +51,7 @@ const updateMindmapNameHandler = async ({
         );
       }
 
-      const newMindmap: MindmapModel = {
+      const updatedMindmap: MindmapModel = {
         ...mindmapData,
         name: payload.name.raw,
         path: payload.name.path,
@@ -59,14 +59,14 @@ const updateMindmapNameHandler = async ({
       };
 
       t.update(mindmapRef, {
-        name: newMindmap.name,
-        path: newMindmap.path,
-        mdate: newMindmap.mdate,
+        name: updatedMindmap.name,
+        path: updatedMindmap.path,
+        mdate: updatedMindmap.mdate,
       });
 
       return {
         id: payload.id,
-        ...newMindmap,
+        ...updatedMindmap,
       };
     },
     { maxAttempts: 1 },

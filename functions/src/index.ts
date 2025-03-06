@@ -28,6 +28,7 @@ import { updateYourUserProfileController } from '@modules/update-your-user-profi
 import { createMindmapController } from '@modules/create-mindmap/create-mindmap.controller';
 import { getYourMindmapsController } from '@modules/get-your-mindmaps/get-your-mindmaps.controller';
 import { updateMindmapNameController } from '@modules/update-mindmap-name/update-mindmap-name.controller';
+import { updateMindmapShapeController } from '@modules/update-mindmap-shape/update-mindmap-shape.controller';
 
 const app = admin.initializeApp();
 const db = app.firestore();
@@ -133,6 +134,11 @@ export const createMindmap = createMindmapController({
 });
 
 export const updateMindmapName = updateMindmapNameController({
+  db,
+  projectId,
+});
+
+export const updateMindmapShape = updateMindmapShapeController({
   db,
   projectId,
 });
