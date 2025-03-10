@@ -29,6 +29,7 @@ import { createMindmapController } from '@modules/create-mindmap/create-mindmap.
 import { getYourMindmapsController } from '@modules/get-your-mindmaps/get-your-mindmaps.controller';
 import { updateMindmapNameController } from '@modules/update-mindmap-name/update-mindmap-name.controller';
 import { updateMindmapShapeController } from '@modules/update-mindmap-shape/update-mindmap-shape.controller';
+import { deleteMindmapController } from '@modules/delete-mindmap';
 
 const app = admin.initializeApp();
 const db = app.firestore();
@@ -146,4 +147,10 @@ export const updateMindmapShape = updateMindmapShapeController({
 export const getYourMindmaps = getYourMindmapsController({
   db,
   projectId,
+});
+
+export const deleteMindmap = deleteMindmapController({
+  db,
+  projectId,
+  memory: `128MiB`,
 });
