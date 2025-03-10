@@ -4,7 +4,6 @@ import { errors } from '@utils/errors';
 import { parse } from '@utils/parse';
 import { date, id } from '@utils/validators';
 import { FieldValue } from 'firebase-admin/firestore';
-import { HttpsError } from 'firebase-functions/https';
 import { z } from 'zod';
 
 const payloadSchema = z.object({
@@ -20,22 +19,17 @@ const deleteMindmapController = protectedController<null>(
       .collection(`mindmaps`)
       .doc(payload.id);
 
-    const result = await db.runTransaction<
-      { is: `fail`; error: HttpsError } | { is: `ok` }
-    >(async (t) => {
+    return db.runTransaction(async (t) => {
       const yourMindmapData = (await t.get(yourMindmapRef)).data() as
         | MindmapModel
         | undefined;
 
       if (!yourMindmapData) {
-        return { is: `fail`, error: errors.notFound(`Cannot find mindmap`) };
+        throw errors.notFound(`Cannot find mindmap`);
       }
 
       if (yourMindmapData.mdate !== payload.mdate) {
-        return {
-          is: `fail`,
-          error: errors.outOfDate(`Cannot remove already changed mindmap`),
-        };
+        throw errors.outOfDate(`Cannot remove already changed mindmap`);
       }
 
       t.delete(yourMindmapRef);
@@ -43,14 +37,8 @@ const deleteMindmapController = protectedController<null>(
         mindmapsCount: FieldValue.increment(-1),
       });
 
-      return { is: `ok` };
+      return null;
     });
-
-    if (result.is === `fail`) {
-      throw result.error;
-    }
-
-    return null;
   },
 );
 
