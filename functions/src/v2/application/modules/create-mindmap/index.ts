@@ -1,10 +1,10 @@
 import { protectedController } from '@utils/controller';
-import { MindmapNode, type MindmapModel } from '@domain/models/mindmap';
 import {
-  mindmapEdges,
-  mindmapNodes,
-  mindmapOrientation,
-} from '@utils/mindmap-schemas';
+  mindmapEdgesSchema,
+  mindmapNodesSchema,
+  type MindmapModel,
+} from '@domain/models/mindmap';
+import { mindmapOrientation } from '@utils/mindmap-schemas';
 import { description, type Id, name, tags } from '@utils/validators';
 import { z } from 'zod';
 import { parse } from '@utils/parse';
@@ -17,8 +17,8 @@ const payloadSchema = z.object({
   name: name(),
   description: description().nullable(),
   tags: tags().nullable(),
-  nodes: mindmapNodes(),
-  edges: mindmapEdges(),
+  nodes: mindmapNodesSchema,
+  edges: mindmapEdgesSchema,
   orientation: mindmapOrientation(),
 });
 
@@ -58,35 +58,9 @@ const createMindmapController = protectedController<Dto>(
         path: payload.name.path,
         description: payload.description ?? null,
         edges: payload.edges,
-        nodes: payload.nodes.map<MindmapNode>((node) => {
-          if (node.type === `embedded`) {
-            return {
-              id: node.id,
-              position: node.position,
-              type: node.type,
-              data: {
-                name: node.data.name.raw,
-                path: node.data.name.path,
-                description: node.data.description,
-                content: node.data.content,
-              },
-            };
-          }
-
-          return {
-            id: node.id,
-            position: node.position,
-            type: node.type,
-            data: {
-              name: node.data.name.raw,
-              path: node.data.name.path,
-              description: node.data.description,
-              url: node.data.url,
-            },
-          };
-        }),
-        visibility: Visibility.Private,
+        nodes: payload.nodes,
         orientation: payload.orientation,
+        visibility: Visibility.Private,
         tags: payload.tags ?? null,
       };
 
