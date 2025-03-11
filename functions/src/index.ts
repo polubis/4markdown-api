@@ -38,14 +38,14 @@ const db = app.firestore();
 const projectId = app.options.projectId!;
 
 export const useBackup = onCall<unknown>(
-  { maxInstances: 2 },
+  { maxInstances: 1 },
   async (request) => {
     await BackupsService.use(projectId, UseBackupPayload(request.data));
   },
 );
 
 export const createBackup = onCall<unknown>(
-  { maxInstances: 2 },
+  { maxInstances: 1 },
   async (request) => {
     await BackupsService.create(projectId, CreateBackupPayload(request.data));
   },
