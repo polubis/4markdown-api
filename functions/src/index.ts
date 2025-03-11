@@ -145,7 +145,6 @@ export const updateMindmapName = updateMindmapNameController({
 export const updateMindmapShape = updateMindmapShapeController({
   db,
   projectId,
-  maxInstances: 3,
 });
 
 export const getYourMindmaps = getYourMindmapsController({

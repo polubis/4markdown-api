@@ -1,13 +1,13 @@
-import { MindmapModel } from '@domain/models/mindmap';
+import { mindmapIdSchema, MindmapModel } from '@domain/models/mindmap';
 import { protectedController } from '@utils/controller';
 import { errors } from '@utils/errors';
 import { parse } from '@utils/parse';
-import { date, id } from '@utils/validators';
+import { date } from '@utils/validators';
 import { FieldValue } from 'firebase-admin/firestore';
 import { z } from 'zod';
 
 const payloadSchema = z.object({
-  id,
+  id: mindmapIdSchema,
   mdate: date,
 });
 
