@@ -7,7 +7,7 @@ import { nowISO } from '@libs/helpers/stamps';
 import { protectedController } from '@utils/controller';
 import { errors } from '@utils/errors';
 import { parse } from '@utils/parse';
-import { date, Id } from '@utils/validators';
+import { date } from '@utils/validators';
 import { z } from 'zod';
 
 const payloadSchema = z.object({
@@ -16,7 +16,7 @@ const payloadSchema = z.object({
   mdate: date,
 });
 
-type Dto = Pick<MindmapModel, `name` | `path` | `mdate`> & { id: Id };
+type Dto = Pick<MindmapModel, `name` | `path` | `mdate`>;
 
 const updateMindmapNameController = protectedController<Dto>(
   async (rawPayload, { db, uid }) => {
@@ -35,7 +35,7 @@ const updateMindmapNameController = protectedController<Dto>(
       throw errors.outOfDate(`Mindmap has been already changed`);
     }
 
-    const updatedMindmap: Pick<MindmapModel, `name` | `path` | `mdate`> = {
+    const updatedMindmap: Dto = {
       name: payload.name.raw,
       path: payload.name.path,
       mdate: nowISO(),
@@ -43,10 +43,7 @@ const updateMindmapNameController = protectedController<Dto>(
 
     await mindmapRef.update(updatedMindmap);
 
-    return {
-      ...updatedMindmap,
-      id: payload.id,
-    };
+    return updatedMindmap;
   },
 );
 

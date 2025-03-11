@@ -99,6 +99,8 @@ type MindmapMetaModel = {
   mindmapsCount: number;
 };
 
+type MindmapModelId = z.infer<typeof mindmapIdSchema>;
+
 export {
   MINDMAP_EDGE_TYPES,
   MINDMAP_NODE_TYPES,
@@ -111,4 +113,4 @@ export {
   mindmapTagsSchema,
   mindmapIdSchema,
 };
-export type { MindmapModel, MindmapMetaModel, MindmapNode };
+export type { MindmapModel, MindmapMetaModel, MindmapNode, MindmapModelId };
