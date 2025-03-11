@@ -91,9 +91,13 @@ const createMindmapController = protectedController<Dto>(
       };
 
       t.set(userMindmapsRef.collection(`mindmaps`).doc(mindmapId), newMindmap);
-      t.update(userMindmapsRef, {
-        mindmapsCount: FieldValue.increment(1),
-      });
+      t.set(
+        userMindmapsRef,
+        {
+          mindmapsCount: FieldValue.increment(1),
+        },
+        { merge: true },
+      );
 
       return {
         ...newMindmap,
