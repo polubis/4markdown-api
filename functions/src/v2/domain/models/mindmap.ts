@@ -16,6 +16,12 @@ const MINDMAP_EDGE_TYPES = [`solid`] as const;
 const MINDMAP_NODE_TYPES = [`external`, `embedded`] as const;
 const MINDMAP_ORIENTATIONS = [`x`, `y`] as const;
 
+const mindmapVisibilitySchema = z.enum([
+  Visibility.Private,
+  Visibility.Public,
+  Visibility.Permanent,
+]);
+
 const mindmapIdSchema = id;
 const mindmapNameSchema = name();
 const mindmapDescriptionSchema = description().nullable();
@@ -90,7 +96,7 @@ type MindmapModel = {
   orientation: MindmapOrientation;
   nodes: MindmapNode[];
   edges: MindmapEdge[];
-  visibility: Visibility;
+  visibility: z.infer<typeof mindmapVisibilitySchema>;
   description: MindmapDescription;
   tags: MindmapTags;
 };
@@ -112,5 +118,6 @@ export {
   mindmapDescriptionSchema,
   mindmapTagsSchema,
   mindmapIdSchema,
+  mindmapVisibilitySchema,
 };
 export type { MindmapModel, MindmapMetaModel, MindmapNode, MindmapModelId };

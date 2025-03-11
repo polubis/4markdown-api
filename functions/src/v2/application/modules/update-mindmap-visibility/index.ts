@@ -1,20 +1,19 @@
-import { Visibility } from '@domain/atoms/general';
-import { MindmapModel } from '@domain/models/mindmap';
+import {
+  mindmapIdSchema,
+  MindmapModel,
+  mindmapVisibilitySchema,
+} from '@domain/models/mindmap';
 import { nowISO } from '@libs/helpers/stamps';
 import { protectedController } from '@utils/controller';
 import { errors } from '@utils/errors';
 import { parse } from '@utils/parse';
-import { date, id } from '@utils/validators';
+import { date } from '@utils/validators';
 import { z } from 'zod';
 
 const payloadSchema = z.object({
-  id,
+  id: mindmapIdSchema,
   mdate: date,
-  visibility: z.enum([
-    Visibility.Private,
-    Visibility.Public,
-    Visibility.Permanent,
-  ]),
+  visibility: mindmapVisibilitySchema,
 });
 
 type Dto = Pick<MindmapModel, 'mdate'>;
@@ -39,15 +38,15 @@ const updateMindmapVisibilityController = protectedController<Dto>(
       throw errors.outOfDate(`Cannot remove already changed mindmap`);
     }
 
-    const updateMindmapData: Pick<MindmapModel, 'mdate' | 'visibility'> = {
+    const updateMindmap: Pick<MindmapModel, 'mdate' | 'visibility'> = {
       visibility: payload.visibility,
       mdate: nowISO(),
     };
 
-    await yourMindmapRef.update(updateMindmapData);
+    await yourMindmapRef.update(updateMindmap);
 
     return {
-      mdate: updateMindmapData.mdate,
+      mdate: updateMindmap.mdate,
     };
   },
 );
