@@ -4,7 +4,7 @@ import { type Firestore } from 'firebase-admin/firestore';
 import { onCall, type CallableFunction } from 'firebase-functions/https';
 import type { ProjectId } from '../infra/models/atoms';
 import type { Id } from './validators';
-import type { MemoryOption, SupportedRegion } from 'firebase-functions/options';
+import type { MemoryOption } from 'firebase-functions/options';
 // @TODO[PRIO=2]: [Split it into separate library].
 type Secret = 'EMAILS_API_KEY' | 'EMAILS_ENCRYPTION_TOKEN' | `ADMIN_LIST`;
 type Secrets = Secret[];
@@ -15,7 +15,6 @@ type ControllerConfig = {
   projectId: ProjectId;
   maxInstances?: number;
   concurrency?: number;
-  region?: SupportedRegion;
   memory?: MemoryOption;
 };
 
@@ -38,9 +37,6 @@ const getConcurrency = (concurrency?: number): number => concurrency ?? 6;
 const getMemory = (
   memory?: ControllerConfig['memory'],
 ): ControllerConfig['memory'] => memory ?? `256MiB`;
-const getRegion = (
-  region?: ControllerConfig['region'],
-): ControllerConfig['region'] => region ?? `europe-central2`;
 
 // @TODO[PRIO=2]: [Add and test parent try catch].
 const controller =
@@ -54,7 +50,6 @@ const controller =
         secrets: getSecrets(config.secrets),
         concurrency: getConcurrency(config.concurrency),
         memory: getMemory(config.memory),
-        region: getRegion(config.region),
       },
       async (request) => {
         return await handler(request.data, { db, projectId: config.projectId });
@@ -84,7 +79,6 @@ const protectedController =
         secrets: getSecrets(config.secrets),
         concurrency: getConcurrency(config.concurrency),
         memory: getMemory(config.memory),
-        region: getRegion(config.region),
       },
       async (request) => {
         const { auth } = request;
@@ -128,7 +122,6 @@ const adminController =
         secrets: getSecrets(config.secrets),
         concurrency: getConcurrency(config.concurrency),
         memory: getMemory(config.memory),
-        region: getRegion(config.region),
       },
       async (request) => {
         const { auth } = request;
