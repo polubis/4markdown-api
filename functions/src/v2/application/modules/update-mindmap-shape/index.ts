@@ -1,0 +1,58 @@
+import { protectedController } from '@utils/controller';
+import { parse } from '@utils/parse';
+import {
+  mindmapEdgesSchema,
+  mindmapIdSchema,
+  MindmapModel,
+  mindmapNodesSchema,
+  mindmapOrientationSchema,
+} from '@domain/models/mindmap';
+import { date } from '@utils/validators';
+import { errors } from '@utils/errors';
+import { nowISO } from '@libs/helpers/stamps';
+import { z } from 'zod';
+
+const updateMindmapShapePayloadSchema = z.object({
+  id: mindmapIdSchema,
+  mdate: date,
+  nodes: mindmapNodesSchema,
+  edges: mindmapEdgesSchema,
+  orientation: mindmapOrientationSchema,
+});
+
+type Dto = Pick<MindmapModel, `mdate` | `nodes` | `edges` | `orientation`>;
+
+const updateMindmapShapeController = protectedController<Dto>(
+  async (rawPayload, context) => {
+    const payload = await parse(updateMindmapShapePayloadSchema, rawPayload);
+    const userMindmapsRef = context.db
+      .collection(`user-mindmaps`)
+      .doc(context.uid);
+    const mindmapRef = userMindmapsRef.collection(`mindmaps`).doc(payload.id);
+
+    const mindmapSnap = await mindmapRef.get();
+
+    const mindmapData = mindmapSnap.data() as MindmapModel | undefined;
+
+    if (!mindmapData) {
+      throw errors.notFound(`Cannot find mindmap`);
+    }
+
+    if (mindmapData.mdate !== payload.mdate) {
+      throw errors.outOfDate(`Mindmap has been already changed`);
+    }
+
+    const updatedMindmap: Dto = {
+      orientation: payload.orientation,
+      nodes: payload.nodes,
+      edges: payload.edges,
+      mdate: nowISO(),
+    };
+
+    await mindmapRef.update(updatedMindmap);
+
+    return updatedMindmap;
+  },
+);
+
+export { updateMindmapShapeController };
