@@ -26,7 +26,7 @@ import { deleteDocumentCommentController } from '@modules/delete-document-commen
 import { getYourUserProfileController } from '@modules/get-your-user-profile/get-your-user-profile.controller';
 import { updateYourUserProfileController } from '@modules/update-your-user-profile/update-your-user-profile.controller';
 import { getYourMindmapsController } from '@modules/get-your-mindmaps/get-your-mindmaps.controller';
-import { updateMindmapNameController } from '@modules/update-mindmap-name/update-mindmap-name.controller';
+import { updateMindmapNameController } from '@modules/update-mindmap-name';
 import { updateMindmapShapeController } from '@modules/update-mindmap-shape/update-mindmap-shape.controller';
 import { deleteMindmapController } from '@modules/delete-mindmap';
 import { updateMindmapVisibilityController } from '@modules/update-mindmap-visibility';
@@ -139,6 +139,7 @@ export const createMindmap = createMindmapController({
 export const updateMindmapName = updateMindmapNameController({
   db,
   projectId,
+  memory: `128MiB`,
 });
 
 export const updateMindmapShape = updateMindmapShapeController({
