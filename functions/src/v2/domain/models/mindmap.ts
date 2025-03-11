@@ -4,16 +4,20 @@ import {
   cords,
   description,
   name,
+  tags,
   text,
   url,
   type Date,
-  type Path,
 } from '@utils/validators';
 import { z } from 'zod';
 
 const MINDMAP_EDGE_TYPES = [`solid`] as const;
 const MINDMAP_NODE_TYPES = [`external`, `embedded`] as const;
 const MINDMAP_ORIENTATIONS = [`x`, `y`] as const;
+
+const mindmapNameSchema = name();
+const mindmapDescriptionSchema = description().nullable();
+const mindmapTagsSchema = tags().nullable();
 
 const clientGeneratedIdSchema = clientGeneratedId();
 
@@ -34,6 +38,7 @@ const nodeDescriptionSchema = description().nullable();
 const nodeNameSchema = name();
 const urlSchema = url(`Wrong url format in node`);
 const textSchema = text.nullable();
+const mindmapOrientationSchema = z.enum(MINDMAP_ORIENTATIONS);
 
 const mindmapNodesSchema = z.array(
   z.union([
@@ -68,21 +73,24 @@ const mindmapNodesSchema = z.array(
   ]),
 );
 
-type MindmapOrientation = (typeof MINDMAP_ORIENTATIONS)[number];
+type MindmapOrientation = z.infer<typeof mindmapOrientationSchema>;
 type MindmapNode = z.infer<typeof mindmapNodesSchema>[number];
 type MindmapEdge = z.infer<typeof mindmapEdgesSchema>[number];
+type MindmapDescription = z.infer<typeof mindmapDescriptionSchema>;
+type MindmapTags = z.infer<typeof mindmapTagsSchema>;
+type MindmapName = z.infer<typeof mindmapNameSchema>;
 
 type MindmapModel = {
   cdate: Date;
   mdate: Date;
-  path: Path;
-  name: string;
+  path: MindmapName['path'];
+  name: MindmapName['raw'];
   orientation: MindmapOrientation;
   nodes: MindmapNode[];
   edges: MindmapEdge[];
   visibility: Visibility;
-  description: string | null;
-  tags: string[] | null;
+  description: MindmapDescription;
+  tags: MindmapTags;
 };
 
 type MindmapMetaModel = {
@@ -95,5 +103,9 @@ export {
   MINDMAP_ORIENTATIONS,
   mindmapEdgesSchema,
   mindmapNodesSchema,
+  mindmapOrientationSchema,
+  mindmapNameSchema,
+  mindmapDescriptionSchema,
+  mindmapTagsSchema,
 };
 export type { MindmapModel, MindmapMetaModel, MindmapNode };
