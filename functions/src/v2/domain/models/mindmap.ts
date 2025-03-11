@@ -3,6 +3,7 @@ import {
   clientGeneratedId,
   cords,
   description,
+  id,
   name,
   tags,
   text,
@@ -15,6 +16,7 @@ const MINDMAP_EDGE_TYPES = [`solid`] as const;
 const MINDMAP_NODE_TYPES = [`external`, `embedded`] as const;
 const MINDMAP_ORIENTATIONS = [`x`, `y`] as const;
 
+const mindmapIdSchema = id;
 const mindmapNameSchema = name();
 const mindmapDescriptionSchema = description().nullable();
 const mindmapTagsSchema = tags().nullable();
@@ -107,5 +109,6 @@ export {
   mindmapNameSchema,
   mindmapDescriptionSchema,
   mindmapTagsSchema,
+  mindmapIdSchema,
 };
 export type { MindmapModel, MindmapMetaModel, MindmapNode };
