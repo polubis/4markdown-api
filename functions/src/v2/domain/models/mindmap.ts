@@ -30,14 +30,12 @@ const mindmapTagsSchema = tags().nullable();
 const clientGeneratedIdSchema = clientGeneratedId();
 
 const mindmapEdgesSchema = z.array(
-  z
-    .object({
-      id: clientGeneratedIdSchema,
-      source: clientGeneratedIdSchema,
-      target: clientGeneratedIdSchema,
-      type: z.enum(MINDMAP_EDGE_TYPES),
-    })
-    .strict(),
+  z.object({
+    id: clientGeneratedIdSchema,
+    source: clientGeneratedIdSchema,
+    target: clientGeneratedIdSchema,
+    type: z.enum(MINDMAP_EDGE_TYPES),
+  }),
 );
 
 const [externalType, embeddedType] = MINDMAP_NODE_TYPES;
@@ -50,34 +48,26 @@ const mindmapOrientationSchema = z.enum(MINDMAP_ORIENTATIONS);
 
 const mindmapNodesSchema = z.array(
   z.union([
-    z
-      .object({
-        id: clientGeneratedIdSchema,
-        type: z.literal(externalType),
-        position: positionSchema,
-        data: z
-          .object({
-            url: urlSchema,
-            description: nodeDescriptionSchema,
-            name: nodeNameSchema,
-          })
-          .strict(),
-      })
-      .strict(),
-    z
-      .object({
-        id: clientGeneratedIdSchema,
-        type: z.literal(embeddedType),
-        position: positionSchema,
-        data: z
-          .object({
-            content: textSchema.nullable(),
-            description: nodeDescriptionSchema,
-            name: nodeNameSchema,
-          })
-          .strict(),
-      })
-      .strict(),
+    z.object({
+      id: clientGeneratedIdSchema,
+      type: z.literal(externalType),
+      position: positionSchema,
+      data: z.object({
+        url: urlSchema,
+        description: nodeDescriptionSchema,
+        name: nodeNameSchema,
+      }),
+    }),
+    z.object({
+      id: clientGeneratedIdSchema,
+      type: z.literal(embeddedType),
+      position: positionSchema,
+      data: z.object({
+        content: textSchema.nullable(),
+        description: nodeDescriptionSchema,
+        name: nodeNameSchema,
+      }),
+    }),
   ]),
 );
 
