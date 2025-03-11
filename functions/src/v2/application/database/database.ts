@@ -16,6 +16,7 @@ type DBCollectionKey = (typeof COLLECTIONS_KEYS)[number];
 
 const Db = (db: Firestore) => {
   return {
+    db: () => db.batch(),
     runTransaction: <T>(
       updateFunction: (transaction: Transaction) => Promise<T>,
     ) => {

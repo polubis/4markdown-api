@@ -25,7 +25,7 @@ import { editDocumentCommentController } from '@modules/edit-document-comment/ed
 import { deleteDocumentCommentController } from '@modules/delete-document-comment/delete-document-comment.controller';
 import { getYourUserProfileController } from '@modules/get-your-user-profile/get-your-user-profile.controller';
 import { updateYourUserProfileController } from '@modules/update-your-user-profile/update-your-user-profile.controller';
-import { getYourMindmapsController } from '@modules/get-your-mindmaps/get-your-mindmaps.controller';
+import { getYourMindmapsController } from '@modules/get-your-mindmaps';
 import { updateMindmapNameController } from '@modules/update-mindmap-name';
 import { updateMindmapShapeController } from '@modules/update-mindmap-shape';
 import { deleteMindmapController } from '@modules/delete-mindmap';
