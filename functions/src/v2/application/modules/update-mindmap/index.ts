@@ -1,17 +1,23 @@
-import { MindmapModel } from '@domain/models/mindmap';
+import {
+  mindmapDescriptionSchema,
+  mindmapIdSchema,
+  MindmapModel,
+  mindmapNameSchema,
+  mindmapTagsSchema,
+} from '@domain/models/mindmap';
 import { nowISO } from '@libs/helpers/stamps';
 import { protectedController } from '@utils/controller';
 import { errors } from '@utils/errors';
 import { parse } from '@utils/parse';
-import { date, description, id, name, tags } from '@utils/validators';
+import { date } from '@utils/validators';
 import { z } from 'zod';
 
 const payloadSchema = z.object({
-  id,
+  id: mindmapIdSchema,
   mdate: date,
-  name: name(),
-  description: description().nullable(),
-  tags: tags().nullable(),
+  name: mindmapNameSchema,
+  description: mindmapDescriptionSchema,
+  tags: mindmapTagsSchema,
 });
 
 type Dto = Pick<
@@ -39,10 +45,7 @@ const updateMindmapController = protectedController<Dto>(
       throw errors.outOfDate(`Cannot remove already changed mindmap`);
     }
 
-    const updateMindmapData: Pick<
-      MindmapModel,
-      'mdate' | 'name' | 'description' | 'tags' | 'path'
-    > = {
+    const updatedMindmap: Dto = {
       name: payload.name.raw,
       path: payload.name.path,
       description: payload.description,
@@ -50,15 +53,9 @@ const updateMindmapController = protectedController<Dto>(
       mdate: nowISO(),
     };
 
-    await yourMindmapRef.update(updateMindmapData);
+    await yourMindmapRef.update(updatedMindmap);
 
-    return {
-      mdate: updateMindmapData.mdate,
-      name: updateMindmapData.name,
-      path: updateMindmapData.path,
-      tags: updateMindmapData.tags,
-      description: updateMindmapData.description,
-    };
+    return updatedMindmap;
   },
 );
 
