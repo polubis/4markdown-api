@@ -38,6 +38,17 @@ describe(`Document schemas works when`, () => {
   });
 
   describe(`name validation`, () => {
+    it(`rejects already parsed value`, () => {
+      expect(() =>
+        documentNameSchema.parse({
+          path: `/dasdasd/`,
+          raw: `dasdasd`,
+          slug: `dasdasd`,
+          segments: [`dasdasd`],
+        }),
+      ).toThrow();
+    });
+
     it(`trims white space`, () => {
       expect(documentNameSchema.parse(`   aas  sas as   `)).toEqual({
         path: `/aas-sas-as/`,
