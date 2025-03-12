@@ -44,7 +44,33 @@ const updateMindmapShapeController = protectedController<Dto>(
 
     const updatedMindmap: Dto = {
       orientation: payload.orientation,
-      nodes: payload.nodes,
+      nodes: payload.nodes.map((node) => {
+        if (node.type === `external`) {
+          return {
+            id: node.id,
+            type: node.type,
+            position: node.position,
+            data: {
+              url: node.data.url,
+              description: node.data.description,
+              name: node.data.name.raw,
+              path: node.data.name.path,
+            },
+          };
+        }
+
+        return {
+          id: node.id,
+          type: node.type,
+          position: node.position,
+          data: {
+            content: node.data.content,
+            description: node.data.description,
+            name: node.data.name.raw,
+            path: node.data.name.path,
+          },
+        };
+      }),
       edges: payload.edges,
       mdate: nowISO(),
     };

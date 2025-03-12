@@ -63,7 +63,7 @@ const mindmapNodesSchema = z.array(
       type: z.literal(embeddedType),
       position: positionSchema,
       data: z.object({
-        content: textSchema.nullable(),
+        content: textSchema,
         description: nodeDescriptionSchema,
         name: nodeNameSchema,
       }),
@@ -72,7 +72,30 @@ const mindmapNodesSchema = z.array(
 );
 
 type MindmapOrientation = z.infer<typeof mindmapOrientationSchema>;
-type MindmapNode = z.infer<typeof mindmapNodesSchema>[number];
+type MindmapNode =
+  | {
+      type: `external`;
+      id: z.infer<typeof clientGeneratedIdSchema>;
+      position: z.infer<typeof positionSchema>;
+      data: {
+        url: z.infer<typeof urlSchema>;
+        description: z.infer<typeof nodeDescriptionSchema>;
+        name: z.infer<typeof nodeNameSchema>['raw'];
+        path: z.infer<typeof nodeNameSchema>['path'];
+      };
+    }
+  | {
+      type: `embedded`;
+      id: z.infer<typeof clientGeneratedIdSchema>;
+      position: z.infer<typeof positionSchema>;
+      data: {
+        content: z.infer<typeof textSchema>;
+        description: z.infer<typeof nodeDescriptionSchema>;
+        name: z.infer<typeof nodeNameSchema>['raw'];
+        path: z.infer<typeof nodeNameSchema>['path'];
+      };
+    };
+
 type MindmapEdge = z.infer<typeof mindmapEdgesSchema>[number];
 type MindmapDescription = z.infer<typeof mindmapDescriptionSchema>;
 type MindmapTags = z.infer<typeof mindmapTagsSchema>;
