@@ -1,16 +1,16 @@
 import { protectedController } from '@utils/controller';
 import { parse } from '@utils/parse';
-import {
-  mindmapEdgesSchema,
-  mindmapIdSchema,
-  MindmapModel,
-  mindmapNodesSchema,
-  mindmapOrientationSchema,
-} from '@domain/models/mindmap';
+import { MindmapModel } from '@domain/models/mindmap';
 import { date } from '@utils/validators';
 import { errors } from '@utils/errors';
 import { nowISO } from '@libs/helpers/stamps';
 import { z } from 'zod';
+import {
+  mindmapEdgesSchema,
+  mindmapIdSchema,
+  mindmapNodesSchema,
+  mindmapOrientationSchema,
+} from '@utils/mindmap-schemas';
 
 const updateMindmapShapePayloadSchema = z.object({
   id: mindmapIdSchema,

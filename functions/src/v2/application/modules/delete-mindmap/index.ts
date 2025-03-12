@@ -1,5 +1,5 @@
-import { mindmapIdSchema } from '@domain/models/mindmap';
 import { protectedController } from '@utils/controller';
+import { mindmapIdSchema } from '@utils/mindmap-schemas';
 import { parse } from '@utils/parse';
 import { FieldValue } from 'firebase-admin/firestore';
 import { z } from 'zod';

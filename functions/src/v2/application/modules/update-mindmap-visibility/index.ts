@@ -1,11 +1,11 @@
-import {
-  mindmapIdSchema,
-  MindmapModel,
-  mindmapVisibilitySchema,
-} from '@domain/models/mindmap';
+import { MindmapModel } from '@domain/models/mindmap';
 import { nowISO } from '@libs/helpers/stamps';
 import { protectedController } from '@utils/controller';
 import { errors } from '@utils/errors';
+import {
+  mindmapIdSchema,
+  mindmapVisibilitySchema,
+} from '@utils/mindmap-schemas';
 import { parse } from '@utils/parse';
 import { date } from '@utils/validators';
 import { z } from 'zod';

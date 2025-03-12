@@ -1,19 +1,19 @@
 import { protectedController } from '@utils/controller';
-import {
-  mindmapDescriptionSchema,
-  mindmapEdgesSchema,
-  mindmapNameSchema,
-  mindmapNodesSchema,
-  mindmapOrientationSchema,
-  mindmapTagsSchema,
-  type MindmapModel,
-} from '@domain/models/mindmap';
+import { type MindmapModel } from '@domain/models/mindmap';
 import { type Id } from '@utils/validators';
 import { z } from 'zod';
 import { parse } from '@utils/parse';
 import { nowISO, uuid } from '@libs/helpers/stamps';
 import { Visibility } from '@domain/atoms/general';
 import { FieldValue } from 'firebase-admin/firestore';
+import {
+  mindmapNameSchema,
+  mindmapDescriptionSchema,
+  mindmapNodesSchema,
+  mindmapEdgesSchema,
+  mindmapOrientationSchema,
+  mindmapTagsSchema,
+} from '@utils/mindmap-schemas';
 
 const payloadSchema = z.object({
   name: mindmapNameSchema,
@@ -45,7 +45,12 @@ const createMindmapController = protectedController<Dto>(
         name: name.raw,
         path: name.path,
         description: description ?? null,
-        edges,
+        edges: edges.map((edge) => ({
+          id: edge.id,
+          source: edge.source,
+          target: edge.target,
+          type: edge.type,
+        })),
         nodes: nodes.map((node) => {
           if (node.type === `external`) {
             return {
