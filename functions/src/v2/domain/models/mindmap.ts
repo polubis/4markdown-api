@@ -71,17 +71,25 @@ const mindmapNodesSchema = z.array(
   ]),
 );
 
-type MindmapOrientation = z.infer<typeof mindmapOrientationSchema>;
+type ClientUID = `${number}:${number}`;
+
+type MindmapEdge = {
+  id: ClientUID;
+  source: ClientUID;
+  target: ClientUID;
+  type: `solid`;
+};
+
 type MindmapNode =
   | {
       type: `external`;
       id: z.infer<typeof clientGeneratedIdSchema>;
       position: z.infer<typeof positionSchema>;
       data: {
-        url: z.infer<typeof urlSchema>;
-        description: z.infer<typeof nodeDescriptionSchema>;
-        name: z.infer<typeof nodeNameSchema>['raw'];
-        path: z.infer<typeof nodeNameSchema>['path'];
+        url: string;
+        description: string | null;
+        name: string;
+        path: string;
       };
     }
   | {
@@ -89,29 +97,24 @@ type MindmapNode =
       id: z.infer<typeof clientGeneratedIdSchema>;
       position: z.infer<typeof positionSchema>;
       data: {
-        content: z.infer<typeof textSchema>;
-        description: z.infer<typeof nodeDescriptionSchema>;
-        name: z.infer<typeof nodeNameSchema>['raw'];
-        path: z.infer<typeof nodeNameSchema>['path'];
+        content: string | null;
+        description: string | null;
+        name: string;
+        path: string;
       };
     };
-
-type MindmapEdge = z.infer<typeof mindmapEdgesSchema>[number];
-type MindmapDescription = z.infer<typeof mindmapDescriptionSchema>;
-type MindmapTags = z.infer<typeof mindmapTagsSchema>;
-type MindmapName = z.infer<typeof mindmapNameSchema>;
 
 type MindmapModel = {
   cdate: Date;
   mdate: Date;
-  path: MindmapName['path'];
-  name: MindmapName['raw'];
-  orientation: MindmapOrientation;
+  path: string;
+  name: string;
+  orientation: `x` | `y`;
   nodes: MindmapNode[];
   edges: MindmapEdge[];
-  visibility: z.infer<typeof mindmapVisibilitySchema>;
-  description: MindmapDescription;
-  tags: MindmapTags;
+  visibility: Visibility;
+  description: string | null;
+  tags: string[] | null;
 };
 
 type MindmapMetaModel = {
