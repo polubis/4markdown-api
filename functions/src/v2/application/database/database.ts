@@ -16,7 +16,6 @@ type DBCollectionKey = (typeof COLLECTIONS_KEYS)[number];
 
 const Db = (db: Firestore) => {
   return {
-    db: () => db.batch(),
     runTransaction: <T>(
       updateFunction: (transaction: Transaction) => Promise<T>,
     ) => {
@@ -27,7 +26,6 @@ const Db = (db: Firestore) => {
     ): admin.firestore.CollectionReference<admin.firestore.DocumentData> => {
       return db.collection(key);
     },
-    collectionGroup: db.collectionGroup,
   };
 };
 
