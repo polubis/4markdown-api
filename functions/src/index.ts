@@ -25,20 +25,27 @@ import { editDocumentCommentController } from '@modules/edit-document-comment/ed
 import { deleteDocumentCommentController } from '@modules/delete-document-comment/delete-document-comment.controller';
 import { getYourUserProfileController } from '@modules/get-your-user-profile/get-your-user-profile.controller';
 import { updateYourUserProfileController } from '@modules/update-your-user-profile/update-your-user-profile.controller';
+import { getYourMindmapsController } from '@modules/get-your-mindmaps';
+import { updateMindmapNameController } from '@modules/update-mindmap-name';
+import { updateMindmapShapeController } from '@modules/update-mindmap-shape';
+import { deleteMindmapController } from '@modules/delete-mindmap';
+import { updateMindmapVisibilityController } from '@modules/update-mindmap-visibility';
+import { updateMindmapController } from '@modules/update-mindmap';
+import { createMindmapController } from '@modules/create-mindmap';
 
 const app = admin.initializeApp();
 const db = app.firestore();
 const projectId = app.options.projectId!;
 
 export const useBackup = onCall<unknown>(
-  { maxInstances: 2 },
+  { maxInstances: 1 },
   async (request) => {
     await BackupsService.use(projectId, UseBackupPayload(request.data));
   },
 );
 
 export const createBackup = onCall<unknown>(
-  { maxInstances: 2 },
+  { maxInstances: 1 },
   async (request) => {
     await BackupsService.create(projectId, CreateBackupPayload(request.data));
   },
@@ -122,4 +129,43 @@ export const migrateDatabase = migrateDatabaseController({
   db,
   projectId,
   secrets: [`ADMIN_LIST`],
+});
+
+export const createMindmap = createMindmapController({
+  db,
+  projectId,
+});
+
+export const updateMindmapName = updateMindmapNameController({
+  db,
+  projectId,
+  memory: `128MiB`,
+});
+
+export const updateMindmapShape = updateMindmapShapeController({
+  db,
+  projectId,
+});
+
+export const getYourMindmaps = getYourMindmapsController({
+  db,
+  projectId,
+});
+
+export const deleteMindmap = deleteMindmapController({
+  db,
+  projectId,
+  memory: `128MiB`,
+});
+
+export const updateMindmapVisibility = updateMindmapVisibilityController({
+  db,
+  projectId,
+  memory: `128MiB`,
+});
+
+export const updateMindmap = updateMindmapController({
+  db,
+  projectId,
+  memory: `128MiB`,
 });
