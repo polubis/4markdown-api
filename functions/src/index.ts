@@ -32,6 +32,7 @@ import { deleteMindmapController } from '@modules/delete-mindmap';
 import { updateMindmapVisibilityController } from '@modules/update-mindmap-visibility';
 import { updateMindmapController } from '@modules/update-mindmap';
 import { createMindmapController } from '@modules/create-mindmap';
+import { getMindmapController } from '@modules/get-mindmap';
 
 const app = admin.initializeApp();
 const db = app.firestore();
@@ -168,4 +169,9 @@ export const updateMindmap = updateMindmapController({
   db,
   projectId,
   memory: `128MiB`,
+});
+
+export const getMindmap = getMindmapController({
+  db,
+  projectId,
 });
