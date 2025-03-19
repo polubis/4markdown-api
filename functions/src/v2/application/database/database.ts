@@ -11,6 +11,7 @@ const COLLECTIONS_KEYS = [
   `document-comments`,
   `user-mindmaps`,
   `mindmaps`,
+  `bug-reports`,
 ] as const;
 type DBCollectionKey = (typeof COLLECTIONS_KEYS)[number];
 
