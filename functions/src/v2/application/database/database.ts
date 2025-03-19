@@ -1,4 +1,3 @@
-import * as admin from 'firebase-admin';
 import type { Firestore, Transaction } from 'firebase-admin/firestore';
 
 const COLLECTIONS_KEYS = [
@@ -22,11 +21,8 @@ const Db = (db: Firestore) => {
     ) => {
       return db.runTransaction(updateFunction);
     },
-    collection: (
-      key: DBCollectionKey,
-    ): admin.firestore.CollectionReference<admin.firestore.DocumentData> => {
-      return db.collection(key);
-    },
+    collection: (key: DBCollectionKey) => db.collection(key),
+    collectionGroup: (key: DBCollectionKey) => db.collectionGroup(key),
   };
 };
 
