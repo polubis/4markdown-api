@@ -1,8 +1,9 @@
-import { type Id } from '@utils/validators';
+import { type Date, type Id } from '@utils/validators';
 
 type PermanentMindmapModel = {
-  mindmapId: Id;
   authorId: Id;
+  mindmapId: Id;
+  cdate: Date;
 };
 
 export type { PermanentMindmapModel };

@@ -1,5 +1,6 @@
 import { Visibility } from '@domain/atoms/general';
 import { MindmapModel } from '@domain/models/mindmap';
+import { PermanentMindmapModel } from '@domain/models/permanent-mindmaps';
 import { nowISO } from '@libs/helpers/stamps';
 import { protectedController } from '@utils/controller';
 import { errors } from '@utils/errors';
@@ -50,13 +51,13 @@ const updateMindmapVisibilityController = protectedController<Dto>(
       };
 
       if (payload.visibility === Visibility.Permanent) {
-        t.set(
-          permanentMindmapsRef.doc(payload.id),
-          {
-            mindmapId: payload.id,
-          },
-          { merge: true },
-        );
+        const permanentMindmap: PermanentMindmapModel = {
+          authorId: uid,
+          cdate: nowISO(),
+          mindmapId: payload.id,
+        };
+
+        t.set(permanentMindmapsRef.doc(payload.id), permanentMindmap);
       } else {
         t.delete(permanentMindmapsRef.doc(payload.id));
       }
