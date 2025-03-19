@@ -33,6 +33,8 @@ import { updateMindmapVisibilityController } from '@modules/update-mindmap-visib
 import { updateMindmapController } from '@modules/update-mindmap';
 import { createMindmapController } from '@modules/create-mindmap';
 import { getMindmapController } from '@modules/get-mindmap';
+import { reportBugController } from '@modules/report-bug';
+import { getPermanentMindmapsController } from '@modules/get-permanent-mindmaps';
 
 const app = admin.initializeApp();
 const db = app.firestore();
@@ -172,6 +174,16 @@ export const updateMindmap = updateMindmapController({
 });
 
 export const getMindmap = getMindmapController({
+  db,
+  projectId,
+});
+
+export const reportBug = reportBugController({
+  db,
+  projectId,
+});
+
+export const getPermanentMindmaps = getPermanentMindmapsController({
   db,
   projectId,
 });
