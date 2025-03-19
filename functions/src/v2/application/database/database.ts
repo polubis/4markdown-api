@@ -22,7 +22,6 @@ const Db = (db: Firestore) => {
       return db.runTransaction(updateFunction);
     },
     collection: (key: DBCollectionKey) => db.collection(key),
-    collectionGroup: (key: DBCollectionKey) => db.collectionGroup(key),
   };
 };
 
