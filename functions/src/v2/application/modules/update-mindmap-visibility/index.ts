@@ -1,3 +1,4 @@
+import { Visibility } from '@domain/atoms/general';
 import { MindmapModel } from '@domain/models/mindmap';
 import { nowISO } from '@libs/helpers/stamps';
 import { protectedController } from '@utils/controller';
@@ -21,33 +22,51 @@ type Dto = Pick<MindmapModel, 'mdate'>;
 const updateMindmapVisibilityController = protectedController<Dto>(
   async (rawPayload, { uid, db }) => {
     const payload = await parse(payloadSchema, rawPayload);
+
     const yourMindmapsRef = db.collection(`user-mindmaps`).doc(uid);
     const yourMindmapRef = yourMindmapsRef
       .collection(`mindmaps`)
       .doc(payload.id);
+    const permanentMindmapsRef = db.collection(`permanent-mindmaps`);
 
-    const yourMindmapData = (await yourMindmapRef.get()).data() as
-      | MindmapModel
-      | undefined;
+    return await db.runTransaction(async (t) => {
+      const yourMindmapData = (await t.get(yourMindmapRef)).data() as
+        | MindmapModel
+        | undefined;
 
-    if (!yourMindmapData) {
-      throw errors.notFound(`Cannot find mindmap`);
-    }
+      if (!yourMindmapData) {
+        throw errors.notFound(`Cannot find mindmap`);
+      }
 
-    if (yourMindmapData.mdate !== payload.mdate) {
-      throw errors.outOfDate(`Cannot remove already changed mindmap`);
-    }
+      if (yourMindmapData.mdate !== payload.mdate) {
+        throw errors.outOfDate(
+          `Cannot update already changed mindmap. Refresh and try again`,
+        );
+      }
 
-    const updateMindmap: Pick<MindmapModel, 'mdate' | 'visibility'> = {
-      visibility: payload.visibility,
-      mdate: nowISO(),
-    };
+      const updateMindmap: Pick<MindmapModel, 'mdate' | 'visibility'> = {
+        visibility: payload.visibility,
+        mdate: nowISO(),
+      };
 
-    await yourMindmapRef.update(updateMindmap);
+      if (payload.visibility === Visibility.Permanent) {
+        t.set(
+          permanentMindmapsRef.doc(payload.id),
+          {
+            mindmapId: payload.id,
+          },
+          { merge: true },
+        );
+      } else {
+        t.delete(permanentMindmapsRef.doc(payload.id));
+      }
 
-    return {
-      mdate: updateMindmap.mdate,
-    };
+      t.update(yourMindmapRef, updateMindmap);
+
+      return {
+        mdate: updateMindmap.mdate,
+      };
+    });
   },
 );
 
