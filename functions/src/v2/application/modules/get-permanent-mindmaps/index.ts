@@ -39,7 +39,7 @@ const getPermanentMindmapsController = controller<Dto>(
 
     const mindmapsSnap = await db
       .collectionGroup(`mindmaps`)
-      .where(`id`, `in`, Object.values(permanentMindmapsData))
+      .where(`id`, `in`, Object.keys(permanentMindmapsData))
       .get();
 
     const mindmaps = mindmapsSnap.docs.map((doc) => ({
