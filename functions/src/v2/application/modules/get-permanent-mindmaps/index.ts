@@ -10,7 +10,11 @@ const payloadSchema = z.object({
   limit: z.number().min(1).max(100).optional().default(10),
 });
 
-type DtoItem = MindmapModel & { id: Id; author: UserProfileModel | null };
+type DtoItem = MindmapModel & {
+  id: Id;
+  author: UserProfileModel | null;
+  isAuthorTrusted: boolean;
+};
 type Dto = DtoItem[];
 
 const getPermanentMindmapsController = controller<Dto>(
@@ -23,10 +27,11 @@ const getPermanentMindmapsController = controller<Dto>(
       .limit(payload.limit)
       .get();
 
-    const notFullMindmaps: (Omit<DtoItem, 'author'> & { authorId: Id })[] = [];
+    const notFullMindmaps: (Omit<DtoItem, 'author' | 'isAuthorTrusted'> & {
+      authorId: Id;
+    })[] = [];
     const authorProfiles: Record<Id, UserProfileModel | null> = {};
-
-    const userProfilesRef = db.collection(`users-profiles`);
+    const accountPermissions: Record<Id, boolean> = {};
 
     for (const mindmapDoc of mindmapsSnap.docs) {
       const mindmapData = mindmapDoc.data() as MindmapModel;
@@ -40,18 +45,26 @@ const getPermanentMindmapsController = controller<Dto>(
       });
     }
 
-    const userProfilesSnap = await userProfilesRef
-      .where(`__name__`, `in`, Object.keys(authorProfiles))
-      .get();
+    const [userProfilesSnap, accountPermissionsSnap] = await Promise.all([
+      db
+        .collection(`users-profiles`)
+        .where(`__name__`, `in`, Object.keys(authorProfiles))
+        .get(),
+      db.collection(`account-permissions`).where(`trusted`, `==`, true).get(),
+    ]);
 
-    userProfilesSnap.docs.forEach((userProfileDoc) => {
-      authorProfiles[userProfileDoc.id] =
-        (userProfileDoc.data() as UserProfileModel | undefined) ?? null;
+    accountPermissionsSnap.docs.forEach(({ id }) => {
+      accountPermissions[id] = true;
+    });
+
+    userProfilesSnap.docs.forEach(({ id, data }) => {
+      authorProfiles[id] = (data() as UserProfileModel | undefined) ?? null;
     });
 
     const mindmaps: Dto = notFullMindmaps.map(({ authorId, ...mindmap }) => ({
       ...mindmap,
       author: authorProfiles[authorId],
+      isAuthorTrusted: !!accountPermissions[authorId],
     }));
 
     return mindmaps;
