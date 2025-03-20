@@ -13,7 +13,7 @@ const payloadSchema = z.object({
 type DtoItem = MindmapModel & {
   id: Id;
   author: UserProfileModel | null;
-  // isAuthorTrusted: boolean;
+  isAuthorTrusted: boolean;
 };
 type Dto = DtoItem[];
 
