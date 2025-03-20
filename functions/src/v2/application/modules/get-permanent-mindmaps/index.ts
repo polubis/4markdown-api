@@ -32,6 +32,7 @@ const getPermanentMindmapsController = controller<Dto>(
       const mindmapData = mindmapDoc.data() as MindmapModel;
       const authorId = mindmapDoc.ref.parent.parent!.id;
 
+      authorProfiles[authorId] = null;
       notFullMindmaps.push({
         ...mindmapData,
         id: mindmapDoc.id,
