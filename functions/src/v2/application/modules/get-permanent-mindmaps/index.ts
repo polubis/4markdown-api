@@ -12,8 +12,9 @@ const payloadSchema = z.object({
 
 type DtoItem = MindmapModel & {
   id: Id;
-  author: UserProfileModel | null;
+  authorProfile: UserProfileModel | null;
   isAuthorTrusted: boolean;
+  authorId: Id;
 };
 type Dto = DtoItem[];
 
@@ -31,9 +32,7 @@ const getPermanentMindmapsController = controller<Dto>(
       return [];
     }
 
-    const notFullMindmaps: (Omit<DtoItem, 'author' | 'isAuthorTrusted'> & {
-      authorId: Id;
-    })[] = [];
+    const mindmaps: Dto = [];
     const authorProfiles: Record<Id, UserProfileModel | null> = {};
     const accountPermissions: Record<Id, boolean> = {};
 
@@ -42,10 +41,13 @@ const getPermanentMindmapsController = controller<Dto>(
       const authorId = mindmapDoc.ref.parent.parent!.id;
 
       authorProfiles[authorId] = null;
-      notFullMindmaps.push({
+
+      mindmaps.push({
         ...mindmapData,
         id: mindmapDoc.id,
         authorId,
+        authorProfile: null,
+        isAuthorTrusted: false,
       });
     }
 
@@ -66,13 +68,11 @@ const getPermanentMindmapsController = controller<Dto>(
         (userProfileSnap.data() as UserProfileModel | undefined) ?? null;
     });
 
-    const mindmaps: Dto = notFullMindmaps.map(({ authorId, ...mindmap }) => ({
+    return mindmaps.map((mindmap) => ({
       ...mindmap,
-      author: authorProfiles[authorId],
-      isAuthorTrusted: !!accountPermissions[authorId],
+      authorProfile: authorProfiles[mindmap.authorId],
+      isAuthorTrusted: !!accountPermissions[mindmap.authorId],
     }));
-
-    return mindmaps;
   },
 );
 
