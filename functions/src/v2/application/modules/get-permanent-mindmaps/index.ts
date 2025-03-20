@@ -13,7 +13,7 @@ const payloadSchema = z.object({
 type DtoItem = MindmapModel & {
   id: Id;
   author: UserProfileModel | null;
-  isAuthorTrusted: boolean;
+  // isAuthorTrusted: boolean;
 };
 type Dto = DtoItem[];
 
@@ -26,6 +26,10 @@ const getPermanentMindmapsController = controller<Dto>(
       .orderBy(`cdate`, `desc`)
       .limit(payload.limit)
       .get();
+
+    if (mindmapsSnap.docs.length === 0) {
+      return [];
+    }
 
     const notFullMindmaps: (Omit<DtoItem, 'author' | 'isAuthorTrusted'> & {
       authorId: Id;
@@ -53,12 +57,13 @@ const getPermanentMindmapsController = controller<Dto>(
       db.collection(`account-permissions`).where(`trusted`, `==`, true).get(),
     ]);
 
-    accountPermissionsSnap.docs.forEach(({ id }) => {
-      accountPermissions[id] = true;
+    accountPermissionsSnap.docs.forEach((accountPermissionDoc) => {
+      accountPermissions[accountPermissionDoc.id] = true;
     });
 
-    userProfilesSnap.docs.forEach(({ id, data }) => {
-      authorProfiles[id] = (data() as UserProfileModel | undefined) ?? null;
+    userProfilesSnap.docs.forEach((userProfileSnap) => {
+      authorProfiles[userProfileSnap.id] =
+        (userProfileSnap.data() as UserProfileModel | undefined) ?? null;
     });
 
     const mindmaps: Dto = notFullMindmaps.map(({ authorId, ...mindmap }) => ({
