@@ -32,7 +32,7 @@ import { deleteMindmapController } from '@modules/delete-mindmap';
 import { updateMindmapVisibilityController } from '@modules/update-mindmap-visibility';
 import { updateMindmapController } from '@modules/update-mindmap';
 import { createMindmapController } from '@modules/create-mindmap';
-import { getMindmapController } from '@modules/get-mindmap';
+import { getAccessibleMindmapController } from '@modules/get-accessible-mindmap';
 import { reportBugController } from '@modules/report-bug';
 import { getPermanentMindmapsController } from '@modules/get-permanent-mindmaps';
 
@@ -167,7 +167,7 @@ export const updateMindmap = updateMindmapController({
   projectId,
 });
 
-export const getMindmap = getMindmapController({
+export const getAccessibleMindmap = getAccessibleMindmapController({
   db,
   projectId,
 });
