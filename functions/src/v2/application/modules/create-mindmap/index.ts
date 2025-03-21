@@ -3,7 +3,7 @@ import { type MindmapModel } from '@domain/models/mindmap';
 import { type Id } from '@utils/validators';
 import { z } from 'zod';
 import { parse } from '@utils/parse';
-import { nowISO, uuid } from '@libs/helpers/stamps';
+import { nowISO, shortUuid } from '@libs/helpers/stamps';
 import { Visibility } from '@domain/atoms/general';
 import { FieldValue } from 'firebase-admin/firestore';
 import {
@@ -36,7 +36,7 @@ const createMindmapController = protectedController<Dto>(
     return db.runTransaction(async (t) => {
       const userMindmapsRef = db.collection(`user-mindmaps`).doc(uid);
 
-      const mindmapId = uuid();
+      const mindmapId = shortUuid();
       const now = nowISO();
 
       const newMindmap: MindmapModel = {
