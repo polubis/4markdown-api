@@ -76,7 +76,6 @@ export const getYourUserProfile = getYourUserProfileController({
 export const updateYourUserProfileV2 = updateYourUserProfileController({
   db,
   projectId,
-  memory: `512MiB`,
 });
 
 export const deleteDocumentComment = deleteDocumentCommentController({
@@ -98,7 +97,6 @@ export const getDocumentComments = getDocumentCommentsController({
 export const uploadImage = uploadImageController({
   db,
   projectId,
-  memory: `512MiB`,
 });
 export const updateDocumentCode = updateDocumentCodeController({
   db,
@@ -142,7 +140,6 @@ export const createMindmap = createMindmapController({
 export const updateMindmapName = updateMindmapNameController({
   db,
   projectId,
-  memory: `128MiB`,
 });
 
 export const updateMindmapShape = updateMindmapShapeController({
@@ -158,19 +155,16 @@ export const getYourMindmaps = getYourMindmapsController({
 export const deleteMindmap = deleteMindmapController({
   db,
   projectId,
-  memory: `128MiB`,
 });
 
 export const updateMindmapVisibility = updateMindmapVisibilityController({
   db,
   projectId,
-  memory: `128MiB`,
 });
 
 export const updateMindmap = updateMindmapController({
   db,
   projectId,
-  memory: `128MiB`,
 });
 
 export const getMindmap = getMindmapController({

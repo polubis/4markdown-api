@@ -55,8 +55,13 @@ const getPermanentMindmapsController = controller<Dto>(
       db
         .collection(`users-profiles`)
         .where(`__name__`, `in`, Object.keys(authorProfiles))
+        .limit(payload.limit)
         .get(),
-      db.collection(`account-permissions`).where(`trusted`, `==`, true).get(),
+      db
+        .collection(`account-permissions`)
+        .where(`trusted`, `==`, true)
+        .limit(payload.limit)
+        .get(),
     ]);
 
     accountPermissionsSnap.docs.forEach((accountPermissionDoc) => {
