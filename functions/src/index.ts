@@ -32,7 +32,7 @@ import { deleteMindmapController } from '@modules/delete-mindmap';
 import { updateMindmapVisibilityController } from '@modules/update-mindmap-visibility';
 import { updateMindmapController } from '@modules/update-mindmap';
 import { createMindmapController } from '@modules/create-mindmap';
-import { getMindmapController } from '@modules/get-mindmap';
+import { getAccessibleMindmapController } from '@modules/get-accessible-mindmap';
 import { reportBugController } from '@modules/report-bug';
 import { getPermanentMindmapsController } from '@modules/get-permanent-mindmaps';
 
@@ -76,7 +76,6 @@ export const getYourUserProfile = getYourUserProfileController({
 export const updateYourUserProfileV2 = updateYourUserProfileController({
   db,
   projectId,
-  memory: `512MiB`,
 });
 
 export const deleteDocumentComment = deleteDocumentCommentController({
@@ -98,7 +97,6 @@ export const getDocumentComments = getDocumentCommentsController({
 export const uploadImage = uploadImageController({
   db,
   projectId,
-  memory: `512MiB`,
 });
 export const updateDocumentCode = updateDocumentCodeController({
   db,
@@ -142,7 +140,6 @@ export const createMindmap = createMindmapController({
 export const updateMindmapName = updateMindmapNameController({
   db,
   projectId,
-  memory: `128MiB`,
 });
 
 export const updateMindmapShape = updateMindmapShapeController({
@@ -158,22 +155,19 @@ export const getYourMindmaps = getYourMindmapsController({
 export const deleteMindmap = deleteMindmapController({
   db,
   projectId,
-  memory: `128MiB`,
 });
 
 export const updateMindmapVisibility = updateMindmapVisibilityController({
   db,
   projectId,
-  memory: `128MiB`,
 });
 
 export const updateMindmap = updateMindmapController({
   db,
   projectId,
-  memory: `128MiB`,
 });
 
-export const getMindmap = getMindmapController({
+export const getAccessibleMindmap = getAccessibleMindmapController({
   db,
   projectId,
 });

@@ -36,7 +36,7 @@ const getMaxInstances = (maxInstances?: number): number => maxInstances ?? 1;
 const getConcurrency = (concurrency?: number): number => concurrency ?? 6;
 const getMemory = (
   memory?: ControllerConfig['memory'],
-): ControllerConfig['memory'] => memory ?? `256MiB`;
+): ControllerConfig['memory'] => memory ?? `512MiB`;
 
 // @TODO[PRIO=2]: [Add and test parent try catch].
 const controller =
