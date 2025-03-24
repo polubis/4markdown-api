@@ -47,9 +47,9 @@ const createBackupController = adminController<Dto>(async (rawPayload) => {
 
   await Promise.all([
     execPromise(
-      `gsutil -m cp -r gs://${sourceBucket}/* gs://${backupBucket}/${backupId}/storage/`,
+      `gsutil -m cp -r ${sourceBucket}/* ${backupBucket}/${backupId}/storage/`,
     ),
-    execPromise(`gcloud firestore export gs://${backupBucket}/${backupId}/db/`),
+    execPromise(`gcloud firestore export ${backupBucket}/${backupId}/db/`),
   ]);
 
   return null;
