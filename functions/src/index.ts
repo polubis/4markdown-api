@@ -9,7 +9,6 @@ import { createDocumentController } from './v2/application/modules/create-docume
 import { getYourDocumentsController } from './v2/application/modules/get-your-documents/get-your-documents.controller';
 import { updateDocumentNameController } from './v2/application/modules/update-document-name/update-document-name.controller';
 import { updateDocumentVisibilityController } from '@modules/update-document-visibility/update-document-visibility.controller';
-import { migrateDatabaseController } from '@modules/migrate-database/migrate-database.controller';
 import { uploadImageController } from '@modules/upload-image/upload-image.controller';
 import { addDocumentCommentController } from '@modules/add-document-comment/add-document-comment.controller';
 import { getDocumentCommentsController } from '@modules/get-document-comments/get-document-comments.controller';
@@ -27,7 +26,6 @@ import { createMindmapController } from '@modules/create-mindmap';
 import { getAccessibleMindmapController } from '@modules/get-accessible-mindmap';
 import { reportBugController } from '@modules/report-bug';
 import { getPermanentMindmapsController } from '@modules/get-permanent-mindmaps';
-import { createBackupController } from '@modules/create-backup';
 
 const app = admin.initializeApp();
 const db = app.firestore();
@@ -90,12 +88,6 @@ export const updateDocumentVisibility = updateDocumentVisibilityController({
   projectId,
 });
 
-export const migrateDatabase = migrateDatabaseController({
-  db,
-  projectId,
-  secrets: [`ADMIN_LIST`],
-});
-
 export const createMindmap = createMindmapController({
   db,
   projectId,
@@ -144,10 +136,4 @@ export const reportBug = reportBugController({
 export const getPermanentMindmaps = getPermanentMindmapsController({
   db,
   projectId,
-});
-
-export const createBackup = createBackupController({
-  db,
-  projectId,
-  secrets: [`SOURCE_BUCKET`, `BACKUP_BUCKET`, `ADMIN_LIST`],
 });
