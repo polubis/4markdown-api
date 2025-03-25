@@ -8,16 +8,7 @@ import { getAccessibleDocumentController } from './v2/application/modules/get-ac
 import { createDocumentController } from './v2/application/modules/create-document/create-document.controller';
 import { getYourDocumentsController } from './v2/application/modules/get-your-documents/get-your-documents.controller';
 import { updateDocumentNameController } from './v2/application/modules/update-document-name/update-document-name.controller';
-import {
-  CreateBackupPayload,
-  UseBackupPayload,
-} from './payloads/backup.payload';
-import { BackupsService } from './services/backup.service';
-import { onSchedule } from 'firebase-functions/scheduler';
-import { onCall } from 'firebase-functions/https';
 import { updateDocumentVisibilityController } from '@modules/update-document-visibility/update-document-visibility.controller';
-import { isDev } from '@utils/is-dev';
-import { migrateDatabaseController } from '@modules/migrate-database/migrate-database.controller';
 import { uploadImageController } from '@modules/upload-image/upload-image.controller';
 import { addDocumentCommentController } from '@modules/add-document-comment/add-document-comment.controller';
 import { getDocumentCommentsController } from '@modules/get-document-comments/get-document-comments.controller';
@@ -39,35 +30,6 @@ import { getPermanentMindmapsController } from '@modules/get-permanent-mindmaps'
 const app = admin.initializeApp();
 const db = app.firestore();
 const projectId = app.options.projectId!;
-
-export const useBackup = onCall<unknown>(
-  { maxInstances: 1 },
-  async (request) => {
-    await BackupsService.use(projectId, UseBackupPayload(request.data));
-  },
-);
-
-export const createBackup = onCall<unknown>(
-  { maxInstances: 1 },
-  async (request) => {
-    await BackupsService.create(projectId, CreateBackupPayload(request.data));
-  },
-);
-
-export const autoCreateBackup = onSchedule(
-  { schedule: `59 23 * * 0`, maxInstances: 1 },
-  async () => {
-    // every sunday 23:59
-    if (isDev(projectId)) return;
-
-    await BackupsService.create(
-      projectId,
-      CreateBackupPayload({
-        token: process.env.BACKUP_TOKEN,
-      }),
-    );
-  },
-);
 
 export const getYourUserProfile = getYourUserProfileController({
   db,
@@ -124,12 +86,6 @@ export const updateDocumentName = updateDocumentNameController({
 export const updateDocumentVisibility = updateDocumentVisibilityController({
   db,
   projectId,
-});
-
-export const migrateDatabase = migrateDatabaseController({
-  db,
-  projectId,
-  secrets: [`ADMIN_LIST`],
 });
 
 export const createMindmap = createMindmapController({
