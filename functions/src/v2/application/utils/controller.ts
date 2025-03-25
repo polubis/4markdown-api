@@ -6,7 +6,12 @@ import type { ProjectId } from '../infra/models/atoms';
 import type { Id } from './validators';
 import type { MemoryOption } from 'firebase-functions/options';
 // @TODO[PRIO=2]: [Split it into separate library].
-type Secret = 'EMAILS_API_KEY' | 'EMAILS_ENCRYPTION_TOKEN' | `ADMIN_LIST`;
+type Secret =
+  | 'EMAILS_API_KEY'
+  | 'EMAILS_ENCRYPTION_TOKEN'
+  | `ADMIN_LIST`
+  | `BACKUP_BUCKET`
+  | `SOURCE_BUCKET`;
 type Secrets = Secret[];
 
 type ControllerConfig = {
