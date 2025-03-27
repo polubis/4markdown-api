@@ -20,6 +20,7 @@ type ControllerConfig = {
   projectId: ProjectId;
   maxInstances?: number;
   concurrency?: number;
+  enforceAppCheck?: boolean;
   memory?: MemoryOption;
 };
 
@@ -55,6 +56,7 @@ const controller =
         secrets: getSecrets(config.secrets),
         concurrency: getConcurrency(config.concurrency),
         memory: getMemory(config.memory),
+        enforceAppCheck: config.enforceAppCheck,
       },
       async (request) => {
         return await handler(request.data, { db, projectId: config.projectId });
@@ -84,6 +86,7 @@ const protectedController =
         secrets: getSecrets(config.secrets),
         concurrency: getConcurrency(config.concurrency),
         memory: getMemory(config.memory),
+        enforceAppCheck: config.enforceAppCheck,
       },
       async (request) => {
         const { auth } = request;
@@ -127,6 +130,7 @@ const adminController =
         secrets: getSecrets(config.secrets),
         concurrency: getConcurrency(config.concurrency),
         memory: getMemory(config.memory),
+        enforceAppCheck: config.enforceAppCheck,
       },
       async (request) => {
         const { auth } = request;
