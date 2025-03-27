@@ -19,9 +19,14 @@ const rewriteWithAssistantController = protectedController<Dto>(
   async (rawPayload, { db, uid }) => {
     const payload = await parse(payloadSchema, rawPayload);
     const accountBalanceRef = db.collection(`account-balances`).doc(uid);
-    const anthropic = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY,
-    });
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+
+    if (!apiKey) {
+      throw errors.internal(`Problem with configuration`);
+    }
+
+    const anthropic = new Anthropic({ apiKey });
+
     // Move tokens history as a separate collection?
 
     const { answer } = await db.runTransaction(async (transaction) => {
