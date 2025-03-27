@@ -11,6 +11,7 @@ const COLLECTIONS_KEYS = [
   `user-mindmaps`,
   `mindmaps`,
   `bug-reports`,
+  `account-balances`,
 ] as const;
 type DBCollectionKey = (typeof COLLECTIONS_KEYS)[number];
 
