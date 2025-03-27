@@ -19,6 +19,10 @@ const rewriteWithAssistantController = protectedController<Dto>(
   async (rawPayload, { db, uid }) => {
     const payload = await parse(payloadSchema, rawPayload);
     const accountBalanceRef = db.collection(`account-balances`).doc(uid);
+    const anthropic = new Anthropic({
+      apiKey: process.env.ANTHROPIC_API_KEY,
+    });
+    // Move tokens history as a separate collection?
 
     const { answer } = await db.runTransaction(async (transaction) => {
       const accountBalancesSnap = await transaction.get(accountBalanceRef);
@@ -36,10 +40,6 @@ const rewriteWithAssistantController = protectedController<Dto>(
       if (totalTokens < 1) {
         throw errors.unauthorized(`You don't have enough tokens`);
       }
-
-      const anthropic = new Anthropic({
-        apiKey: process.env.ANTHROPIC_API_KEY,
-      });
 
       const message = await anthropic.messages.create({
         model: `claude-2.1`,
