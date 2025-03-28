@@ -142,4 +142,5 @@ export const getPermanentMindmaps = getPermanentMindmapsController({
 export const rewriteWithAssistant = rewriteWithAssistantController({
   db,
   projectId,
+  secrets: [`ANTHROPIC_API_KEY`],
 });
