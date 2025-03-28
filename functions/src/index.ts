@@ -142,5 +142,4 @@ export const getPermanentMindmaps = getPermanentMindmapsController({
 export const rewriteWithAssistant = rewriteWithAssistantController({
   db,
   projectId,
-  enforceAppCheck: true,
 });
