@@ -4,9 +4,9 @@ import {
   cords,
   description,
   id,
+  markdown,
   name,
   tags,
-  text,
   url,
 } from '@utils/validators';
 import { z } from 'zod';
@@ -42,7 +42,6 @@ const positionSchema = cords();
 const nodeDescriptionSchema = description().nullable();
 const nodeNameSchema = name();
 const urlSchema = url(`Wrong url format in node`);
-const textSchema = text.nullable();
 const mindmapOrientationSchema = z.enum(MINDMAP_ORIENTATIONS);
 
 const mindmapNodesSchema = z.array(
@@ -62,7 +61,7 @@ const mindmapNodesSchema = z.array(
       type: z.literal(embeddedType),
       position: positionSchema,
       data: z.object({
-        content: textSchema,
+        content: markdown(`Node content`).nullable(),
         description: nodeDescriptionSchema,
         name: nodeNameSchema,
       }),

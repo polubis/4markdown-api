@@ -33,6 +33,12 @@ const tagsWhiteList: Record<string, boolean> = {
   'f#': true,
 };
 
+const markdown = (entity: string) =>
+  z
+    .string()
+    .trim()
+    .max(35000, `${entity} characters exceed. The limit is 35000`);
+
 const tags = () =>
   z
     .array(
@@ -100,6 +106,7 @@ type Base64 = z.infer<ReturnType<typeof base64>>;
 type Text = z.infer<typeof text>;
 type Slug = string;
 type Path = string;
+type Markdown = z.infer<ReturnType<typeof markdown>>;
 type ClientGeneratedId = z.infer<ReturnType<typeof clientGeneratedId>>;
 
 export type {
@@ -112,6 +119,7 @@ export type {
   Slug,
   Path,
   ClientGeneratedId,
+  Markdown,
 };
 export {
   id,
@@ -125,4 +133,5 @@ export {
   cords,
   name,
   clientGeneratedId,
+  markdown,
 };

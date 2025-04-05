@@ -27,7 +27,14 @@
     "firebase-admin": "^13.2.0",
     "firebase-functions": "^6.3.2",
     "module-alias": "^2.2.3",
+    "rehype-sanitize": "^6.0.0",
+    "rehype-stringify": "^10.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-math": "^6.0.0",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.2",
     "sharp": "^0.34.0",
+    "unified": "^11.0.5",
     "zod": "^3.24.2"
   },
   "devDependencies": {
