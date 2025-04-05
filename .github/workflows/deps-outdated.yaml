@@ -1,4 +1,4 @@
-name: Check For Outdated Dependencies
+name: Outdated Dependencies
 
 on:
   pull_request:
@@ -18,7 +18,7 @@ jobs:
       - name: Install
         run: npm i -g npm-check-updates
 
-      - name: Check
+      - name: Outdated Dependencies
         run: |
           OUTDATED_DEPS=$(cd functions && ncu)
 

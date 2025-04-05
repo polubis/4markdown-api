@@ -1,49 +1,16 @@
-<p align="center">
-  <a href="https://www.gatsbyjs.com/?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter-ts">
-    <img alt="Gatsby" src="https://www.gatsbyjs.com/Gatsby-Monogram.svg" width="60" />
-  </a>
-</p>
-<h1 align="center">
-  Gatsby Minimal TypeScript Starter
-</h1>
+## How to Contribute?
 
-## 🚀 Quick start
+1. Share your GitHub username with [Adrian Połubiński](https://www.linkedin.com/in/adrian-po%C5%82ubi%C5%84ski-281ab2172/).
+2. Once added to the board and repo, pick a ticket.
+3. Assign it to yourself and move it to `in progress`.
+4. Always create a branch from `develop`, our default branch (`main` is for production).
+5. After completing your work, raise a PR and link it to the ticket in the comments.
+6. Include the ticket link in the PR description as well.
+7. Move the ticket to `in review`.
+8. Assign the PR to [Adrian Połubiński](https://www.linkedin.com/in/adrian-po%C5%82ubi%C5%84ski-281ab2172/) for code review.
+9. If approved, testers (`MajaWielechowska` or `KaminskiKrzysztof`) will be assigned. If not, you'll need to make the necessary fixes.
+10. After testing, testers will comment on the results.
+11. If everything is fine, assign the ticket back to [Adrian Połubiński](https://www.linkedin.com/in/adrian-po%C5%82ubi%C5%84ski-281ab2172/).
+12. Once code review is complete, your part is done—[Adrian Połubiński](https://www.linkedin.com/in/adrian-po%C5%82ubi%C5%84ski-281ab2172/) will handle the merging.
 
-1.  **Create a Gatsby site.**
-
-    Use the Gatsby CLI to create a new site, specifying the minimal TypeScript starter.
-
-    ```shell
-    # create a new Gatsby site using the minimal TypeScript starter
-    npm init gatsby -- -ts
-    ```
-
-2.  **Start developing.**
-
-    Navigate into your new site’s directory and start it up.
-
-    ```shell
-    cd my-gatsby-site/
-    npm run develop
-    ```
-
-3.  **Open the code and start customizing!**
-
-    Your site is now running at http://localhost:8000!
-
-    Edit `src/pages/index.tsx` to see your site update in real-time!
-
-4.  **Learn more**
-
-    - [Documentation](https://www.gatsbyjs.com/docs/?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter-ts)
-    - [Tutorials](https://www.gatsbyjs.com/docs/tutorial/?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter-ts)
-    - [Guides](https://www.gatsbyjs.com/docs/how-to/?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter-ts)
-    - [API Reference](https://www.gatsbyjs.com/docs/api-reference/?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter-ts)
-    - [Plugin Library](https://www.gatsbyjs.com/plugins?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter-ts)
-    - [Cheat Sheet](https://www.gatsbyjs.com/docs/cheat-sheet/?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter-ts)
-
-## 🚀 Quick start (Netlify)
-
-Deploy this starter with one click on [Netlify](https://app.netlify.com/signup):
-
-[<img src="https://www.netlify.com/img/deploy/button.svg" alt="Deploy to Netlify" />](https://app.netlify.com/start/deploy?repository=https://github.com/gatsbyjs/gatsby-starter-minimal-ts)
+> Contact [Adrian Połubiński](https://www.linkedin.com/in/adrian-po%C5%82ubi%C5%84ski-281ab2172/) if you need assistance.

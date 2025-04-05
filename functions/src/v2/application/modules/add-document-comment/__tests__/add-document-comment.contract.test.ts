@@ -1,4 +1,4 @@
-import { addDocumentCommentPayloadSchema } from '../add-document-comment.contract';
+import { addDocumentCommentPayloadSchema } from "../add-document-comment.contract";
 
 describe(`Add document comment contract works when`, () => {
   it(`it accepts a valid payload`, () => {
@@ -10,7 +10,7 @@ describe(`Add document comment contract works when`, () => {
     };
 
     expect(() =>
-      addDocumentCommentPayloadSchema.parse(validPayload),
+      addDocumentCommentPayloadSchema.parse(validPayload)
     ).not.toThrow();
   });
 

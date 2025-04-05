@@ -1,4 +1,4 @@
-name: Vulnerabilities In Dependencies
+name: Vulnerabilities
 
 on:
   pull_request:
@@ -19,7 +19,7 @@ jobs:
         run: npm audit
         continue-on-error: true
 
-      - name: Check
+      - name: Vulnerabilities
         run: |
           critical_count=$(cd functions && npm audit --audit-level=critical --json | jq '.metadata.vulnerabilities.critical')
 
