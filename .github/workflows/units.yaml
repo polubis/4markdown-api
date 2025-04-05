@@ -15,11 +15,5 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
 
-      - name: Install Dependencies
-        run: npm install --legacy-peer-deps
-
-      - name: Install Internal Function Deps
-        run: cd functions && npm i
-
-      - name: Run Tests
-        run: npm run test:ci
+      - name: Units
+        run: cd functions && npm i && npm run test:ci

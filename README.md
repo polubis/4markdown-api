@@ -1,21 +1,16 @@
-## Creating backups of DB and Storage
+## How to Contribute?
 
-```
-DATESTAMP=$(date +"%Y-%m-%d_%H-%M-%S") && \
-SOURCE_BUCKET="PUT_HERE_VALUE" && \
-BACKUP_BUCKET="PUT_HERE_VALUE" && \
-gsutil -m cp -r $SOURCE_BUCKET/* $BACKUP_BUCKET/$DATESTAMP/storage/ && \
-gcloud firestore export $BACKUP_BUCKET/$DATESTAMP/db/
-```
+1. Share your GitHub username with [Adrian Połubiński](https://www.linkedin.com/in/adrian-po%C5%82ubi%C5%84ski-281ab2172/).
+2. Once added to the board and repo, pick a ticket.
+3. Assign it to yourself and move it to `in progress`.
+4. Always create a branch from `develop`, our default branch (`main` is for production).
+5. After completing your work, raise a PR and link it to the ticket in the comments.
+6. Include the ticket link in the PR description as well.
+7. Move the ticket to `in review`.
+8. Assign the PR to [Adrian Połubiński](https://www.linkedin.com/in/adrian-po%C5%82ubi%C5%84ski-281ab2172/) for code review.
+9. If approved, testers (`MajaWielechowska` or `KaminskiKrzysztof`) will be assigned. If not, you'll need to make the necessary fixes.
+10. After testing, testers will comment on the results.
+11. If everything is fine, assign the ticket back to [Adrian Połubiński](https://www.linkedin.com/in/adrian-po%C5%82ubi%C5%84ski-281ab2172/).
+12. Once code review is complete, your part is done—[Adrian Połubiński](https://www.linkedin.com/in/adrian-po%C5%82ubi%C5%84ski-281ab2172/) will handle the merging.
 
-## Applying Storage backup and DB backup
-
-```
-BACKUP_FOLDER="PUT_HERE_FOLDER_NAME" && \
-SOURCE_BUCKET="PUT_HERE_VALUE" && \
-BACKUP_BUCKET="PUT_HERE_VALUE" && \
-gsutil ls $SOURCE_BUCKET && \
-gsutil -m rm -r $SOURCE_BUCKET/* || echo "Bucket is empty, skipping removal." && \
-gsutil -m cp -r $BACKUP_BUCKET/$BACKUP_FOLDER/storage/* $SOURCE_BUCKET/ && \
-gcloud firestore import $BACKUP_BUCKET/$BACKUP_FOLDER/db/
-```
+> Contact [Adrian Połubiński](https://www.linkedin.com/in/adrian-po%C5%82ubi%C5%84ski-281ab2172/) if you need assistance.
