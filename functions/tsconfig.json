@@ -7,6 +7,7 @@
     "sourceMap": true,
     "strict": true,
     "target": "es2017",
+    "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {
       "@controllers/*": ["src/v2/application/modules/controllers/*"],

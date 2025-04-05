@@ -11,7 +11,7 @@ import { nowISO, uuid } from '@libs/helpers/stamps';
 import { type Base64 } from '@utils/validators';
 import { decodeBase64Asset } from '@utils/decode-base64-asset';
 import { storage } from 'firebase-admin';
-import * as sharp from 'sharp';
+import sharp from 'sharp';
 import { toUnit } from '@libs/helpers/to-unit';
 
 type UpdateYourUserProfileHandlerConfig = {
