@@ -6,6 +6,7 @@ import { parse } from '@utils/parse';
 import type { DocumentModel, DocumentsModel } from '@domain/models/document';
 import { nowISO } from '@libs/helpers/stamps';
 import { documentCodeSchema } from '@utils/document-schemas';
+import { validateMarkdown } from '@utils/validate-markdown';
 
 const payloadSchema = z.object({
   id,
@@ -20,11 +21,11 @@ type Dto = {
 const updateDocumentCodeController = protectedController<Dto>(
   async (rawPayload, { uid, db }) => {
     const ref = db.collection(`docs`).doc(uid);
+    const payload = await parse(payloadSchema, rawPayload);
 
-    const [payload, snap] = await Promise.all([
-      parse(payloadSchema, rawPayload),
-      ref.get(),
-    ]);
+    await validateMarkdown(payload.code);
+
+    const snap = await ref.get();
 
     const documents = snap.data() as DocumentsModel | undefined;
 

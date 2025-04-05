@@ -10,6 +10,7 @@ import type {
   CreateDocumentPayload,
 } from './create-document.contract';
 import { type ProtectedControllerHandlerContext } from '@utils/controller';
+import { validateMarkdown } from '@utils/validate-markdown';
 
 const createDocumentHandler = async ({
   payload,
@@ -18,6 +19,8 @@ const createDocumentHandler = async ({
   payload: CreateDocumentPayload;
   context: ProtectedControllerHandlerContext;
 }): Promise<CreateDocumentDto> => {
+  await validateMarkdown(payload.code);
+
   const documentsRef = db.collection(`docs`).doc(uid);
   const documentsSnap = await documentsRef.get();
 

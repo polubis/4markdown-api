@@ -6,13 +6,17 @@ import remarkMath from 'remark-math';
 import remarkRehype from 'remark-rehype';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import rehypeStringify from 'rehype-stringify';
+import { errors } from './errors';
 
 const sanitizeSchema = {
   ...defaultSchema,
 };
 
-const validateMarkdown = async (markdown: Markdown): Promise<boolean> => {
-  if (markdown === ``) return true;
+const validateMarkdown = async (markdown: Markdown): Promise<void> => {
+  if (markdown === ``) return;
+
+  let originalHtml = ``;
+  let sanitizedHtml = ``;
 
   try {
     const processorOriginal = unified()
@@ -30,14 +34,23 @@ const validateMarkdown = async (markdown: Markdown): Promise<boolean> => {
       .use(rehypeSanitize, sanitizeSchema)
       .use(rehypeStringify);
 
-    const [originalHtml, sanitizedHtml] = await Promise.all([
+    const [original, sanitized] = await Promise.all([
       processorOriginal.process(markdown),
       processorSanitized.process(markdown),
     ]);
 
-    return originalHtml === sanitizedHtml;
-  } catch (error) {
-    return false;
+    originalHtml = original.toString();
+    sanitizedHtml = sanitized.toString();
+  } catch (e) {
+    throw errors.internal(
+      `Something went wrong with sanitization. Please try again later`,
+    );
+  }
+
+  if (originalHtml !== sanitizedHtml) {
+    throw errors.badRequest(
+      `Unsafe content detected. If you will continue these attempts the system will automatically block you`,
+    );
   }
 };
 
