@@ -107,7 +107,9 @@ const rewriteWithAssistantController = protectedController<Dto>(
     const plan = accountPermission?.plan ?? Plan.Free;
 
     if (plan === Plan.Free) {
-      throw errors.unauthorized(`You don't have access to this feature`);
+      throw errors.unauthorized(
+        `You don't have access to this feature. It requires ${Plan.Pro} or ${Plan.Business}`
+      );
     }
 
     const anthropic = new Anthropic({ apiKey });
