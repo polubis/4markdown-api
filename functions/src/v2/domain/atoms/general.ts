@@ -4,4 +4,10 @@ const enum Visibility {
   Permanent = `permanent`,
 }
 
-export { Visibility };
+const enum Plan {
+  Free = `free`,
+  Pro = `pro`,
+  Business = `business`,
+}
+
+export { Visibility, Plan };
