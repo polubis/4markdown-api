@@ -1,5 +1,5 @@
 type AccountPermissionModel = {
-  trusted: boolean;
+  trusted?: boolean;
 };
 
 export type { AccountPermissionModel };

@@ -26,6 +26,7 @@ import { createMindmapController } from '@modules/create-mindmap';
 import { getAccessibleMindmapController } from '@modules/get-accessible-mindmap';
 import { reportBugController } from '@modules/report-bug';
 import { getPermanentMindmapsController } from '@modules/get-permanent-mindmaps';
+import { rewriteWithAssistantController } from '@modules/rewrite-with-assistant';
 
 const app = admin.initializeApp();
 const db = app.firestore();
@@ -136,4 +137,10 @@ export const reportBug = reportBugController({
 export const getPermanentMindmaps = getPermanentMindmapsController({
   db,
   projectId,
+});
+
+export const rewriteWithAssistant = rewriteWithAssistantController({
+  db,
+  projectId,
+  secrets: [`ANTHROPIC_API_KEY`],
 });

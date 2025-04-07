@@ -1,17 +1,12 @@
-import { errors } from './errors';
-import { Db, type DBInstance } from '../database/database';
-import { type Firestore } from 'firebase-admin/firestore';
-import { onCall, type CallableFunction } from 'firebase-functions/https';
-import type { ProjectId } from '../infra/models/atoms';
-import type { Id } from './validators';
-import type { MemoryOption } from 'firebase-functions/options';
+import { errors } from "./errors";
+import { Db, type DBInstance } from "../database/database";
+import { type Firestore } from "firebase-admin/firestore";
+import { onCall, type CallableFunction } from "firebase-functions/https";
+import type { ProjectId } from "../infra/models/atoms";
+import type { Id } from "./validators";
+import type { MemoryOption } from "firebase-functions/options";
 // @TODO[PRIO=2]: [Split it into separate library].
-type Secret =
-  | 'EMAILS_API_KEY'
-  | 'EMAILS_ENCRYPTION_TOKEN'
-  | `ADMIN_LIST`
-  | `BACKUP_BUCKET`
-  | `SOURCE_BUCKET`;
+type Secret = `ADMIN_LIST` | `ANTHROPIC_API_KEY`;
 type Secrets = Secret[];
 
 type ControllerConfig = {
@@ -33,15 +28,15 @@ type ControllerHandlerContext = {
 // @TODO[PRIO=1]: [Make it better typed].
 type ControllerHandler<TResponse = unknown> = (
   rawPayload: RawPayload,
-  context: ControllerHandlerContext,
+  context: ControllerHandlerContext
 ) => Promise<TResponse>;
 
 const getSecrets = (secrets?: Secrets): Secrets => secrets ?? [];
 const getMaxInstances = (maxInstances?: number): number => maxInstances ?? 1;
 const getConcurrency = (concurrency?: number): number => concurrency ?? 6;
 const getMemory = (
-  memory?: ControllerConfig['memory'],
-): ControllerConfig['memory'] => memory ?? `512MiB`;
+  memory?: ControllerConfig["memory"]
+): ControllerConfig["memory"] => memory ?? `512MiB`;
 
 // @TODO[PRIO=2]: [Add and test parent try catch].
 const controller =
@@ -58,7 +53,7 @@ const controller =
       },
       async (request) => {
         return await handler(request.data, { db, projectId: config.projectId });
-      },
+      }
     );
   };
 
@@ -70,7 +65,7 @@ type ProtectedControllerHandlerContext = {
 
 type ProtectedControllerHandler<TResponse = unknown> = (
   rawPayload: RawPayload,
-  context: ProtectedControllerHandlerContext,
+  context: ProtectedControllerHandlerContext
 ) => Promise<TResponse>;
 // @TODO[PRIO=2]: [Transfer rawPayload as object property and as a single object].
 const protectedController =
@@ -97,7 +92,7 @@ const protectedController =
           db,
           projectId: config.projectId,
         });
-      },
+      }
     );
   };
 
@@ -110,7 +105,7 @@ type AdminControllerHandlerContext = {
 // @TODO[PRIO=3]: [Force response and DTO types to be required].
 type AdminControllerHandler<TResponse = unknown> = (
   rawPayload: RawPayload,
-  context: AdminControllerHandlerContext,
+  context: AdminControllerHandlerContext
 ) => Promise<TResponse>;
 
 const isAdmin = (userId: Id): boolean =>
@@ -142,7 +137,7 @@ const adminController =
           db,
           projectId: config.projectId,
         });
-      },
+      }
     );
   };
 
