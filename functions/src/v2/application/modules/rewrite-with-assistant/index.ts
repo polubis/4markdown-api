@@ -20,13 +20,13 @@ const enum Persona {
 type PersonasConfig = Record<
   Persona,
   {
-    insturct: (input: string) => string;
+    instruct: (input: string) => string;
   }
 >;
 
 const personas = {
   [Persona.Grammy]: {
-    insturct: (
+    instruct: (
       input: string
     ) => `You are a highly precise grammatical correction engine. Your sole task is to correct the English grammar of the text provided below.
     
@@ -43,7 +43,7 @@ ${input}
 @@@@@END@@@@@`,
   },
   [Persona.Cleany]: {
-    insturct: (
+    instruct: (
       input: string
     ) => `You are an expert text editor specializing in improving clarity, conciseness, and natural flow while correcting grammar. Your task is to rewrite the provided English text to be shorter, use simpler language, and sound more natural, while fixing any grammatical errors.
 
@@ -60,7 +60,7 @@ ${input}
 @@@@@END@@@@@`,
   },
   [Persona.Teacher]: {
-    insturct: (
+    instruct: (
       input: string
     ) => `You are a Knowledgeable Explainer and Content Structurer. Your sole task is to generate informative content describing the topic provided below, structured clearly using Markdown.
 
@@ -94,18 +94,24 @@ const askAssistant = async ({
   apiKey,
   input,
 }: { apiKey: string } & z.infer<typeof payloadSchema>): Promise<string> => {
-  const anthropic = new Anthropic({ apiKey });
+  let message: Anthropic.Messages.Message;
 
-  const message = await anthropic.messages.create({
-    model: "claude-3-5-haiku-latest",
-    max_tokens: limits.input,
-    messages: [
-      {
-        role: "user",
-        content: personas[persona].insturct(input),
-      },
-    ],
-  });
+  try {
+    const anthropic = new Anthropic({ apiKey });
+
+    message = await anthropic.messages.create({
+      model: "claude-3-5-haiku-latest",
+      max_tokens: limits.input,
+      messages: [
+        {
+          role: "user",
+          content: personas[persona].instruct(input),
+        },
+      ],
+    });
+  } catch {
+    throw errors.internal(`Problem with external API communication`);
+  }
 
   const answer = message.content[0];
 
