@@ -3,8 +3,9 @@ import { parse } from "@utils/parse";
 import { z } from "zod";
 import { Anthropic } from "@anthropic-ai/sdk";
 import { errors } from "@utils/errors";
-import { type AccountPermissionModel } from "@domain/models/account-permission";
-import { Plan } from "@domain/atoms/general";
+import { type AccountBalanceModel } from "@domain/models/account-balance";
+import { nowISO } from "@libs/helpers/stamps";
+import { AccountBalanceHistoryModel } from "@domain/models/account-balance-history";
 
 const limits = {
   input: 1024,
@@ -86,6 +87,37 @@ const payloadSchema = z.object({
 
 type Dto = { output: string };
 
+const TOKENS_COST = 1;
+
+const askAssistant = async ({
+  persona,
+  apiKey,
+  input,
+}: { apiKey: string } & z.infer<typeof payloadSchema>): Promise<string> => {
+  const anthropic = new Anthropic({ apiKey });
+
+  const message = await anthropic.messages.create({
+    model: "claude-3-5-haiku-latest",
+    max_tokens: limits.input,
+    messages: [
+      {
+        role: "user",
+        content: personas[persona].insturct(input),
+      },
+    ],
+  });
+
+  const answer = message.content[0];
+
+  if (answer.type !== `text`) {
+    throw errors.internal(`Unexpected message content type`);
+  }
+
+  return answer.text;
+};
+
+const DEFAULT_ACCOUNT_TOKENS = 50;
+
 const rewriteWithAssistantController = protectedController<Dto>(
   async (rawPayload, context) => {
     const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -95,43 +127,87 @@ const rewriteWithAssistantController = protectedController<Dto>(
     }
 
     const payload = await parse(payloadSchema, rawPayload);
-    const accountPermissionSnap = await context.db
-      .collection(`account-permissions`)
-      .doc(context.uid)
-      .get();
+    const accountBalanceRef = context.db
+      .collection(`account-balance`)
+      .doc(context.uid);
+    const accountBalanceHistoryRef = accountBalanceRef.collection(
+      `account-balance-history`
+    );
 
-    const accountPermission = accountPermissionSnap.data() as
-      | AccountPermissionModel
-      | undefined;
+    let output: string | null = null;
 
-    const plan = accountPermission?.plan ?? Plan.Free;
+    await context.db.runTransaction(async (t) => {
+      const accountBalanceSnap = await t.get(accountBalanceRef);
 
-    if (plan === Plan.Free) {
-      throw errors.unauthorized(
-        `You don't have access to this feature. It requires ${Plan.Pro} or ${Plan.Business}`
+      const accountBalance = accountBalanceSnap.data() as
+        | AccountBalanceModel
+        | undefined;
+
+      const now = nowISO();
+
+      if (accountBalance) {
+        if (accountBalance.tokens <= 0) {
+          throw errors.unauthorized(
+            `You don't have access to this feature. It requires at least ${TOKENS_COST} tokens`
+          );
+        }
+
+        const tokensAfter = accountBalance.tokens - TOKENS_COST;
+
+        const accountBalanceModel: Pick<
+          AccountBalanceModel,
+          "mdate" | "tokens" | "historySize"
+        > = {
+          mdate: now,
+          tokens: tokensAfter,
+          historySize: accountBalance.historySize + 1,
+        };
+        const accountBalanceHistoryModel: AccountBalanceHistoryModel = {
+          cdate: now,
+          tokensBefore: accountBalance.tokens,
+          tokensAfter,
+          operation: `-`,
+        };
+
+        if (!output) {
+          output = await askAssistant({ ...payload, apiKey });
+        }
+
+        t.update(accountBalanceRef, accountBalanceModel);
+        t.create(accountBalanceHistoryRef.doc(), accountBalanceHistoryModel);
+      } else {
+        const tokensBefore = DEFAULT_ACCOUNT_TOKENS;
+        const tokensAfter = tokensBefore - TOKENS_COST;
+
+        const accountBalanceModel: AccountBalanceModel = {
+          cdate: now,
+          mdate: now,
+          tokens: tokensAfter,
+          historySize: 1,
+        };
+        const accountBalanceHistoryModel: AccountBalanceHistoryModel = {
+          cdate: now,
+          tokensBefore,
+          tokensAfter,
+          operation: `-`,
+        };
+
+        if (!output) {
+          output = await askAssistant({ ...payload, apiKey });
+        }
+
+        t.create(accountBalanceRef, accountBalanceModel);
+        t.create(accountBalanceHistoryRef.doc(), accountBalanceHistoryModel);
+      }
+    });
+
+    if (!output) {
+      throw errors.badRequest(
+        `Something went wrong with response generation. Please try again later`
       );
     }
 
-    const anthropic = new Anthropic({ apiKey });
-
-    const message = await anthropic.messages.create({
-      model: "claude-3-5-haiku-latest",
-      max_tokens: limits.input,
-      messages: [
-        {
-          role: "user",
-          content: personas[payload.persona].insturct(payload.input),
-        },
-      ],
-    });
-
-    const answer = message.content[0];
-
-    if (answer.type !== `text`) {
-      throw errors.internal(`Unexpected message content type`);
-    }
-
-    return { output: answer.text };
+    return { output };
   }
 );
 

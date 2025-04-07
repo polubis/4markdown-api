@@ -1,4 +1,4 @@
-import type { Firestore, Transaction } from 'firebase-admin/firestore';
+import type { Firestore, Transaction } from "firebase-admin/firestore";
 
 const COLLECTIONS_KEYS = [
   `docs`,
@@ -11,13 +11,15 @@ const COLLECTIONS_KEYS = [
   `user-mindmaps`,
   `mindmaps`,
   `bug-reports`,
+  `account-balance`,
+  `account-balance-history`,
 ] as const;
 type DBCollectionKey = (typeof COLLECTIONS_KEYS)[number];
 
 const Db = (db: Firestore) => {
   return {
     runTransaction: <T>(
-      updateFunction: (transaction: Transaction) => Promise<T>,
+      updateFunction: (transaction: Transaction) => Promise<T>
     ) => {
       return db.runTransaction(updateFunction);
     },
